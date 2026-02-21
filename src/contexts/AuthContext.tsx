@@ -77,20 +77,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(session?.user ?? null);
       setLoading(false);
 
-      // Push session to the session bridge so Tauri chatbot can pick it up
+      // Push session to the session_bridge table so Tauri desktop app can pick it up
       if (session && (_event === 'SIGNED_IN' || _event === 'TOKEN_REFRESHED' || _event === 'INITIAL_SESSION')) {
-        void fetch('/api/session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ access_token: session.access_token, refresh_token: session.refresh_token }),
-        }).catch(() => {});
+        void supabase.from('session_bridge').upsert({
+          user_id: session.user.id,
+          access_token: session.access_token,
+          refresh_token: session.refresh_token,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id' }).then(() => {});
       }
       if (_event === 'SIGNED_OUT') {
-        void fetch('/api/session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ clear: true }),
-        }).catch(() => {});
+        if (session?.user?.id) {
+          void supabase.from('session_bridge').delete()
+            .eq('user_id', session.user.id).then(() => {});
+        }
       }
     });
 
