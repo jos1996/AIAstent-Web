@@ -363,6 +363,14 @@ export default function AboutPage() {
                 onMouseEnter={e => (e.currentTarget.style.color = '#000')}
                 onMouseLeave={e => (e.currentTarget.style.color = '#666')}
               >About Us</a>
+              <a href="/privacy" style={{ display: 'block', color: '#666', fontSize: 14, marginBottom: 10, transition: 'color 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#000')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#666')}
+              >Privacy Policy</a>
+              <a href="/refund" style={{ display: 'block', color: '#666', fontSize: 14, marginBottom: 10, transition: 'color 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#000')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#666')}
+              >Refund Policy</a>
             </div>
           </div>
         </div>

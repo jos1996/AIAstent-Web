@@ -23,54 +23,66 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const handleAuthFromUrl = async () => {
-      const params = new URLSearchParams(window.location.search);
-      const accessToken = params.get('auth');
-      const refreshToken = params.get('ref');
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const accessToken = params.get('auth');
+        const refreshToken = params.get('ref');
 
-      // Priority 1: URL tokens from Tauri — always use when present (most current)
-      if (accessToken && refreshToken) {
-        // Clean URL immediately for security before any async work
-        window.history.replaceState({}, '', window.location.pathname);
+        // Priority 1: URL tokens from Tauri — always use when present (most current)
+        if (accessToken && refreshToken) {
+          // Clean URL immediately for security before any async work
+          window.history.replaceState({}, '', window.location.pathname);
 
-        // Try setting session with both tokens
-        const { data, error } = await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken,
-        });
-        if (!error && data.session) {
-          setSession(data.session);
-          setUser(data.session.user);
+          // Try setting session with both tokens
+          const { data, error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+          if (!error && data.session) {
+            setSession(data.session);
+            setUser(data.session.user);
+            setLoading(false);
+            return;
+          }
+          // Access token may be expired — refresh using the refresh token
+          const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession({
+            refresh_token: refreshToken,
+          });
+          if (!refreshError && refreshData.session) {
+            setSession(refreshData.session);
+            setUser(refreshData.session.user);
+            setLoading(false);
+            return;
+          }
+        }
+
+        // Priority 2: Existing browser session (no URL tokens present)
+        const { data: { session: existingSession } } = await supabase.auth.getSession();
+        if (existingSession?.user) {
+          setSession(existingSession);
+          setUser(existingSession.user);
           setLoading(false);
           return;
         }
-        // Access token may be expired — refresh using the refresh token
-        const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession({
-          refresh_token: refreshToken,
-        });
-        if (!refreshError && refreshData.session) {
-          setSession(refreshData.session);
-          setUser(refreshData.session.user);
-          setLoading(false);
-          return;
-        }
-      }
 
-      // Priority 2: Existing browser session (no URL tokens present)
-      const { data: { session: existingSession } } = await supabase.auth.getSession();
-      if (existingSession?.user) {
-        setSession(existingSession);
-        setUser(existingSession.user);
+        // No session found anywhere
+        setSession(null);
+        setUser(null);
         setLoading(false);
-        return;
+      } catch (err) {
+        console.warn('Auth initialization failed:', err);
+        setSession(null);
+        setUser(null);
+        setLoading(false);
       }
-
-      // No session found anywhere
-      setSession(null);
-      setUser(null);
-      setLoading(false);
     };
 
-    handleAuthFromUrl();
+    // Timeout fallback: if auth takes too long (e.g. bad Supabase creds), stop loading
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 5000);
+
+    handleAuthFromUrl().finally(() => clearTimeout(timeout));
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
