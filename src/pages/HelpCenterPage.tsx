@@ -4,20 +4,20 @@ import { useAuth } from '../contexts/AuthContext';
 
 const faqs = [
   {
-    q: 'How does AIAssist work?',
-    a: 'AIAssist is a desktop AI assistant that can analyze your screen, answer questions, help with interviews, draft emails, and more. Use the popup overlay for quick interactions, or access settings for full account management.',
+    q: 'How does HelplyAI work?',
+    a: 'HelplyAI is a desktop AI assistant that can analyze your screen, answer questions, help with interviews, draft emails, and more. Use the popup overlay for quick interactions, or access settings for full account management.',
   },
   {
     q: 'How do I use Screen Analysis?',
-    a: 'Click the "Analyze Screen" button in the popup. AIAssist will capture your screen (the overlay is invisible to screenshots) and provide intelligent analysis of whatever is on screen, whether it is a quiz, email, code, or document.',
+    a: 'Click the "Analyze Screen" button in the popup. HelplyAI will capture your screen (the overlay is invisible to screenshots) and provide intelligent analysis of whatever is on screen, whether it is a quiz, email, code, or document.',
   },
   {
     q: 'What is Interview mode?',
     a: 'Interview mode is designed to help you during interviews. It listens to the conversation, detects questions, and provides professional answers in real-time. Switch to Interview mode using the dropdown in the popup header.',
   },
   {
-    q: 'Is AIAssist visible during screen sharing?',
-    a: 'No. AIAssist uses native macOS APIs to make itself completely invisible to screen capture and screen sharing applications. Your overlay will not be seen by others.',
+    q: 'Is HelplyAI visible during screen sharing?',
+    a: 'No. HelplyAI uses native macOS APIs to make itself completely invisible to screen capture and screen sharing applications. Your overlay will not be seen by others.',
   },
   {
     q: 'How do I change the AI response language?',

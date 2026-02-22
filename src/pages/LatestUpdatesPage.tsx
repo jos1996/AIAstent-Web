@@ -95,7 +95,7 @@ export default function LatestUpdatesPage() {
   return (
     <div style={{ padding: '32px 36px', maxWidth: 800 }}>
       <h1 style={{ fontSize: 22, fontWeight: 700, color: '#f3f4f6', marginBottom: 4 }}>Latest Updates</h1>
-      <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 24 }}>See what's new in AIAssist. New features, bug fixes, and improvements.</p>
+      <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 24 }}>See what's new in HelplyAI. New features, bug fixes, and improvements.</p>
 
       {/* Filter pills */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 28 }}>

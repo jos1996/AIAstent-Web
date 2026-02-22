@@ -11,7 +11,7 @@ interface Tutorial {
 const tutorials: Tutorial[] = [
   {
     id: '1',
-    title: 'Getting Started with AIAssist',
+    title: 'Getting Started with HelplyAI',
     description: 'Learn the basics: how to open the chatbot, send messages, and use voice input for hands-free interaction.',
     duration: '5 min',
     category: 'Basics',
@@ -21,7 +21,7 @@ const tutorials: Tutorial[] = [
   {
     id: '2',
     title: 'Screen Analysis Deep Dive',
-    description: 'See how AIAssist can analyze your screen content, solve problems, summarize documents, and fix code.',
+    description: 'See how HelplyAI can analyze your screen content, solve problems, summarize documents, and fix code.',
     duration: '8 min',
     category: 'Features',
     thumbnail: null,
@@ -48,7 +48,7 @@ const tutorials: Tutorial[] = [
   {
     id: '5',
     title: 'Multi-Language Configuration',
-    description: 'Configure input and output languages, enable auto-detect, and use AIAssist in 14+ languages.',
+    description: 'Configure input and output languages, enable auto-detect, and use HelplyAI in 14+ languages.',
     duration: '6 min',
     category: 'Settings',
     thumbnail: null,
@@ -66,7 +66,7 @@ const tutorials: Tutorial[] = [
   {
     id: '7',
     title: 'Keyboard Shortcuts & Power Tips',
-    description: 'Master global shortcuts, quick actions, and hidden features to use AIAssist like a pro.',
+    description: 'Master global shortcuts, quick actions, and hidden features to use HelplyAI like a pro.',
     duration: '7 min',
     category: 'Advanced',
     thumbnail: null,
@@ -75,7 +75,7 @@ const tutorials: Tutorial[] = [
   {
     id: '8',
     title: 'Cross-Platform Setup (macOS & Windows)',
-    description: 'Install and configure AIAssist on both macOS and Windows. Covers platform-specific features and tips.',
+    description: 'Install and configure HelplyAI on both macOS and Windows. Covers platform-specific features and tips.',
     duration: '6 min',
     category: 'Setup',
     thumbnail: null,
@@ -96,7 +96,7 @@ export default function TutorialsPage() {
     <div style={{ padding: '32px 36px', maxWidth: 900 }}>
       <h1 style={{ fontSize: 22, fontWeight: 700, color: '#f3f4f6', marginBottom: 4 }}>Tutorials</h1>
       <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 28 }}>
-        Video guides to help you get the most out of AIAssist. More tutorials coming soon!
+        Video guides to help you get the most out of HelplyAI. More tutorials coming soon!
       </p>
 
       {/* Video grid */}

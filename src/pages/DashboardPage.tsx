@@ -217,7 +217,7 @@ export default function DashboardPage() {
             <div style={{ padding: 40, textAlign: 'center', color: '#6b7280' }}>Loading...</div>
           ) : recentActivity.length === 0 ? (
             <div style={{ padding: 40, textAlign: 'center', color: '#6b7280' }}>
-              No activity yet. Start using AIAssist to see your history here.
+              No activity yet. Start using HelplyAI to see your history here.
             </div>
           ) : (
             recentActivity.map(item => (

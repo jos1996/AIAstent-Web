@@ -166,7 +166,7 @@ export default function SettingsLayout() {
           <div style={{ width: 28, height: 28, borderRadius: 8, background: 'linear-gradient(135deg, #2563eb, #7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 6v6l4 2"/></svg>
           </div>
-          <span style={{ color: '#e5e7eb', fontSize: 15, fontWeight: 700 }}>AIAssist Settings</span>
+          <span style={{ color: '#e5e7eb', fontSize: 15, fontWeight: 700 }}>HelplyAI Settings</span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -329,12 +329,12 @@ export default function SettingsLayout() {
             backdropFilter: 'blur(20px)',
           }}>
             <div style={{ textAlign: 'center', marginBottom: 32 }}>
-              <img src="/favicon.png" alt="AIAssist" style={{ width: 56, height: 56, borderRadius: '50%', marginBottom: 16 }} />
+              <img src="/favicon.png" alt="HelplyAI" style={{ width: 56, height: 56, borderRadius: '50%', marginBottom: 16 }} />
               <h1 style={{ color: '#fff', fontSize: 22, fontWeight: 700, margin: 0 }}>
                 {authMode === 'login' ? 'Welcome back' : authMode === 'signup' ? 'Create account' : 'Reset password'}
               </h1>
               <p style={{ color: '#9ca3af', fontSize: 14, marginTop: 8 }}>
-                {authMode === 'login' ? 'Sign in to unlock all features' : authMode === 'signup' ? 'Get started with AIAssist' : 'Enter your email to reset'}
+                {authMode === 'login' ? 'Sign in to unlock all features' : authMode === 'signup' ? 'Get started with HelplyAI' : 'Enter your email to reset'}
               </p>
             </div>
 
