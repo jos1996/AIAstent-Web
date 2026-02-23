@@ -95,14 +95,6 @@ export default function HomePage() {
             onMouseEnter={e => (e.currentTarget.style.color = '#000')}
             onMouseLeave={e => (e.currentTarget.style.color = '#555')}
           >About Us</a>
-          <a href="/settings/dashboard" style={{
-            padding: '8px 20px', borderRadius: 100, fontSize: 14, fontWeight: 600,
-            background: '#000',
-            color: '#fff', transition: 'all 0.3s',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#1a1a1a'; e.currentTarget.style.transform = 'translateY(-1px)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#000'; e.currentTarget.style.transform = 'translateY(0)' }}
-          >Sign In</a>
         </div>
       </nav>
 
