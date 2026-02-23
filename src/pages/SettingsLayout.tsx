@@ -306,6 +306,24 @@ export default function SettingsLayout() {
               borderTop: '1px solid rgba(255,255,255,0.08)',
             }}>
               <button
+                onClick={() => navigate('/')}
+                style={{
+                  width: '100%', padding: '11px 16px', borderRadius: 12,
+                  background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.12)',
+                  color: '#9ca3af', fontSize: 14, fontWeight: 500,
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                  transition: 'all 0.2s', marginBottom: 8,
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = '#9ca3af'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                  <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+                Home
+              </button>
+              <button
                 onClick={async () => { await signOut(); navigate('/settings'); }}
                 style={{
                   width: '100%', padding: '11px 16px', borderRadius: 12,

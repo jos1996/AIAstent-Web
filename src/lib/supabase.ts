@@ -17,9 +17,10 @@ export const supabase = createClient(
   {
     auth: {
       flowType: 'pkce',
-      detectSessionInUrl: !isPlaceholder,
+      detectSessionInUrl: true,
       autoRefreshToken: !isPlaceholder,
       persistSession: !isPlaceholder,
+      storage: typeof window !== 'undefined' ? window.localStorage : undefined,
     },
   }
 );

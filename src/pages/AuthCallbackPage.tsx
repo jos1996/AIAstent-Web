@@ -1,77 +1,40 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase, supabaseConfigured } from '../lib/supabase';
+import { supabaseConfigured } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function AuthCallbackPage() {
   const navigate = useNavigate();
   const [error, setError] = useState('');
+  const { user, loading } = useAuth();
+  const hasRedirected = useRef(false);
 
+  // Watch for user from AuthContext — it handles the PKCE exchange via detectSessionInUrl
   useEffect(() => {
+    if (hasRedirected.current) return;
+
     if (!supabaseConfigured) {
       setError('Supabase is not configured. Please add valid credentials to your .env file.');
       return;
     }
 
-    const handleCallback = async () => {
-      try {
-        // Check if there's a code in the URL (PKCE flow from Google OAuth)
-        const url = new URL(window.location.href);
-        const code = url.searchParams.get('code');
+    // Once AuthContext finishes loading and user is available, redirect to dashboard
+    if (!loading && user) {
+      hasRedirected.current = true;
+      navigate('/settings/dashboard', { replace: true });
+      return;
+    }
 
-        if (code) {
-          // Exchange the code for a session
-          const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-          if (exchangeError) {
-            setError(exchangeError.message);
-            return;
-          }
-          if (data.session) {
-            navigate('/settings/dashboard', { replace: true });
-            return;
-          }
+    // If loading is done but no user, wait a bit more then show error
+    if (!loading && !user) {
+      const timeout = setTimeout(() => {
+        if (!hasRedirected.current) {
+          setError('Authentication failed. Please try signing in again.');
         }
-
-        // Check for hash fragment (implicit flow fallback)
-        if (window.location.hash) {
-          const { data: { session }, error: hashError } = await supabase.auth.getSession();
-          if (hashError) {
-            setError(hashError.message);
-            return;
-          }
-          if (session) {
-            navigate('/settings/dashboard', { replace: true });
-            return;
-          }
-        }
-
-        // Check if session already exists
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          navigate('/settings/dashboard', { replace: true });
-          return;
-        }
-
-        // Listen for auth state changes as a fallback
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-          if (session && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION')) {
-            subscription.unsubscribe();
-            navigate('/settings/dashboard', { replace: true });
-          }
-        });
-
-        // Timeout fallback
-        setTimeout(() => {
-          subscription.unsubscribe();
-          setError('Authentication timed out. Please try again.');
-        }, 10000);
-
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Authentication failed. Please try again.');
-      }
-    };
-
-    handleCallback();
-  }, [navigate]);
+      }, 5000);
+      return () => clearTimeout(timeout);
+    }
+  }, [user, loading, navigate]);
 
   return (
     <div style={{
@@ -93,8 +56,17 @@ export default function AuthCallbackPage() {
                 padding: '10px 24px', borderRadius: 10,
                 background: 'rgba(37,99,235,0.2)', border: '1px solid rgba(37,99,235,0.3)',
                 color: '#60a5fa', fontSize: 14, cursor: 'pointer',
+                marginRight: 10,
               }}
-            >Back to Login</button>
+            >Sign In Again</button>
+            <button
+              onClick={() => navigate('/', { replace: true })}
+              style={{
+                padding: '10px 24px', borderRadius: 10,
+                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)',
+                color: '#9ca3af', fontSize: 14, cursor: 'pointer',
+              }}
+            >Go Home</button>
           </>
         ) : (
           <>

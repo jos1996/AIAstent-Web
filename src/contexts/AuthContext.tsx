@@ -27,17 +27,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    // If we're on the auth callback page, let AuthCallbackPage handle the code exchange
-    const isCallbackPage = window.location.pathname === '/auth/callback';
-
     const handleAuthFromUrl = async () => {
       try {
-        // Don't process auth on callback page — AuthCallbackPage handles it
-        if (isCallbackPage) {
-          setLoading(false);
-          return;
-        }
-
         const params = new URLSearchParams(window.location.search);
         const accessToken = params.get('auth');
         const refreshToken = params.get('ref');
