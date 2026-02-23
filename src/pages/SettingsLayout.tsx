@@ -175,12 +175,12 @@ export default function SettingsLayout() {
           borderBottom: '1px solid rgba(255,255,255,0.06)',
           background: 'rgba(20,20,20,0.8)', backdropFilter: 'blur(20px)',
         }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', cursor: 'pointer' }}>
           <div style={{ width: 28, height: 28, borderRadius: 8, background: 'linear-gradient(135deg, #2563eb, #7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 6v6l4 2"/></svg>
           </div>
-          <span style={{ color: '#e5e7eb', fontSize: 15, fontWeight: 700 }}>HelplyAI Settings</span>
-        </div>
+          <span style={{ color: '#e5e7eb', fontSize: 15, fontWeight: 700 }}>HelplyAI</span>
+        </a>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {isAuthenticated ? (
