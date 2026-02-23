@@ -5,6 +5,22 @@ import { PLANS, PLAN_ORDER } from '../lib/plans';
 import type { PlanId } from '../lib/plans';
 import { usePlanLimits } from '../hooks/usePlanLimits';
 
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
+const RAZORPAY_KEY = 'rzp_live_RXT3VUdM3gaV4e';
+
+// Price mapping in INR (₹)
+const PLAN_PRICES: Record<PlanId, number> = {
+  free: 0,
+  weekly: 499,      // ~$6 USD
+  pro: 1599,        // ~$19 USD
+  pro_plus: 6799,   // ~$80 USD
+};
+
 export default function BillingPage() {
   const { user } = useAuth();
   const [billingEmail, setBillingEmail] = useState('');
@@ -42,22 +58,77 @@ export default function BillingPage() {
     setLoading(false);
   };
 
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
   const handleSelectPlan = async (planId: PlanId) => {
     if (planId === planState.plan) return;
     setUpgradeLoading(planId);
 
     if (planId !== 'free') {
-      // Payment gateway placeholder — for now just update the plan
-      // TODO: integrate Stripe/Razorpay here
-      alert(`Payment gateway coming soon! For now, your plan will be set to ${PLANS[planId].name} for testing.`);
-    }
+      const plan = PLANS[planId];
+      const amount = PLAN_PRICES[planId] * 100; // Convert to paise
 
-    const result = await updatePlan(planId);
-    if (!result.success) {
-      alert(result.error || 'Failed to update plan');
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        alert('Failed to load payment gateway. Please try again.');
+        setUpgradeLoading(null);
+        return;
+      }
+
+      const options = {
+        key: RAZORPAY_KEY,
+        amount: amount,
+        currency: 'INR',
+        name: 'HelplyAI',
+        description: `${plan.name} Plan`,
+        image: 'https://helplyai.co/logo.png',
+        handler: async function () {
+          // Payment successful
+          const result = await updatePlan(planId);
+          if (!result.success) {
+            alert(result.error || 'Failed to update plan');
+          } else {
+            alert('Payment successful! Your plan has been upgraded.');
+            await loadBilling();
+          }
+          setUpgradeLoading(null);
+        },
+        prefill: {
+          email: user?.email || '',
+        },
+        theme: {
+          color: '#2563eb',
+        },
+        modal: {
+          ondismiss: function() {
+            setUpgradeLoading(null);
+          }
+        }
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } else {
+      // Free plan - no payment needed
+      const result = await updatePlan(planId);
+      if (!result.success) {
+        alert(result.error || 'Failed to update plan');
+      }
+      await loadBilling();
+      setUpgradeLoading(null);
     }
-    await loadBilling();
-    setUpgradeLoading(null);
   };
 
   if (loading || !loaded) return <div style={{ color: '#6b7280', padding: 40 }}>Loading...</div>;
@@ -172,7 +243,7 @@ export default function BillingPage() {
       )}
 
       {/* Plan Cards — 4 cards including new weekly plan */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, marginBottom: 32 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
         {PLAN_ORDER.map(planId => {
           const plan = PLANS[planId];
           const isCurrent = planState.plan === planId;
@@ -180,7 +251,7 @@ export default function BillingPage() {
 
           return (
             <div key={planId} style={{
-              padding: 28, borderRadius: 18, position: 'relative',
+              padding: 20, borderRadius: 16, position: 'relative',
               background: isCurrent ? 'linear-gradient(135deg, rgba(37,99,235,0.15) 0%, rgba(37,99,235,0.08) 100%)' 
                 : plan.highlighted ? 'linear-gradient(135deg, rgba(59,130,246,0.15) 0%, rgba(147,51,234,0.1) 100%)'
                 : 'rgba(255,255,255,0.03)',
@@ -211,11 +282,11 @@ export default function BillingPage() {
                 </div>
               )}
               {/* Plan Name */}
-              <div style={{ color: '#fff', fontSize: 18, fontWeight: 700, marginBottom: 10 }}>{plan.name}</div>
+              <div style={{ color: '#fff', fontSize: 16, fontWeight: 700, marginBottom: 8 }}>{plan.name}</div>
 
               {/* Price */}
               <div style={{ marginBottom: 6 }}>
-                <span style={{ color: '#fff', fontSize: 42, fontWeight: 800, letterSpacing: '-1px' }}>{plan.priceLabel}</span>
+                <span style={{ color: '#fff', fontSize: 32, fontWeight: 800, letterSpacing: '-1px' }}>{plan.priceLabel}</span>
                 {planId !== 'free' && (
                   <span style={{ color: '#6b7280', fontSize: 13 }}> {plan.priceSuffix}</span>
                 )}
@@ -235,8 +306,8 @@ export default function BillingPage() {
               {/* Tagline */}
               <div style={{ 
                 color: plan.highlighted ? '#d1d5db' : '#9ca3af', 
-                fontSize: 14, 
-                marginBottom: 24, 
+                fontSize: 13, 
+                marginBottom: 18, 
                 marginTop: plan.savingsNote ? 0 : 10,
                 fontWeight: plan.highlighted ? 500 : 400,
                 lineHeight: 1.5,
@@ -247,7 +318,7 @@ export default function BillingPage() {
                 onClick={() => handleSelectPlan(planId)}
                 disabled={isCurrent || upgradeLoading !== null}
                 style={{
-                  width: '100%', padding: '13px 0', borderRadius: 12, marginBottom: 24,
+                  width: '100%', padding: '11px 0', borderRadius: 10, marginBottom: 18,
                   background: isCurrent ? 'transparent'
                     : plan.highlighted ? '#fff'
                     : planId === 'pro_plus' ? '#fff'
@@ -271,7 +342,7 @@ export default function BillingPage() {
 
               {/* Intro text for non-free */}
               {planId !== 'free' && (
-                <div style={{ color: '#9ca3af', fontSize: 12, fontWeight: 600, marginBottom: 10 }}>
+                <div style={{ color: '#9ca3af', fontSize: 11, fontWeight: 600, marginBottom: 8 }}>
                   {planId === 'weekly' ? 'Everything in Free, plus...' 
                    : planId === 'pro' ? 'Everything in Free, plus...' 
                    : 'Everything in Pro, plus...'}
@@ -279,10 +350,10 @@ export default function BillingPage() {
               )}
 
               {/* Features */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {plan.features.map(f => (
-                  <div key={f} style={{ color: '#d1d5db', fontSize: 13, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 1 }}>
+                  <div key={f} style={{ color: '#d1d5db', fontSize: 12, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 2 }}>
                       <polyline points="20 6 9 17 4 12"/>
                     </svg>
                     {f}
@@ -309,7 +380,7 @@ export default function BillingPage() {
           )}
         </div>
         <div style={{ color: '#4b5563', fontSize: 12, marginTop: 8 }}>
-          Payment gateway (Stripe/Razorpay) will be integrated soon. Plan changes are saved to your account.
+          Secure payments powered by Razorpay. All transactions are encrypted and secure.
         </div>
       </div>
     </div>
