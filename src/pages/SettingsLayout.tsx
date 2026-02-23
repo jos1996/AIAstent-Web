@@ -56,6 +56,15 @@ export default function SettingsLayout() {
   const [authSuccess, setAuthSuccess] = useState('');
   const [authSubmitting, setAuthSubmitting] = useState(false);
 
+  const currentPath = location.pathname;
+
+  // Redirect authenticated users to dashboard if they're at /settings root
+  useEffect(() => {
+    if (user && currentPath === '/settings') {
+      navigate('/settings/dashboard', { replace: true });
+    }
+  }, [user, currentPath, navigate]);
+
   useEffect(() => {
     if (!user) return;
     const loadHeaderProfile = async () => {
@@ -86,9 +95,6 @@ export default function SettingsLayout() {
     loadHeaderProfile();
   }, [user]);
 
-  const currentPath = location.pathname;
-
-
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError('');
@@ -96,17 +102,24 @@ export default function SettingsLayout() {
     setAuthSubmitting(true);
     if (authMode === 'login') {
       const { error } = await signIn(authEmail, authPassword);
-      if (error) setAuthError(error);
+      if (error) {
+        setAuthError(error);
+        setAuthSubmitting(false);
+      } else {
+        // Successfully signed in - redirect to dashboard
+        navigate('/settings/dashboard');
+      }
     } else if (authMode === 'signup') {
       const { error } = await signUp(authEmail, authPassword, authFullName);
       if (error) setAuthError(error);
       else setAuthSuccess('Account created! Check your email for verification.');
+      setAuthSubmitting(false);
     } else if (authMode === 'forgot') {
       const { error } = await resetPassword(authEmail);
       if (error) setAuthError(error);
       else setAuthSuccess('Password reset email sent. Check your inbox.');
+      setAuthSubmitting(false);
     }
-    setAuthSubmitting(false);
   };
 
   const handleGoogleAuth = async () => {

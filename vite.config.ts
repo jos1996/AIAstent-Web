@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
 
 // Shared session store — settings web app writes here, Tauri chatbot reads
 let sessionStore: { access_token: string; refresh_token: string } | null = null;
@@ -8,7 +7,6 @@ let sessionStore: { access_token: string; refresh_token: string } | null = null;
 export default defineConfig({
   plugins: [
     react(),
-    tailwindcss(),
     {
       name: 'session-bridge',
       configureServer(server) {

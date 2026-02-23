@@ -1,42 +1,76 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { supabase, supabaseConfigured } from '../lib/supabase';
 
 export default function AuthCallbackPage() {
   const navigate = useNavigate();
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // With PKCE flow, Supabase detects ?code= in the URL and exchanges it automatically.
-    // We listen for the SIGNED_IN event and navigate to dashboard once the session exists.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session) {
-        navigate('/settings/dashboard', { replace: true });
-      } else if (event === 'TOKEN_REFRESHED' && session) {
-        navigate('/settings/dashboard', { replace: true });
-      }
-    });
+    if (!supabaseConfigured) {
+      setError('Supabase is not configured. Please add valid credentials to your .env file.');
+      return;
+    }
 
-    // Also check if session was already established before this component mounted
-    supabase.auth.getSession().then(({ data: { session }, error: err }) => {
-      if (err) {
-        setError(err.message);
-        return;
-      }
-      if (session) {
-        navigate('/settings/dashboard', { replace: true });
-      }
-    });
+    const handleCallback = async () => {
+      try {
+        // Check if there's a code in the URL (PKCE flow from Google OAuth)
+        const url = new URL(window.location.href);
+        const code = url.searchParams.get('code');
 
-    // 15-second timeout fallback
-    const timeout = setTimeout(() => {
-      setError('Authentication is taking too long. Please try again.');
-    }, 15000);
+        if (code) {
+          // Exchange the code for a session
+          const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+          if (exchangeError) {
+            setError(exchangeError.message);
+            return;
+          }
+          if (data.session) {
+            navigate('/settings/dashboard', { replace: true });
+            return;
+          }
+        }
 
-    return () => {
-      subscription.unsubscribe();
-      clearTimeout(timeout);
+        // Check for hash fragment (implicit flow fallback)
+        if (window.location.hash) {
+          const { data: { session }, error: hashError } = await supabase.auth.getSession();
+          if (hashError) {
+            setError(hashError.message);
+            return;
+          }
+          if (session) {
+            navigate('/settings/dashboard', { replace: true });
+            return;
+          }
+        }
+
+        // Check if session already exists
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          navigate('/settings/dashboard', { replace: true });
+          return;
+        }
+
+        // Listen for auth state changes as a fallback
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+          if (session && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION')) {
+            subscription.unsubscribe();
+            navigate('/settings/dashboard', { replace: true });
+          }
+        });
+
+        // Timeout fallback
+        setTimeout(() => {
+          subscription.unsubscribe();
+          setError('Authentication timed out. Please try again.');
+        }, 10000);
+
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Authentication failed. Please try again.');
+      }
     };
+
+    handleCallback();
   }, [navigate]);
 
   return (

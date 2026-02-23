@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, supabaseConfigured } from '../lib/supabase';
 import type { User, Session } from '@supabase/supabase-js';
 
 interface AuthContextType {
@@ -19,11 +19,25 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(supabaseConfigured);
 
   useEffect(() => {
+    // Skip auth entirely if Supabase is not configured — app loads instantly
+    if (!supabaseConfigured) {
+      return;
+    }
+
+    // If we're on the auth callback page, let AuthCallbackPage handle the code exchange
+    const isCallbackPage = window.location.pathname === '/auth/callback';
+
     const handleAuthFromUrl = async () => {
       try {
+        // Don't process auth on callback page — AuthCallbackPage handles it
+        if (isCallbackPage) {
+          setLoading(false);
+          return;
+        }
+
         const params = new URLSearchParams(window.location.search);
         const accessToken = params.get('auth');
         const refreshToken = params.get('ref');
@@ -77,10 +91,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    // Timeout fallback: if auth takes too long (e.g. bad Supabase creds), stop loading
+    // Timeout fallback: if auth takes too long, stop loading after 3 seconds
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 5000);
+    }, 3000);
 
     handleAuthFromUrl().finally(() => clearTimeout(timeout));
 
@@ -88,28 +102,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
-
-      // Push session to the session_bridge table so Tauri desktop app can pick it up
-      if (session && (_event === 'SIGNED_IN' || _event === 'TOKEN_REFRESHED' || _event === 'INITIAL_SESSION')) {
-        void supabase.from('session_bridge').upsert({
-          user_id: session.user.id,
-          access_token: session.access_token,
-          refresh_token: session.refresh_token,
-          updated_at: new Date().toISOString(),
-        }, { onConflict: 'user_id' }).then(() => {});
-      }
-      if (_event === 'SIGNED_OUT') {
-        if (session?.user?.id) {
-          void supabase.from('session_bridge').delete()
-            .eq('user_id', session.user.id).then(() => {});
-        }
-      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
+  const notConfiguredError = 'Supabase is not configured. Please add valid VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your .env file.';
+
   const signUp = async (email: string, password: string, fullName: string) => {
+    if (!supabaseConfigured) return { error: notConfiguredError };
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -119,11 +120,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signIn = async (email: string, password: string) => {
+    if (!supabaseConfigured) return { error: notConfiguredError };
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error?.message ?? null };
   };
 
   const signInWithGoogle = async () => {
+    if (!supabaseConfigured) return { error: notConfiguredError };
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -135,10 +138,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    if (!supabaseConfigured) return;
     await supabase.auth.signOut();
   };
 
   const resetPassword = async (email: string) => {
+    if (!supabaseConfigured) return { error: notConfiguredError };
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/auth/callback`,
     });
@@ -146,6 +151,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const deleteAccount = async () => {
+    if (!supabaseConfigured) return { error: notConfiguredError };
     if (!user) return { error: 'No user logged in' };
     const { error } = await supabase.rpc('delete_user');
     if (!error) await supabase.auth.signOut();

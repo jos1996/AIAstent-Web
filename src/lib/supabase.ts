@@ -1,17 +1,25 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase credentials missing. Check your .env file.');
+const isPlaceholder = !supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('your-project-id') || supabaseAnonKey.includes('your-supabase');
+
+if (isPlaceholder) {
+  console.warn('Supabase credentials missing or placeholder. Auth features will be disabled.');
 }
 
-export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '', {
-  auth: {
-    flowType: 'pkce',
-    detectSessionInUrl: true,
-    autoRefreshToken: true,
-    persistSession: true,
-  },
-});
+export const supabaseConfigured = !isPlaceholder;
+
+export const supabase = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseAnonKey || 'placeholder-key',
+  {
+    auth: {
+      flowType: 'pkce',
+      detectSessionInUrl: !isPlaceholder,
+      autoRefreshToken: !isPlaceholder,
+      persistSession: !isPlaceholder,
+    },
+  }
+);
