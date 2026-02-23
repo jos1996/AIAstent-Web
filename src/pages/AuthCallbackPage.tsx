@@ -29,7 +29,7 @@ export default function AuthCallbackPage() {
     if (!loading && !user) {
       const timeout = setTimeout(() => {
         if (!hasRedirected.current) {
-          setError('Authentication failed. Please try signing in again.');
+          setError('Authentication failed. The redirect URL may not be configured in Supabase. Please check SUPABASE_CONFIG.md and try again.');
         }
       }, 5000);
       return () => clearTimeout(timeout);

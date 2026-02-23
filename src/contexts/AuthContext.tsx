@@ -118,10 +118,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     if (!supabaseConfigured) return { error: notConfiguredError };
+    // Use exact redirect URL to ensure PKCE verifier matches
+    const redirectUrl = window.location.hostname === 'localhost' 
+      ? `http://localhost:${window.location.port}/auth/callback`
+      : `${window.location.origin}/auth/callback`;
+    
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: redirectUrl,
         queryParams: { prompt: 'select_account' },
       },
     });
