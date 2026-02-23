@@ -8,11 +8,12 @@ To fix the PKCE authentication error, you need to add the redirect URL to your S
 2. Navigate to **Authentication** → **URL Configuration**
 3. Add the following to **Redirect URLs**:
    - `http://localhost:5174/auth/callback` (for local development)
-   - `https://your-production-domain.netlify.app/auth/callback` (for production)
+   - `https://helplyai.co/auth/callback` (for production)
 
 ## Current Configuration
 
 - **Supabase URL**: `https://vodhulbrqziyamcpdokz.supabase.co`
+- **Production URL**: `https://helplyai.co`
 - **Local Dev URL**: `http://localhost:5174`
 - **Auth Callback**: `/auth/callback`
 
