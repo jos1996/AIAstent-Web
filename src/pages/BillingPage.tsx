@@ -16,9 +16,9 @@ const RAZORPAY_KEY = 'rzp_live_RXT3VUdM3gaV4e';
 // Price mapping in INR (₹)
 const PLAN_PRICES: Record<PlanId, number> = {
   free: 0,
-  weekly: 499,      // ~$6 USD
-  pro: 1599,        // ~$19 USD
-  pro_plus: 6799,   // ~$80 USD
+  weekly: 540,      // ~$6 USD
+  pro: 1710,        // ~$19 USD
+  pro_plus: 7200,   // ~$80 USD
 };
 
 export default function BillingPage() {
