@@ -1,3 +1,11 @@
+# Redirect default Netlify subdomain to custom domain
+[[redirects]]
+  from = "https://worklyweb.netlify.app/*"
+  to = "https://helplyai.co/:splat"
+  status = 301
+  force = true
+
+# SPA routing - must come after domain redirect
 [[redirects]]
   from = "/*"
   to = "/index.html"
