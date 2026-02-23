@@ -133,6 +133,35 @@ export default function DashboardPage() {
 
   return (
     <div>
+      {/* Open Chatbot Button - Top Right */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+        <button
+          onClick={() => {
+            // Try to open desktop app if installed, otherwise show download info
+            window.location.href = 'helplyai://open';
+            setTimeout(() => {
+              // If app didn't open, could show download modal
+              alert('HelplyAI desktop app is required. Please download it from the home page.');
+            }, 1000);
+          }}
+          style={{
+            padding: '12px 24px', borderRadius: 12, fontSize: 14, fontWeight: 600,
+            background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
+            border: 'none', color: '#fff', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: 10,
+            transition: 'all 0.3s', boxShadow: '0 4px 12px rgba(37,99,235,0.3)',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(37,99,235,0.4)'; }}
+          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(37,99,235,0.3)'; }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+            <path d="M8 10h8M8 14h4"/>
+          </svg>
+          Open Chatbot
+        </button>
+      </div>
+
       {/* Profile Welcome Card */}
       <div style={{
         marginBottom: 28, padding: 24, borderRadius: 14,
