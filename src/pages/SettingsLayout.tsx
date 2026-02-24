@@ -175,11 +175,10 @@ export default function SettingsLayout() {
   return (
     <div style={{
       width: '100%', height: '100%',
-      background: 'linear-gradient(135deg, #0a0a0a 0%, #111118 50%, #0a0a0a 100%)',
+      background: '#ffffff',
       display: 'flex', flexDirection: 'column',
       fontFamily: "-apple-system, 'SF Pro Text', system-ui, sans-serif",
-      color: '#e5e7eb',
-      borderRadius: 16,
+      color: '#1f2937',
       overflow: 'hidden',
       position: 'relative',
     }}>
@@ -187,16 +186,14 @@ export default function SettingsLayout() {
       {/* Top Bar */}
       <div
         style={{
-          height: 52, flexShrink: 0, display: 'flex', alignItems: 'center',
-          justifyContent: 'space-between', padding: '0 20px',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
-          background: 'rgba(20,20,20,0.8)', backdropFilter: 'blur(20px)',
+          height: 60, flexShrink: 0, display: 'flex', alignItems: 'center',
+          justifyContent: 'space-between', padding: '0 24px',
+          borderBottom: '1px solid #e5e7eb',
+          background: '#ffffff',
         }}>
-        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', cursor: 'pointer' }}>
-          <div style={{ width: 28, height: 28, borderRadius: 8, background: 'linear-gradient(135deg, #2563eb, #7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 6v6l4 2"/></svg>
-          </div>
-          <span style={{ color: '#e5e7eb', fontSize: 15, fontWeight: 700 }}>HelplyAI</span>
+        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', cursor: 'pointer' }}>
+          <img src="/favicon.png" alt="HelplyAI" style={{ width: 32, height: 32, borderRadius: 8 }} />
+          <span style={{ color: '#1f2937', fontSize: 16, fontWeight: 700 }}>HelplyAI</span>
         </a>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -206,29 +203,29 @@ export default function SettingsLayout() {
                 <img src={profileAvatar} alt="" style={{ width: 28, height: 28, borderRadius: 8, objectFit: 'cover' }} />
               ) : profileName ? (
                 <div style={{
-                  width: 28, height: 28, borderRadius: 8,
+                  width: 32, height: 32, borderRadius: 8,
                   background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: '#fff', fontSize: 11, fontWeight: 700,
+                  color: '#fff', fontSize: 12, fontWeight: 700,
                 }}>{profileName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}</div>
               ) : null}
-              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
-                {profileName && <span style={{ color: '#e5e7eb', fontSize: 13, fontWeight: 500 }}>{profileName}</span>}
-                <span style={{ color: '#6b7280', fontSize: profileName ? 11 : 13 }}>{profileUsername ? `@${profileUsername}` : user?.email}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.3 }}>
+                {profileName && <span style={{ color: '#1f2937', fontSize: 14, fontWeight: 600 }}>{profileName}</span>}
+                <span style={{ color: '#6b7280', fontSize: profileName ? 12 : 14 }}>{profileUsername ? `@${profileUsername}` : user?.email}</span>
               </div>
               <div style={{ position: 'relative' }}>
                 <button
                   className="no-drag"
                   onClick={() => setShowPrefs(!showPrefs)}
                   style={{
-                    width: 34, height: 34, borderRadius: 8,
-                    background: showPrefs ? 'rgba(255,255,255,0.1)' : 'transparent',
-                    border: '1px solid rgba(255,255,255,0.08)', color: '#9ca3af',
+                    width: 36, height: 36, borderRadius: 8,
+                    background: showPrefs ? '#f3f4f6' : 'transparent',
+                    border: '1px solid #e5e7eb', color: '#6b7280',
                     cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                     transition: 'all 0.2s',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = '#fff'; }}
-                  onMouseLeave={e => { if (!showPrefs) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#9ca3af'; } }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#f3f4f6'; e.currentTarget.style.color = '#1f2937'; }}
+                  onMouseLeave={e => { if (!showPrefs) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#6b7280'; } }}
                 >
                   <SidebarIcon type="gear" />
                 </button>
@@ -262,10 +259,10 @@ export default function SettingsLayout() {
           {/* Sidebar */}
           <div style={{
             width: 260, flexShrink: 0,
-            borderRight: '1px solid rgba(255,255,255,0.08)',
+            borderRight: '1px solid #e5e7eb',
             display: 'flex', flexDirection: 'column',
             overflow: 'hidden',
-            background: 'rgba(0,0,0,0.2)',
+            background: '#f9fafb',
           }}>
             {/* Nav items — fixed, no scroll */}
             <div style={{ flex: 1, padding: '20px 16px 12px', overflow: 'hidden' }}>
@@ -275,16 +272,16 @@ export default function SettingsLayout() {
                     key={item.id}
                     onClick={() => navigate(item.path)}
                     style={{
-                      width: '100%', padding: '12px 16px', borderRadius: 12,
-                      background: currentPath === item.path ? 'rgba(37,99,235,0.12)' : 'transparent',
-                      border: currentPath === item.path ? '1px solid rgba(37,99,235,0.2)' : '1px solid transparent',
-                      color: currentPath === item.path ? '#60a5fa' : '#9ca3af',
+                      width: '100%', padding: '12px 16px', borderRadius: 10,
+                      background: currentPath === item.path ? '#2563eb' : 'transparent',
+                      border: 'none',
+                      color: currentPath === item.path ? '#ffffff' : '#6b7280',
                       fontSize: 14, fontWeight: currentPath === item.path ? 600 : 500,
-                      cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 14,
+                      cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12,
                       transition: 'all 0.2s', textAlign: 'left', marginBottom: 4,
                     }}
-                    onMouseEnter={e => { if (currentPath !== item.path) { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = '#e5e7eb'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; } }}
-                    onMouseLeave={e => { if (currentPath !== item.path) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#9ca3af'; e.currentTarget.style.borderColor = 'transparent'; } }}
+                    onMouseEnter={e => { if (currentPath !== item.path) { e.currentTarget.style.background = '#f3f4f6'; e.currentTarget.style.color = '#1f2937'; } }}
+                    onMouseLeave={e => { if (currentPath !== item.path) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#6b7280'; } }}
                   >
                     <SidebarIcon type={item.icon} />
                     {item.label}
@@ -292,7 +289,7 @@ export default function SettingsLayout() {
                 ))}
               </div>
 
-              <div style={{ padding: '16px 16px 8px', color: '#6b7280', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1.2 }}>
+              <div style={{ padding: '16px 16px 8px', color: '#9ca3af', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1.2 }}>
                 Support
               </div>
               {supportItems.map(item => (
@@ -300,16 +297,16 @@ export default function SettingsLayout() {
                   key={item.id}
                   onClick={() => navigate(item.path)}
                   style={{
-                    width: '100%', padding: '12px 16px', borderRadius: 12,
-                    background: currentPath === item.path ? 'rgba(37,99,235,0.12)' : 'transparent',
-                    border: currentPath === item.path ? '1px solid rgba(37,99,235,0.2)' : '1px solid transparent',
-                    color: currentPath === item.path ? '#60a5fa' : '#9ca3af',
+                    width: '100%', padding: '12px 16px', borderRadius: 10,
+                    background: currentPath === item.path ? '#2563eb' : 'transparent',
+                    border: 'none',
+                    color: currentPath === item.path ? '#ffffff' : '#6b7280',
                     fontSize: 14, fontWeight: currentPath === item.path ? 600 : 500,
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 14,
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12,
                     transition: 'all 0.2s', textAlign: 'left', marginBottom: 4,
                   }}
-                  onMouseEnter={e => { if (currentPath !== item.path) { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = '#e5e7eb'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; } }}
-                  onMouseLeave={e => { if (currentPath !== item.path) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#9ca3af'; e.currentTarget.style.borderColor = 'transparent'; } }}
+                  onMouseEnter={e => { if (currentPath !== item.path) { e.currentTarget.style.background = '#f3f4f6'; e.currentTarget.style.color = '#1f2937'; } }}
+                  onMouseLeave={e => { if (currentPath !== item.path) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#6b7280'; } }}
                 >
                   <SidebarIcon type={item.icon} />
                   {item.label}
@@ -320,19 +317,19 @@ export default function SettingsLayout() {
             {/* Bottom actions — always pinned, never scrolls */}
             <div style={{
               flexShrink: 0, padding: '12px 16px 20px',
-              borderTop: '1px solid rgba(255,255,255,0.08)',
+              borderTop: '1px solid #e5e7eb',
             }}>
               <button
                 onClick={() => navigate('/')}
                 style={{
-                  width: '100%', padding: '11px 16px', borderRadius: 12,
-                  background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.12)',
-                  color: '#9ca3af', fontSize: 14, fontWeight: 500,
+                  width: '100%', padding: '11px 16px', borderRadius: 10,
+                  background: '#ffffff', border: '1px solid #e5e7eb',
+                  color: '#6b7280', fontSize: 14, fontWeight: 500,
                   cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
                   transition: 'all 0.2s', marginBottom: 8,
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = '#9ca3af'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#f3f4f6'; e.currentTarget.style.color = '#1f2937'; e.currentTarget.style.borderColor = '#d1d5db'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.color = '#6b7280'; e.currentTarget.style.borderColor = '#e5e7eb'; }}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
@@ -343,14 +340,14 @@ export default function SettingsLayout() {
               <button
                 onClick={async () => { await signOut(); navigate('/settings'); }}
                 style={{
-                  width: '100%', padding: '11px 16px', borderRadius: 12,
-                  background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.12)',
-                  color: '#9ca3af', fontSize: 14, fontWeight: 500,
+                  width: '100%', padding: '11px 16px', borderRadius: 10,
+                  background: '#ffffff', border: '1px solid #e5e7eb',
+                  color: '#6b7280', fontSize: 14, fontWeight: 500,
                   cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
                   transition: 'all 0.2s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = '#9ca3af'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#f3f4f6'; e.currentTarget.style.color = '#1f2937'; e.currentTarget.style.borderColor = '#d1d5db'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.color = '#6b7280'; e.currentTarget.style.borderColor = '#e5e7eb'; }}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
@@ -363,7 +360,7 @@ export default function SettingsLayout() {
           </div>
 
           {/* Main Content */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '40px 48px 48px' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '32px 40px 40px', background: '#ffffff' }}>
             <Outlet />
           </div>
         </div>

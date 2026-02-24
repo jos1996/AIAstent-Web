@@ -142,13 +142,13 @@ export default function DashboardPage() {
           rel="noopener noreferrer"
           style={{
             padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 600,
-            background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
-            color: '#e5e7eb', cursor: 'pointer', textDecoration: 'none',
+            background: '#ffffff', border: '1px solid #e5e7eb',
+            color: '#1f2937', cursor: 'pointer', textDecoration: 'none',
             display: 'flex', alignItems: 'center', gap: 8,
-            transition: 'all 0.3s',
+            transition: 'all 0.2s',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = '#d1d5db'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e5e7eb'; }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
@@ -163,13 +163,13 @@ export default function DashboardPage() {
           rel="noopener noreferrer"
           style={{
             padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 600,
-            background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
-            color: '#e5e7eb', cursor: 'pointer', textDecoration: 'none',
+            background: '#ffffff', border: '1px solid #e5e7eb',
+            color: '#1f2937', cursor: 'pointer', textDecoration: 'none',
             display: 'flex', alignItems: 'center', gap: 8,
-            transition: 'all 0.3s',
+            transition: 'all 0.2s',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = '#d1d5db'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e5e7eb'; }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/>
@@ -187,14 +187,14 @@ export default function DashboardPage() {
             }, 1000);
           }}
           style={{
-            padding: '12px 24px', borderRadius: 12, fontSize: 14, fontWeight: 600,
+            padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600,
             background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
             border: 'none', color: '#fff', cursor: 'pointer',
             display: 'flex', alignItems: 'center', gap: 10,
-            transition: 'all 0.3s', boxShadow: '0 4px 12px rgba(37,99,235,0.3)',
+            transition: 'all 0.2s', boxShadow: '0 2px 8px rgba(37,99,235,0.2)',
           }}
-          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(37,99,235,0.4)'; }}
-          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(37,99,235,0.3)'; }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(37,99,235,0.3)'; }}
+          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,99,235,0.2)'; }}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
@@ -206,9 +206,9 @@ export default function DashboardPage() {
 
       {/* Profile Welcome Card */}
       <div style={{
-        marginBottom: 28, padding: 24, borderRadius: 14,
-        background: 'linear-gradient(135deg, rgba(37,99,235,0.08), rgba(124,58,237,0.08))',
-        border: '1px solid rgba(37,99,235,0.15)',
+        marginBottom: 28, padding: 24, borderRadius: 12,
+        background: '#f9fafb',
+        border: '1px solid #e5e7eb',
         display: 'flex', alignItems: 'center', gap: 20,
       }}>
         {profile?.avatar_url ? (
@@ -224,7 +224,7 @@ export default function DashboardPage() {
           </div>
         )}
         <div style={{ flex: 1 }}>
-          <div style={{ color: '#fff', fontSize: 20, fontWeight: 700, marginBottom: 2 }}>
+          <div style={{ color: '#1f2937', fontSize: 20, fontWeight: 700, marginBottom: 2 }}>
             Welcome back{profile?.display_name || profile?.full_name ? `, ${profile.display_name || profile.full_name}` : ''}!
           </div>
           <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -244,26 +244,28 @@ export default function DashboardPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
         {statCards.map(card => (
           <div key={card.label} style={{
-            padding: 20, borderRadius: 14,
-            background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
+            padding: 20, borderRadius: 12,
+            background: '#ffffff', border: '1px solid #e5e7eb',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
           }}>
             <div style={{ color: '#6b7280', marginBottom: 12, display: 'flex' }}>{card.icon}</div>
-            <div style={{ color: '#fff', fontSize: 26, fontWeight: 700 }}>{loading ? '—' : card.value}</div>
-            <div style={{ color: '#9ca3af', fontSize: 13, marginTop: 4 }}>{card.label}</div>
+            <div style={{ color: '#1f2937', fontSize: 26, fontWeight: 700 }}>{loading ? '—' : card.value}</div>
+            <div style={{ color: '#6b7280', fontSize: 13, marginTop: 4 }}>{card.label}</div>
           </div>
         ))}
       </div>
 
       {/* Recent Activity */}
       <div style={{
-        borderRadius: 14, background: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(255,255,255,0.06)',
+        borderRadius: 12, background: '#ffffff',
+        border: '1px solid #e5e7eb',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
       }}>
         <div style={{
-          padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)',
+          padding: '16px 20px', borderBottom: '1px solid #e5e7eb',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
-          <h2 style={{ color: '#fff', fontSize: 16, fontWeight: 600, margin: 0 }}>Recent Activity</h2>
+          <h2 style={{ color: '#1f2937', fontSize: 16, fontWeight: 600, margin: 0 }}>Recent Activity</h2>
           <div style={{ display: 'flex', gap: 6 }}>
             {filterOptions.map(opt => (
               <button
@@ -271,9 +273,9 @@ export default function DashboardPage() {
                 onClick={() => setFilterType(opt.value)}
                 style={{
                   padding: '5px 12px', borderRadius: 8, fontSize: 12, fontWeight: 500,
-                  background: filterType === opt.value ? 'rgba(37,99,235,0.2)' : 'transparent',
-                  border: filterType === opt.value ? '1px solid rgba(37,99,235,0.3)' : '1px solid rgba(255,255,255,0.08)',
-                  color: filterType === opt.value ? '#60a5fa' : '#9ca3af',
+                  background: filterType === opt.value ? '#2563eb' : '#f3f4f6',
+                  border: 'none',
+                  color: filterType === opt.value ? '#ffffff' : '#6b7280',
                   cursor: 'pointer', transition: 'all 0.15s',
                 }}
               >
@@ -294,19 +296,19 @@ export default function DashboardPage() {
             recentActivity.map(item => (
               <div key={item.id} style={{
                 padding: '12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                borderBottom: '1px solid rgba(255,255,255,0.03)',
+                borderBottom: '1px solid #f3f4f6',
               }}>
                 <div style={{ flex: 1 }}>
-                  <div style={{ color: '#e5e7eb', fontSize: 14, marginBottom: 2 }}>
+                  <div style={{ color: '#1f2937', fontSize: 14, marginBottom: 2 }}>
                     {item.query ? (item.query.length > 80 ? item.query.slice(0, 80) + '...' : item.query) : 'Screen Analysis'}
                   </div>
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                     <span style={{
                       padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 500,
-                      background: item.type === 'chat' ? 'rgba(37,99,235,0.15)' : item.type === 'interview' ? 'rgba(5,150,105,0.15)' : 'rgba(124,58,237,0.15)',
-                      color: item.type === 'chat' ? '#60a5fa' : item.type === 'interview' ? '#34d399' : '#a78bfa',
+                      background: item.type === 'chat' ? '#dbeafe' : item.type === 'interview' ? '#d1fae5' : '#ede9fe',
+                      color: item.type === 'chat' ? '#1e40af' : item.type === 'interview' ? '#065f46' : '#5b21b6',
                     }}>{item.type.replace('_', ' ')}</span>
-                    <span style={{ color: '#4b5563', fontSize: 11 }}>{item.mode}</span>
+                    <span style={{ color: '#6b7280', fontSize: 11 }}>{item.mode}</span>
                   </div>
                 </div>
                 <div style={{ color: '#4b5563', fontSize: 12 }}>
