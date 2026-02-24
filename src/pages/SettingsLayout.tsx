@@ -58,12 +58,17 @@ export default function SettingsLayout() {
 
   const currentPath = location.pathname;
 
-  // Redirect authenticated users to dashboard if they're at /settings root
+  // Redirect authenticated users to dashboard once user state is available
   useEffect(() => {
-    if (user && currentPath === '/settings') {
-      navigate('/settings/dashboard', { replace: true });
+    if (user && !authLoading) {
+      // If at /settings root, go to dashboard; otherwise stay on current settings page
+      if (currentPath === '/settings' || currentPath === '/settings/') {
+        navigate('/settings/dashboard', { replace: true });
+      }
+      // Reset submitting state so the authenticated UI renders
+      setAuthSubmitting(false);
     }
-  }, [user, currentPath, navigate]);
+  }, [user, authLoading, currentPath, navigate]);
 
   useEffect(() => {
     if (!user) return;
@@ -105,10 +110,10 @@ export default function SettingsLayout() {
       if (error) {
         setAuthError(error);
         setAuthSubmitting(false);
-      } else {
-        // Successfully signed in - redirect to dashboard
-        navigate('/settings/dashboard');
       }
+      // On success, keep authSubmitting=true to show loading state.
+      // The useEffect watching `user` will redirect to /settings/dashboard
+      // once onAuthStateChange fires and sets the user.
     } else if (authMode === 'signup') {
       const { error } = await signUp(authEmail, authPassword, authFullName);
       if (error) setAuthError(error);
@@ -130,8 +135,9 @@ export default function SettingsLayout() {
 
   const isAuthenticated = !!user;
 
-  // Show loading spinner while session is being resolved — prevents auth form flash
-  if (authLoading) {
+  // Show loading spinner while session is being resolved or after successful login
+  // This prevents the login form from flashing between sign-in and dashboard
+  if (authLoading || (authSubmitting && !user)) {
     return (
       <div style={{
         width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -149,7 +155,9 @@ export default function SettingsLayout() {
               <path d="M12 6v6l4 2"/>
             </svg>
           </div>
-          <div style={{ color: '#6b7280', fontSize: 13 }}>Loading...</div>
+          <div style={{ color: '#6b7280', fontSize: 13 }}>
+            {authSubmitting ? 'Signing you in...' : 'Loading...'}
+          </div>
         </div>
       </div>
     );
