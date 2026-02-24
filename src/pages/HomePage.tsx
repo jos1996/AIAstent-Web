@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useAuth } from '../contexts/AuthContext'
 
 const Icon = ({ name, size = 24 }: { name: string; size?: number }) => {
   const icons: Record<string, React.ReactElement> = {
@@ -16,6 +17,7 @@ const Icon = ({ name, size = 24 }: { name: string; size?: number }) => {
 }
 
 export default function HomePage() {
+  const { user } = useAuth()
   const [scrolled, setScrolled] = useState(false)
   const [showDownloadModal, setShowDownloadModal] = useState(false)
   const [selectedPlatform, setSelectedPlatform] = useState<'ios' | 'windows' | null>(null)
@@ -70,13 +72,8 @@ export default function HomePage() {
         transition: 'all 0.3s',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: 8,
-            background: 'linear-gradient(135deg, #000 0%, #1a1a1a 100%)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontWeight: 900, fontSize: 18, color: '#fff',
-          }}>🌟</div>
-          <span style={{ fontSize: 19, fontWeight: 800, color: '#000' }}>HelplyAI</span>
+          <img src="/favicon.png" alt="Helply AI" style={{ width: 36, height: 36, borderRadius: 8 }} />
+          <span style={{ fontSize: 19, fontWeight: 800, color: '#000', letterSpacing: '-0.02em' }}>Helply AI</span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
@@ -98,11 +95,11 @@ export default function HomePage() {
           <a href="/settings/dashboard" style={{
             padding: '8px 20px', borderRadius: 100, fontSize: 14, fontWeight: 600,
             background: '#000',
-            color: '#fff', transition: 'all 0.3s',
+            color: '#fff', transition: 'all 0.3s', textDecoration: 'none',
           }}
             onMouseEnter={e => { e.currentTarget.style.background = '#1a1a1a'; e.currentTarget.style.transform = 'translateY(-1px)' }}
             onMouseLeave={e => { e.currentTarget.style.background = '#000'; e.currentTarget.style.transform = 'translateY(0)' }}
-          >Sign In</a>
+          >{user ? 'Dashboard' : 'Sign In'}</a>
         </div>
       </nav>
 
@@ -126,8 +123,8 @@ export default function HomePage() {
         </div>
 
         <h1 style={{
-          fontSize: 'clamp(36px, 6vw, 68px)', fontWeight: 900,
-          lineHeight: 1.1, letterSpacing: '-1.5px', maxWidth: 900,
+          fontSize: 'clamp(29px, 5vw, 54px)', fontWeight: 900,
+          lineHeight: 1.1, letterSpacing: '-1.2px', maxWidth: 900,
           marginBottom: 20,
           color: '#000',
         }}>
