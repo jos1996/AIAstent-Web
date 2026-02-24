@@ -503,103 +503,148 @@ export default function HomePage() {
       }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 60 }}>
+            <div style={{
+              display: 'inline-block',
+              padding: '8px 20px',
+              borderRadius: 100,
+              background: 'linear-gradient(135deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.08) 100%)',
+              border: '1px solid rgba(0,0,0,0.1)',
+              fontSize: 13,
+              fontWeight: 700,
+              color: '#000',
+              marginBottom: 20,
+            }}>
+              YOUR PERSONAL AI ASSISTANT
+            </div>
             <h2 style={{
               fontSize: 'clamp(28px, 4.5vw, 44px)', fontWeight: 900, letterSpacing: '-1px', marginBottom: 12,
               color: '#000',
             }}>
-              How HelplyAI Works
+              How Helply AI Works
             </h2>
-            <p style={{ color: '#666', fontSize: 17, maxWidth: 680, margin: '0 auto' }}>
-              Get real-time AI assistance during your interviews in 4 simple steps
+            <p style={{ color: '#666', fontSize: 17, maxWidth: 720, margin: '0 auto', lineHeight: 1.6 }}>
+              Your complete AI-powered productivity assistant for interviews, work, and daily tasks
             </p>
           </div>
 
-          <div style={{ position: 'relative', maxWidth: 900, margin: '0 auto' }}>
-            {/* Flow Line */}
-            <div style={{
-              position: 'absolute',
-              top: 80,
-              left: '10%',
-              right: '10%',
-              height: 2,
-              background: 'linear-gradient(90deg, #000 0%, #000 25%, #000 50%, #000 75%, #000 100%)',
-              zIndex: 0,
-            }} />
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 32, position: 'relative', zIndex: 1 }}>
+          <div style={{ position: 'relative', maxWidth: 1200, margin: '0 auto' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 24, position: 'relative', zIndex: 1 }}>
               {[
                 { 
                   step: '1', 
-                  title: 'Setup', 
-                  desc: 'Install HelplyAI and connect to your interview platform',
-                  icon: '⚙️'
+                  title: 'Setup & Install', 
+                  desc: 'Download and install Helply AI on your device. Quick 2-minute setup.',
+                  icon: '⚙️',
+                  color: '#2563eb'
                 },
                 { 
                   step: '2', 
-                  title: 'Upload Resume', 
-                  desc: 'Upload your resume for personalized answers',
-                  icon: '📄'
+                  title: 'Interview Mode', 
+                  desc: 'Switch to Interview mode and paste your resume & job description.',
+                  icon: '💼',
+                  color: '#7c3aed'
                 },
                 { 
                   step: '3', 
                   title: 'Start Interview', 
-                  desc: 'AI listens and transcribes questions in real-time',
-                  icon: '🎤'
+                  desc: 'AI listens in real-time, transcribes questions instantly.',
+                  icon: '🎤',
+                  color: '#059669'
                 },
                 { 
                   step: '4', 
                   title: 'Get Answers', 
-                  desc: 'Receive instant, accurate answers on your screen',
-                  icon: '✨'
+                  desc: 'Receive personalized, accurate answers on your screen.',
+                  icon: '✨',
+                  color: '#dc2626'
+                },
+                { 
+                  step: '5', 
+                  title: 'Screen Analysis', 
+                  desc: 'Analyze any screen content - emails, code, documents instantly.',
+                  icon: '🖥️',
+                  color: '#ea580c'
+                },
+                { 
+                  step: '6', 
+                  title: 'Set Reminders', 
+                  desc: 'Create smart reminders for tasks, follow-ups, and deadlines.',
+                  icon: '🔔',
+                  color: '#0891b2'
+                },
+                { 
+                  step: '7', 
+                  title: 'Boost Productivity', 
+                  desc: 'Generate content, get coding help, and automate daily tasks.',
+                  icon: '🚀',
+                  color: '#9333ea'
+                },
+                { 
+                  step: '8', 
+                  title: 'Track Progress', 
+                  desc: 'View history, analytics, and improve with AI insights.',
+                  icon: '📊',
+                  color: '#0d9488'
                 },
               ].map((item, i) => (
                 <div key={i} style={{
                   textAlign: 'center',
                   position: 'relative',
-                }}>
-                  <div style={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: '50%',
-                    background: '#000',
-                    color: '#fff',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 36,
-                    margin: '0 auto 20px',
-                    position: 'relative',
-                    zIndex: 2,
-                    border: '4px solid #fafafa',
-                    transition: 'all 0.3s',
+                  padding: '28px 20px',
+                  borderRadius: 16,
+                  background: 'rgba(255,255,255,0.8)',
+                  border: '1px solid rgba(0,0,0,0.08)',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                  transition: 'all 0.3s',
+                }}
+                  onMouseEnter={e => { 
+                    e.currentTarget.style.transform = 'translateY(-8px)'; 
+                    e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.12)'; 
+                    e.currentTarget.style.borderColor = item.color;
                   }}
-                    onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.1)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.2)' }}
-                    onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none' }}
-                  >
-                    {item.icon}
-                  </div>
+                  onMouseLeave={e => { 
+                    e.currentTarget.style.transform = 'translateY(0)'; 
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'; 
+                    e.currentTarget.style.borderColor = 'rgba(0,0,0,0.08)';
+                  }}
+                >
                   <div style={{
                     position: 'absolute',
-                    top: -10,
+                    top: -16,
                     left: '50%',
                     transform: 'translateX(-50%)',
-                    width: 32,
-                    height: 32,
+                    width: 36,
+                    height: 36,
                     borderRadius: '50%',
-                    background: '#fff',
-                    border: '2px solid #000',
+                    background: item.color,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontSize: 14,
                     fontWeight: 900,
-                    color: '#000',
+                    color: '#fff',
                     zIndex: 3,
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                   }}>
                     {item.step}
                   </div>
-                  <h3 style={{ fontSize: 20, fontWeight: 800, marginBottom: 12, color: '#000' }}>{item.title}</h3>
-                  <p style={{ fontSize: 14, color: '#666', lineHeight: 1.6 }}>{item.desc}</p>
+                  <div style={{
+                    width: 72,
+                    height: 72,
+                    borderRadius: 16,
+                    background: `linear-gradient(135deg, ${item.color}15, ${item.color}25)`,
+                    color: item.color,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 36,
+                    margin: '0 auto 16px',
+                    border: `2px solid ${item.color}30`,
+                  }}>
+                    {item.icon}
+                  </div>
+                  <h3 style={{ fontSize: 17, fontWeight: 800, marginBottom: 10, color: '#000', lineHeight: 1.3 }}>{item.title}</h3>
+                  <p style={{ fontSize: 13, color: '#666', lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
                 </div>
               ))}
             </div>
