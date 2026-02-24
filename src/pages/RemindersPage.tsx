@@ -81,16 +81,17 @@ export default function RemindersPage() {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <div>
-          <h1 style={{ color: '#fff', fontSize: 22, fontWeight: 700, margin: 0 }}>Reminders</h1>
-          <p style={{ color: '#6b7280', fontSize: 14, margin: '6px 0 0' }}>Create and manage your reminders</p>
+          <h1 style={{ color: '#000000', fontSize: 24, fontWeight: 700, margin: 0, letterSpacing: '-0.02em' }}>Reminders</h1>
+          <p style={{ color: '#6b7280', fontSize: 14, margin: '8px 0 0' }}>Create and manage your reminders</p>
         </div>
         <button onClick={() => { resetForm(); setShowForm(true); }}
           style={{
-            padding: '10px 20px', borderRadius: 10,
+            padding: '12px 24px', borderRadius: 10,
             background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
-            border: 'none', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+            border: 'none', color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+            boxShadow: '0 2px 8px rgba(37,99,235,0.2)', transition: 'all 0.2s',
           }}
         >New Reminder</button>
       </div>
@@ -98,48 +99,49 @@ export default function RemindersPage() {
       {/* Form */}
       {showForm && (
         <div style={{
-          marginBottom: 24, padding: 24, borderRadius: 14,
-          background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
+          marginBottom: 24, padding: 28, borderRadius: 12,
+          background: '#ffffff', border: '1px solid #e5e7eb',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
         }}>
-          <h3 style={{ color: '#fff', fontSize: 15, fontWeight: 600, margin: '0 0 16px' }}>
+          <h3 style={{ color: '#000000', fontSize: 16, fontWeight: 700, margin: '0 0 20px', letterSpacing: '-0.01em' }}>
             {editId ? 'Edit Reminder' : 'New Reminder'}
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Title"
               style={{
-                padding: '12px 16px', borderRadius: 10,
-                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-                color: '#fff', fontSize: 14, outline: 'none',
+                padding: '14px 16px', borderRadius: 10,
+                background: '#ffffff', border: '2px solid #e5e7eb',
+                color: '#000000', fontSize: 14, outline: 'none', fontWeight: 500,
               }}
             />
             <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Description (optional)"
               rows={3}
               style={{
-                padding: '12px 16px', borderRadius: 10, resize: 'vertical',
-                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-                color: '#fff', fontSize: 14, outline: 'none', fontFamily: 'inherit',
+                padding: '14px 16px', borderRadius: 10, resize: 'vertical',
+                background: '#ffffff', border: '2px solid #e5e7eb',
+                color: '#000000', fontSize: 14, outline: 'none', fontFamily: 'inherit', fontWeight: 500,
               }}
             />
             <input type="datetime-local" value={dueDate} onChange={e => setDueDate(e.target.value)}
               style={{
-                padding: '12px 16px', borderRadius: 10,
-                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-                color: '#fff', fontSize: 14, outline: 'none', colorScheme: 'dark',
+                padding: '14px 16px', borderRadius: 10,
+                background: '#ffffff', border: '2px solid #e5e7eb',
+                color: '#000000', fontSize: 14, outline: 'none', fontWeight: 500, cursor: 'pointer',
               }}
             />
             <div style={{ display: 'flex', gap: 10 }}>
               <button onClick={handleSave}
                 style={{
-                  padding: '10px 24px', borderRadius: 10,
-                  background: 'rgba(37,99,235,0.2)', border: '1px solid rgba(37,99,235,0.3)',
-                  color: '#60a5fa', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                  padding: '12px 28px', borderRadius: 10,
+                  background: '#2563eb', border: 'none',
+                  color: '#ffffff', fontSize: 14, fontWeight: 600, cursor: 'pointer',
                 }}
               >{editId ? 'Update' : 'Create'}</button>
               <button onClick={resetForm}
                 style={{
-                  padding: '10px 24px', borderRadius: 10,
-                  background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-                  color: '#9ca3af', fontSize: 13, cursor: 'pointer',
+                  padding: '12px 28px', borderRadius: 10,
+                  background: '#ffffff', border: '2px solid #e5e7eb',
+                  color: '#6b7280', fontSize: 14, fontWeight: 600, cursor: 'pointer',
                 }}
               >Cancel</button>
             </div>
@@ -149,11 +151,12 @@ export default function RemindersPage() {
 
       {/* Upcoming */}
       <div style={{
-        borderRadius: 14, background: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(255,255,255,0.06)', marginBottom: 20,
+        borderRadius: 12, background: '#ffffff',
+        border: '1px solid #e5e7eb', marginBottom: 20,
+        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
       }}>
-        <div style={{ padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <h2 style={{ color: '#fff', fontSize: 15, fontWeight: 600, margin: 0 }}>Upcoming ({upcoming.length})</h2>
+        <div style={{ padding: '16px 24px', borderBottom: '1px solid #e5e7eb' }}>
+          <h2 style={{ color: '#000000', fontSize: 16, fontWeight: 700, margin: 0 }}>Upcoming ({upcoming.length})</h2>
         </div>
         {loading ? (
           <div style={{ padding: 30, textAlign: 'center', color: '#6b7280' }}>Loading...</div>
@@ -167,11 +170,12 @@ export default function RemindersPage() {
       {/* Completed */}
       {completed.length > 0 && (
         <div style={{
-          borderRadius: 14, background: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(255,255,255,0.06)',
+          borderRadius: 12, background: '#ffffff',
+          border: '1px solid #e5e7eb',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
         }}>
-          <div style={{ padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-            <h2 style={{ color: '#6b7280', fontSize: 15, fontWeight: 600, margin: 0 }}>Completed ({completed.length})</h2>
+          <div style={{ padding: '16px 24px', borderBottom: '1px solid #e5e7eb' }}>
+            <h2 style={{ color: '#6b7280', fontSize: 16, fontWeight: 700, margin: 0 }}>Completed ({completed.length})</h2>
           </div>
           {completed.map(r => (
             <ReminderItem key={r.id} reminder={r} onToggle={handleToggle} onEdit={handleEdit} onDelete={handleDelete} />
@@ -191,14 +195,14 @@ function ReminderItem({ reminder: r, onToggle, onEdit, onDelete }: {
   const isPast = new Date(r.due_date) < new Date() && !r.is_completed;
   return (
     <div style={{
-      padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.04)',
-      display: 'flex', alignItems: 'center', gap: 14, opacity: r.is_completed ? 0.5 : 1,
+      padding: '16px 24px', borderBottom: '1px solid #f3f4f6',
+      display: 'flex', alignItems: 'center', gap: 16, opacity: r.is_completed ? 0.5 : 1,
     }}>
       <button onClick={() => onToggle(r.id, r.is_completed)}
         style={{
-          width: 22, height: 22, borderRadius: 6, flexShrink: 0,
-          background: r.is_completed ? '#2563eb' : 'transparent',
-          border: r.is_completed ? 'none' : '2px solid rgba(255,255,255,0.2)',
+          width: 24, height: 24, borderRadius: 6, flexShrink: 0,
+          background: r.is_completed ? '#2563eb' : '#ffffff',
+          border: r.is_completed ? 'none' : '2px solid #d1d5db',
           cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}
       >
@@ -207,9 +211,9 @@ function ReminderItem({ reminder: r, onToggle, onEdit, onDelete }: {
         )}
       </button>
       <div style={{ flex: 1 }}>
-        <div style={{ color: '#e5e7eb', fontSize: 14, fontWeight: 500, textDecoration: r.is_completed ? 'line-through' : 'none' }}>{r.title}</div>
-        {r.description && <div style={{ color: '#6b7280', fontSize: 12, marginTop: 2 }}>{r.description}</div>}
-        <div style={{ color: isPast ? '#f87171' : '#4b5563', fontSize: 11, marginTop: 4 }}>
+        <div style={{ color: '#000000', fontSize: 14, fontWeight: 600, textDecoration: r.is_completed ? 'line-through' : 'none' }}>{r.title}</div>
+        {r.description && <div style={{ color: '#6b7280', fontSize: 13, marginTop: 4 }}>{r.description}</div>}
+        <div style={{ color: isPast ? '#dc2626' : '#6b7280', fontSize: 12, marginTop: 6, fontWeight: 500 }}>
           {new Date(r.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
           {isPast && ' (overdue)'}
         </div>
@@ -217,16 +221,16 @@ function ReminderItem({ reminder: r, onToggle, onEdit, onDelete }: {
       <div style={{ display: 'flex', gap: 6 }}>
         <button onClick={() => onEdit(r)}
           style={{
-            padding: '5px 10px', borderRadius: 6, background: 'transparent',
-            border: '1px solid rgba(255,255,255,0.08)', color: '#9ca3af',
-            fontSize: 11, cursor: 'pointer',
+            padding: '8px 14px', borderRadius: 8, background: '#ffffff',
+            border: '2px solid #e5e7eb', color: '#6b7280',
+            fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
           }}
         >Edit</button>
         <button onClick={() => onDelete(r.id)}
           style={{
-            padding: '5px 10px', borderRadius: 6, background: 'transparent',
-            border: '1px solid rgba(255,255,255,0.08)', color: '#6b7280',
-            fontSize: 11, cursor: 'pointer',
+            padding: '8px 14px', borderRadius: 8, background: '#ffffff',
+            border: '2px solid #e5e7eb', color: '#6b7280',
+            fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
           }}
         >Delete</button>
       </div>
