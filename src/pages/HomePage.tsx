@@ -105,17 +105,45 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section style={{
-        minHeight: '90vh', display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-        padding: '100px 24px 60px', textAlign: 'center',
-        background: 'linear-gradient(135deg, #ffffff 0%, #f5f5f5 50%, #e8e8e8 100%)',
+        textAlign: 'center', padding: '80px 24px 60px',
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(240,240,240,0.8) 100%)',
         position: 'relative',
+        overflow: 'hidden',
       }}>
+        {/* Animated Grid Background */}
         <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: 8,
-          padding: '6px 16px', borderRadius: 100,
-          background: 'linear-gradient(135deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.08) 100%)',
-          border: '1px solid rgba(0,0,0,0.1)',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundImage: `
+            linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px',
+          animation: 'gridMove 20s linear infinite',
+          opacity: 0.4,
+          zIndex: 0,
+        }} />
+        {/* Animated Dots */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundImage: 'radial-gradient(circle, rgba(0,0,0,0.08) 1px, transparent 1px)',
+          backgroundSize: '30px 30px',
+          animation: 'dotFloat 15s ease-in-out infinite',
+          opacity: 0.3,
+          zIndex: 0,
+        }} />
+        {/* Content wrapper with higher z-index */}
+        <div style={{ position: 'relative', zIndex: 1 }}>
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 20px',
+          background: 'rgba(0,0,0,0.04)', borderRadius: 24, border: '1px solid rgba(0,0,0,0.08)',
           fontSize: 12, fontWeight: 600, color: '#000', marginBottom: 24,
         }}>
           <Icon name="Sparkles" size={14} />
@@ -125,7 +153,7 @@ export default function HomePage() {
         <h1 style={{
           fontSize: 'clamp(22px, 3.75vw, 40px)', fontWeight: 900,
           lineHeight: 1.1, letterSpacing: '-1px', maxWidth: 900,
-          marginBottom: 20,
+          marginBottom: 16,
           color: '#000',
         }}>
           Your Real-Time <span style={{
@@ -136,11 +164,18 @@ export default function HomePage() {
         </h1>
 
         <p style={{
-          fontSize: 'clamp(15px, 2vw, 18px)', color: '#555',
-          maxWidth: 720, lineHeight: 1.7, marginBottom: 32, fontWeight: 400,
+          fontSize: 'clamp(16px, 2.2vw, 20px)', color: '#1a1a1a',
+          maxWidth: 800, lineHeight: 1.5, marginBottom: 24, fontWeight: 600,
         }}>
-          Automatically get an answer to every interview question with ChatGPT AI activation. 
-          An AI interview copilot. Real-time and private.
+          Crack interviews with confidence and land your first job faster.
+        </p>
+
+        <p style={{
+          fontSize: 'clamp(14px, 1.8vw, 17px)', color: '#666',
+          maxWidth: 780, lineHeight: 1.7, marginBottom: 32, fontWeight: 400,
+        }}>
+          Your AI copilot helps you deliver smart answers in real time, rewrite professional emails, 
+          analyze your screen, and generate instant responses—so you always stay one step ahead.
         </p>
 
         {/* Download Buttons */}
@@ -288,7 +323,20 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+        </div>
       </section>
+
+      {/* CSS Animations */}
+      <style>{`
+        @keyframes gridMove {
+          0% { transform: translate(0, 0); }
+          100% { transform: translate(50px, 50px); }
+        }
+        @keyframes dotFloat {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+        }
+      `}</style>
 
       {/* Success Statistics Banner */}
       <section style={{
