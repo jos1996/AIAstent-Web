@@ -119,9 +119,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithGoogle = async () => {
     if (!supabaseConfigured) return { error: notConfiguredError };
     // Use exact redirect URL to ensure PKCE verifier matches
+    // Normalize to bare domain (no www) so Supabase redirect allowlist matches
+    let origin = window.location.origin;
+    if (origin.includes('://www.')) {
+      origin = origin.replace('://www.', '://');
+    }
     const redirectUrl = window.location.hostname === 'localhost' 
       ? `http://localhost:${window.location.port}/auth/callback`
-      : `${window.location.origin}/auth/callback`;
+      : `${origin}/auth/callback`;
     
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -140,8 +145,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const resetPassword = async (email: string) => {
     if (!supabaseConfigured) return { error: notConfiguredError };
+    let resetOrigin = window.location.origin;
+    if (resetOrigin.includes('://www.')) {
+      resetOrigin = resetOrigin.replace('://www.', '://');
+    }
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback`,
+      redirectTo: `${resetOrigin}/auth/callback`,
     });
     return { error: error?.message ?? null };
   };

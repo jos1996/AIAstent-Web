@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabaseConfigured } from '../lib/supabase';
+import { supabase, supabaseConfigured } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function AuthCallbackPage() {
@@ -8,15 +8,52 @@ export default function AuthCallbackPage() {
   const [error, setError] = useState('');
   const { user, loading } = useAuth();
   const hasRedirected = useRef(false);
+  const codeExchangeAttempted = useRef(false);
 
-  // Watch for user from AuthContext — it handles the PKCE exchange via detectSessionInUrl
+  // Attempt PKCE code exchange manually from URL query params
   useEffect(() => {
-    if (hasRedirected.current) return;
+    if (codeExchangeAttempted.current) return;
+    codeExchangeAttempted.current = true;
 
     if (!supabaseConfigured) {
-      setError('Supabase is not configured. Please add valid credentials to your .env file.');
+      setError('Supabase is not configured.');
       return;
     }
+
+    const handleCallback = async () => {
+      try {
+        // Check for PKCE auth code in URL
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code');
+
+        if (code) {
+          // Exchange the code for a session
+          const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+          if (exchangeError) {
+            console.error('Code exchange failed:', exchangeError);
+            // Don't set error yet — AuthContext may still pick it up via detectSessionInUrl
+          }
+          // Clean URL
+          window.history.replaceState({}, '', window.location.pathname);
+        }
+
+        // Check for hash-based tokens (implicit flow fallback)
+        const hash = window.location.hash;
+        if (hash && hash.includes('access_token=')) {
+          // AuthContext's detectSessionInUrl will handle this
+          return;
+        }
+      } catch (err) {
+        console.error('Auth callback error:', err);
+      }
+    };
+
+    handleCallback();
+  }, []);
+
+  // Watch for user from AuthContext — redirect to dashboard once available
+  useEffect(() => {
+    if (hasRedirected.current) return;
 
     // Once AuthContext finishes loading and user is available, redirect to dashboard
     if (!loading && user) {
@@ -25,11 +62,11 @@ export default function AuthCallbackPage() {
       return;
     }
 
-    // If loading is done but no user, wait a bit more then show error
+    // If loading is done but no user, wait a bit then show error
     if (!loading && !user) {
       const timeout = setTimeout(() => {
         if (!hasRedirected.current) {
-          setError('Authentication failed. The redirect URL may not be configured in Supabase. Please check SUPABASE_CONFIG.md and try again.');
+          setError('Authentication failed. Please try signing in again.');
         }
       }, 5000);
       return () => clearTimeout(timeout);

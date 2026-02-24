@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -55,18 +55,24 @@ export default function SettingsLayout() {
   const [authError, setAuthError] = useState('');
   const [authSuccess, setAuthSuccess] = useState('');
   const [authSubmitting, setAuthSubmitting] = useState(false);
+  const justLoggedInRef = useRef(false);
 
   const currentPath = location.pathname;
 
   // Redirect authenticated users to dashboard once user state is available
   useEffect(() => {
     if (user && !authLoading) {
-      // If at /settings root, go to dashboard; otherwise stay on current settings page
+      // If user just logged in via the form, always go to dashboard
+      if (justLoggedInRef.current) {
+        justLoggedInRef.current = false;
+        setAuthSubmitting(false);
+        navigate('/settings/dashboard', { replace: true });
+        return;
+      }
+      // If at /settings root (not a sub-page), redirect to dashboard
       if (currentPath === '/settings' || currentPath === '/settings/') {
         navigate('/settings/dashboard', { replace: true });
       }
-      // Reset submitting state so the authenticated UI renders
-      setAuthSubmitting(false);
     }
   }, [user, authLoading, currentPath, navigate]);
 
@@ -110,10 +116,13 @@ export default function SettingsLayout() {
       if (error) {
         setAuthError(error);
         setAuthSubmitting(false);
+      } else {
+        // Mark that login just happened so useEffect redirects to dashboard
+        justLoggedInRef.current = true;
+        // Keep authSubmitting=true to show "Signing you in..." loading state
+        // The useEffect watching `user` will redirect to /settings/dashboard
+        // once onAuthStateChange fires and sets the user.
       }
-      // On success, keep authSubmitting=true to show loading state.
-      // The useEffect watching `user` will redirect to /settings/dashboard
-      // once onAuthStateChange fires and sets the user.
     } else if (authMode === 'signup') {
       const { error } = await signUp(authEmail, authPassword, authFullName);
       if (error) setAuthError(error);
