@@ -16,9 +16,9 @@ const RAZORPAY_KEY = 'rzp_live_RXT3VUdM3gaV4e';
 // Price mapping in INR (₹)
 const PLAN_PRICES: Record<PlanId, number> = {
   free: 0,
-  weekly: 540,      // ~$6 USD
-  pro: 1710,        // ~$19 USD
-  pro_plus: 7200,   // ~$80 USD
+  weekly: 1710,     // ~$19 USD
+  pro: 3150,        // ~$35 USD
+  pro_plus: 35910,  // ~$399 USD
 };
 
 export default function BillingPage() {
@@ -45,9 +45,9 @@ export default function BillingPage() {
       setBillingEmail(data.billing_email || '');
       setNextBillingDate(data.next_billing_date || null);
       setPlanStartDate(data.trial_start_date || data.created_at || null);
-      // For free plan, end date is trial_start + 7 days
+      // For free plan, end date is trial_start + 2 days
       if (data.plan === 'free' && data.trial_start_date) {
-        const end = new Date(new Date(data.trial_start_date).getTime() + 7 * 24 * 60 * 60 * 1000);
+        const end = new Date(new Date(data.trial_start_date).getTime() + 2 * 24 * 60 * 60 * 1000);
         setPlanEndDate(end.toISOString());
       } else if (data.trial_end_date) {
         setPlanEndDate(data.trial_end_date);
@@ -137,7 +137,7 @@ export default function BillingPage() {
   const daysLeft = (() => {
     if (planState.plan !== 'free' || !planState.trialStart) return 0;
     const start = new Date(planState.trialStart);
-    const end = new Date(start.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const end = new Date(start.getTime() + 2 * 24 * 60 * 60 * 1000);
     const diff = end.getTime() - Date.now();
     return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
   })();
@@ -200,8 +200,8 @@ export default function BillingPage() {
         </div>
       </div>
 
-      {/* Daily Usage (Free plan only) */}
-      {planState.plan === 'free' && !planState.isExpired && (
+      {/* Daily Usage (Free and Weekly plans) */}
+      {(planState.plan === 'free' || planState.plan === 'weekly') && !planState.isExpired && (
         <div style={{
           marginBottom: 24, padding: 28, borderRadius: 12,
           background: '#ffffff', border: '1px solid #e5e7eb',
@@ -210,11 +210,11 @@ export default function BillingPage() {
           <div style={{ color: '#000000', fontSize: 16, fontWeight: 700, marginBottom: 18 }}>Today's Usage</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 10 }}>
             {([
-              { label: 'Chat', action: 'chat_message' as const, limit: 5 },
-              { label: 'Interview', action: 'interview_question' as const, limit: 3 },
-              { label: 'Screen Analysis', action: 'screen_analysis' as const, limit: 2 },
-              { label: 'Generate', action: 'generate_answer' as const, limit: 3 },
-              { label: 'Reminders', action: 'reminder' as const, limit: 5 },
+              { label: 'Chat', action: 'chat_message' as const, limit: planState.plan === 'weekly' ? 25 : 3 },
+              { label: 'Interview', action: 'interview_question' as const, limit: planState.plan === 'weekly' ? 25 : 3 },
+              { label: 'Screen Analysis', action: 'screen_analysis' as const, limit: planState.plan === 'weekly' ? 20 : 2 },
+              { label: 'Generate', action: 'generate_answer' as const, limit: planState.plan === 'weekly' ? 30 : 3 },
+              { label: 'Reminders', action: 'reminder' as const, limit: planState.plan === 'weekly' ? -1 : 5 },
             ]).map(item => {
               const remaining = getRemaining(item.action);
               const used = usage[item.action] || 0;
@@ -226,7 +226,7 @@ export default function BillingPage() {
                 }}>
                   <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 6 }}>{item.label}</div>
                   <div style={{ fontSize: 14, fontWeight: 600, color: remaining === 0 ? '#dc2626' : '#000000' }}>
-                    {used}/{item.limit}
+                    {item.limit === -1 ? `${used} / ∞` : `${used}/${item.limit}`}
                   </div>
                   <div style={{ height: 3, borderRadius: 2, background: '#e5e7eb', marginTop: 6 }}>
                     <div style={{
@@ -344,7 +344,7 @@ export default function BillingPage() {
               {planId !== 'free' && (
                 <div style={{ color: '#6b7280', fontSize: 11, fontWeight: 600, marginBottom: 8 }}>
                   {planId === 'weekly' ? 'Everything in Free, plus...' 
-                   : planId === 'pro' ? 'Everything in Free, plus...' 
+                   : planId === 'pro' ? 'Everything in Weekly, plus...' 
                    : 'Everything in Pro, plus...'}
                 </div>
               )}

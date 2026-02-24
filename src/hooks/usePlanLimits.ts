@@ -76,7 +76,7 @@ export function usePlanLimits() {
     const limitKey = ACTION_TO_LIMIT_KEY[action];
     const limit = planConfig.limits[limitKey] as number;
     if (planState.isExpired) {
-      return { allowed: false, reason: 'Your 7-day free trial has expired. Subscribe to a plan to continue using all features.' };
+      return { allowed: false, reason: 'Your 2-day free trial has expired. Subscribe to a plan to continue using all features.' };
     }
     if (limit === -1) return { allowed: true, reason: '' };
     const currentCount = usage[action] || 0;
