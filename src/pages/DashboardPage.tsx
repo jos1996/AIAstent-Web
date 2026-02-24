@@ -143,7 +143,7 @@ export default function DashboardPage() {
           style={{
             padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 600,
             background: '#ffffff', border: '1px solid #e5e7eb',
-            color: '#1f2937', cursor: 'pointer', textDecoration: 'none',
+            color: '#000000', cursor: 'pointer', textDecoration: 'none',
             display: 'flex', alignItems: 'center', gap: 8,
             transition: 'all 0.2s',
           }}
@@ -224,7 +224,7 @@ export default function DashboardPage() {
           </div>
         )}
         <div style={{ flex: 1 }}>
-          <div style={{ color: '#1f2937', fontSize: 20, fontWeight: 700, marginBottom: 2 }}>
+          <div style={{ color: '#000000', fontSize: 20, fontWeight: 700, marginBottom: 2 }}>
             Welcome back{profile?.display_name || profile?.full_name ? `, ${profile.display_name || profile.full_name}` : ''}!
           </div>
           <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -249,7 +249,7 @@ export default function DashboardPage() {
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
           }}>
             <div style={{ color: '#6b7280', marginBottom: 12, display: 'flex' }}>{card.icon}</div>
-            <div style={{ color: '#1f2937', fontSize: 26, fontWeight: 700 }}>{loading ? '—' : card.value}</div>
+            <div style={{ color: '#000000', fontSize: 26, fontWeight: 700 }}>{loading ? '—' : card.value}</div>
             <div style={{ color: '#6b7280', fontSize: 13, marginTop: 4 }}>{card.label}</div>
           </div>
         ))}
@@ -265,7 +265,7 @@ export default function DashboardPage() {
           padding: '16px 20px', borderBottom: '1px solid #e5e7eb',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
-          <h2 style={{ color: '#1f2937', fontSize: 16, fontWeight: 600, margin: 0 }}>Recent Activity</h2>
+          <h2 style={{ color: '#000000', fontSize: 16, fontWeight: 600, margin: 0 }}>Recent Activity</h2>
           <div style={{ display: 'flex', gap: 6 }}>
             {filterOptions.map(opt => (
               <button
@@ -299,7 +299,7 @@ export default function DashboardPage() {
                 borderBottom: '1px solid #f3f4f6',
               }}>
                 <div style={{ flex: 1 }}>
-                  <div style={{ color: '#1f2937', fontSize: 14, marginBottom: 2 }}>
+                  <div style={{ color: '#000000', fontSize: 14, marginBottom: 2 }}>
                     {item.query ? (item.query.length > 80 ? item.query.slice(0, 80) + '...' : item.query) : 'Screen Analysis'}
                   </div>
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
