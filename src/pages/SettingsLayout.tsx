@@ -265,8 +265,8 @@ export default function SettingsLayout() {
             overflow: 'hidden',
             background: '#f9fafb',
           }}>
-            {/* Nav items — fixed, no scroll */}
-            <div style={{ flex: 1, padding: '20px 16px 12px', overflow: 'hidden' }}>
+            {/* Nav items — scrollable if content overflows */}
+            <div style={{ flex: 1, padding: '20px 16px 12px', overflowY: 'auto', overflowX: 'hidden' }}>
               <div style={{ marginBottom: 8 }}>
                 {menuItems.map(item => (
                   <button

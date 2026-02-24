@@ -161,24 +161,24 @@ export default function ProfilePage() {
 
   return (
     <div>
-      <h1 style={{ color: '#fff', fontSize: 22, fontWeight: 700, margin: '0 0 6px' }}>Profile</h1>
-      <p style={{ color: '#6b7280', fontSize: 14, margin: '0 0 28px' }}>Manage your account settings</p>
+      <h1 style={{ color: '#000000', fontSize: 24, fontWeight: 700, margin: '0 0 8px', letterSpacing: '-0.02em' }}>Profile</h1>
+      <p style={{ color: '#6b7280', fontSize: 14, margin: '0 0 32px' }}>Manage your account settings</p>
 
       {msg && (
         <div style={{
-          padding: '10px 16px', borderRadius: 10, marginBottom: 20,
-          background: msgType === 'success' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
-          border: `1px solid ${msgType === 'success' ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`,
-          color: msgType === 'success' ? '#4ade80' : '#f87171', fontSize: 13,
+          padding: '12px 16px', borderRadius: 10, marginBottom: 24,
+          background: msgType === 'success' ? '#d1fae5' : '#fee2e2',
+          border: `1px solid ${msgType === 'success' ? '#86efac' : '#fca5a5'}`,
+          color: msgType === 'success' ? '#065f46' : '#991b1b', fontSize: 14, fontWeight: 500,
         }}>{msg}</div>
       )}
 
       {/* Account Email */}
       <Section title="Account Email" subtitle="Your email cannot be changed. Contact support if you need assistance.">
         <div style={{
-          padding: '12px 16px', borderRadius: 10,
-          background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-          color: '#9ca3af', fontSize: 14,
+          padding: '14px 16px', borderRadius: 10,
+          background: '#f9fafb', border: '1px solid #e5e7eb',
+          color: '#6b7280', fontSize: 14, fontWeight: 500,
         }}>{user?.email}</div>
       </Section>
 
@@ -191,16 +191,16 @@ export default function ProfilePage() {
               value={username} onChange={e => checkUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''))}
               placeholder="username"
               style={{
-                width: '100%', padding: '12px 16px 12px 32px', borderRadius: 10,
-                background: 'rgba(255,255,255,0.06)',
-                border: `1px solid ${usernameAvailable === true ? 'rgba(34,197,94,0.4)' : usernameAvailable === false ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.1)'}`,
-                color: '#fff', fontSize: 14, outline: 'none',
+                width: '100%', padding: '14px 16px 14px 36px', borderRadius: 10,
+                background: '#ffffff',
+                border: `2px solid ${usernameAvailable === true ? '#86efac' : usernameAvailable === false ? '#fca5a5' : '#e5e7eb'}`,
+                color: '#000000', fontSize: 14, outline: 'none', fontWeight: 500,
               }}
             />
           </div>
           {usernameAvailable !== null && (
-            <span style={{ fontSize: 12, color: usernameAvailable ? '#4ade80' : '#f87171', whiteSpace: 'nowrap' }}>
-              {usernameAvailable ? 'Available' : 'Taken'}
+            <span style={{ fontSize: 13, fontWeight: 600, color: usernameAvailable ? '#059669' : '#dc2626', whiteSpace: 'nowrap' }}>
+              {usernameAvailable ? '✓ Available' : '✗ Taken'}
             </span>
           )}
         </div>
@@ -213,18 +213,18 @@ export default function ProfilePage() {
             value={fullName} onChange={e => setFullName(e.target.value)}
             placeholder="Full name"
             style={{
-              flex: 1, padding: '12px 16px', borderRadius: 10,
-              background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-              color: '#fff', fontSize: 14, outline: 'none',
+              flex: 1, padding: '14px 16px', borderRadius: 10,
+              background: '#ffffff', border: '2px solid #e5e7eb',
+              color: '#000000', fontSize: 14, outline: 'none', fontWeight: 500,
             }}
           />
           <input
             value={displayName} onChange={e => setDisplayName(e.target.value)}
             placeholder="Display name (shown publicly)"
             style={{
-              flex: 1, padding: '12px 16px', borderRadius: 10,
-              background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-              color: '#fff', fontSize: 14, outline: 'none',
+              flex: 1, padding: '14px 16px', borderRadius: 10,
+              background: '#ffffff', border: '2px solid #e5e7eb',
+              color: '#000000', fontSize: 14, outline: 'none', fontWeight: 500,
             }}
           />
         </div>
@@ -247,8 +247,8 @@ export default function ProfilePage() {
             )}
           </label>
           <div>
-            <div style={{ color: '#e5e7eb', fontSize: 14, fontWeight: 500 }}>{fullName || 'No name set'}</div>
-            <div style={{ color: '#6b7280', fontSize: 12 }}>Click avatar to change</div>
+            <div style={{ color: '#000000', fontSize: 14, fontWeight: 600 }}>{fullName || 'No name set'}</div>
+            <div style={{ color: '#6b7280', fontSize: 13 }}>Click avatar to change</div>
           </div>
         </div>
       </Section>
@@ -258,11 +258,11 @@ export default function ProfilePage() {
         <textarea
           value={bio} onChange={e => setBio(e.target.value)}
           placeholder="A short bio about yourself..."
-          rows={3}
+          rows={4}
           style={{
-            width: '100%', padding: '12px 16px', borderRadius: 10, resize: 'vertical',
-            background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-            color: '#fff', fontSize: 14, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box',
+            width: '100%', padding: '14px 16px', borderRadius: 10, resize: 'vertical',
+            background: '#ffffff', border: '2px solid #e5e7eb',
+            color: '#000000', fontSize: 14, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', fontWeight: 500,
           }}
         />
       </Section>
@@ -274,18 +274,18 @@ export default function ProfilePage() {
             value={phone} onChange={e => setPhone(e.target.value)}
             placeholder="Phone number"
             style={{
-              flex: 1, padding: '12px 16px', borderRadius: 10,
-              background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-              color: '#fff', fontSize: 14, outline: 'none',
+              flex: 1, padding: '14px 16px', borderRadius: 10,
+              background: '#ffffff', border: '2px solid #e5e7eb',
+              color: '#000000', fontSize: 14, outline: 'none', fontWeight: 500,
             }}
           />
           <input
             value={location} onChange={e => setLocation(e.target.value)}
             placeholder="Location (e.g. San Francisco, CA)"
             style={{
-              flex: 1, padding: '12px 16px', borderRadius: 10,
-              background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-              color: '#fff', fontSize: 14, outline: 'none',
+              flex: 1, padding: '14px 16px', borderRadius: 10,
+              background: '#ffffff', border: '2px solid #e5e7eb',
+              color: '#000000', fontSize: 14, outline: 'none', fontWeight: 500,
             }}
           />
         </div>
@@ -294,23 +294,23 @@ export default function ProfilePage() {
             value={website} onChange={e => setWebsite(e.target.value)}
             placeholder="Website (e.g. https://mysite.com)"
             style={{
-              flex: 1, padding: '12px 16px', borderRadius: 10,
-              background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-              color: '#fff', fontSize: 14, outline: 'none',
+              flex: 1, padding: '14px 16px', borderRadius: 10,
+              background: '#ffffff', border: '2px solid #e5e7eb',
+              color: '#000000', fontSize: 14, outline: 'none', fontWeight: 500,
             }}
           />
           <select
             value={timezone} onChange={e => setTimezone(e.target.value)}
             style={{
-              flex: 1, padding: '12px 16px', borderRadius: 10,
-              background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-              color: '#fff', fontSize: 14, outline: 'none',
+              flex: 1, padding: '14px 16px', borderRadius: 10,
+              background: '#ffffff', border: '2px solid #e5e7eb',
+              color: '#000000', fontSize: 14, outline: 'none', fontWeight: 500, cursor: 'pointer',
             }}
           >
             {['UTC', 'America/New_York', 'America/Chicago', 'America/Denver', 'America/Los_Angeles',
               'Europe/London', 'Europe/Paris', 'Europe/Berlin', 'Asia/Tokyo', 'Asia/Shanghai',
               'Asia/Kolkata', 'Asia/Dubai', 'Australia/Sydney', 'Pacific/Auckland'].map(tz => (
-              <option key={tz} value={tz} style={{ background: '#1a1a1a' }}>{tz.replace('_', ' ')}</option>
+              <option key={tz} value={tz} style={{ background: '#ffffff' }}>{tz.replace('_', ' ')}</option>
             ))}
           </select>
         </div>
@@ -320,13 +320,13 @@ export default function ProfilePage() {
       <div style={{ marginBottom: 28 }}>
         <button onClick={handleUpdateProfile} disabled={loading}
           style={{
-            padding: '12px 28px', borderRadius: 10,
+            padding: '14px 32px', borderRadius: 10,
             background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
-            border: 'none', color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-            boxShadow: '0 2px 8px rgba(37,99,235,0.3)', transition: 'all 0.2s',
+            border: 'none', color: '#fff', fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer',
+            boxShadow: '0 2px 8px rgba(37,99,235,0.2)', transition: 'all 0.2s', opacity: loading ? 0.6 : 1,
           }}
-          onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 12px rgba(37,99,235,0.5)'}
-          onMouseLeave={e => e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,99,235,0.3)'}
+          onMouseEnter={e => { if (!loading) e.currentTarget.style.boxShadow = '0 4px 12px rgba(37,99,235,0.3)'; }}
+          onMouseLeave={e => e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,99,235,0.2)'}
         >{loading ? 'Saving...' : 'Save All Changes'}</button>
       </div>
 
@@ -337,16 +337,16 @@ export default function ProfilePage() {
             type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)}
             placeholder="New password (min 8 characters)"
             style={{
-              flex: 1, padding: '12px 16px', borderRadius: 10,
-              background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-              color: '#fff', fontSize: 14, outline: 'none',
+              flex: 1, padding: '14px 16px', borderRadius: 10,
+              background: '#ffffff', border: '2px solid #e5e7eb',
+              color: '#000000', fontSize: 14, outline: 'none', fontWeight: 500,
             }}
           />
           <button onClick={handleUpdatePassword} disabled={loading}
             style={{
-              padding: '12px 20px', borderRadius: 10,
-              background: 'rgba(37,99,235,0.15)', border: '1px solid rgba(37,99,235,0.3)',
-              color: '#60a5fa', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+              padding: '14px 24px', borderRadius: 10,
+              background: '#2563eb', border: 'none',
+              color: '#ffffff', fontSize: 14, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1,
             }}
           >Update</button>
         </div>
@@ -356,13 +356,13 @@ export default function ProfilePage() {
       <Section title="Session">
         <button onClick={handleSignOut}
           style={{
-            padding: '12px 24px', borderRadius: 10,
-            background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-            color: '#e5e7eb', fontSize: 14, fontWeight: 500, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
+            padding: '14px 28px', borderRadius: 10,
+            background: '#ffffff', border: '2px solid #e5e7eb',
+            color: '#000000', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.2s',
           }}
-          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+          onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = '#d1d5db'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e5e7eb'; }}
         >
           Sign out
         </button>
@@ -373,26 +373,28 @@ export default function ProfilePage() {
         {!showDeleteConfirm ? (
           <button onClick={() => setShowDeleteConfirm(true)}
             style={{
-              padding: '12px 24px', borderRadius: 10,
-              background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
-              color: '#f87171', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+              padding: '14px 28px', borderRadius: 10,
+              background: '#fee2e2', border: '2px solid #fca5a5',
+              color: '#dc2626', fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
             }}
+            onMouseEnter={e => e.currentTarget.style.background = '#fecaca'}
+            onMouseLeave={e => e.currentTarget.style.background = '#fee2e2'}
           >Delete my account</button>
         ) : (
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-            <span style={{ color: '#f87171', fontSize: 13 }}>Are you sure? This cannot be undone.</span>
+            <span style={{ color: '#dc2626', fontSize: 14, fontWeight: 600 }}>Are you sure? This cannot be undone.</span>
             <button onClick={handleDelete} disabled={loading}
               style={{
-                padding: '10px 20px', borderRadius: 10,
-                background: '#ef4444', border: 'none',
-                color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                padding: '12px 24px', borderRadius: 10,
+                background: '#dc2626', border: 'none',
+                color: '#fff', fontSize: 14, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1,
               }}
             >Yes, delete</button>
             <button onClick={() => setShowDeleteConfirm(false)}
               style={{
-                padding: '10px 20px', borderRadius: 10,
-                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-                color: '#9ca3af', fontSize: 13, cursor: 'pointer',
+                padding: '12px 24px', borderRadius: 10,
+                background: '#ffffff', border: '2px solid #e5e7eb',
+                color: '#6b7280', fontSize: 14, fontWeight: 600, cursor: 'pointer',
               }}
             >Cancel</button>
           </div>
@@ -405,12 +407,13 @@ export default function ProfilePage() {
 function Section({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
   return (
     <div style={{
-      marginBottom: 28, padding: 24, borderRadius: 14,
-      background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
+      marginBottom: 24, padding: 28, borderRadius: 12,
+      background: '#ffffff', border: '1px solid #e5e7eb',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
     }}>
-      <h3 style={{ color: '#fff', fontSize: 15, fontWeight: 600, margin: 0 }}>{title}</h3>
-      {subtitle && <p style={{ color: '#6b7280', fontSize: 13, margin: '4px 0 0' }}>{subtitle}</p>}
-      <div style={{ marginTop: 16 }}>{children}</div>
+      <h3 style={{ color: '#000000', fontSize: 16, fontWeight: 700, margin: 0, letterSpacing: '-0.01em' }}>{title}</h3>
+      {subtitle && <p style={{ color: '#6b7280', fontSize: 13, margin: '6px 0 0', lineHeight: 1.5 }}>{subtitle}</p>}
+      <div style={{ marginTop: 20 }}>{children}</div>
     </div>
   );
 }
