@@ -5,13 +5,13 @@ import { supabase } from '../lib/supabase';
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: 'grid', path: '/settings/dashboard' },
-  { id: 'profile', label: 'Profile', icon: 'user', path: '/settings/profile' },
-  { id: 'updates', label: 'Latest Updates', icon: 'sparkle', path: '/settings/updates' },
-  { id: 'tutorials', label: 'Tutorials', icon: 'play', path: '/settings/tutorials' },
+  { id: 'billing', label: 'Billing', icon: 'card', path: '/settings/billing' },
   { id: 'history', label: 'History', icon: 'clock', path: '/settings/history' },
   { id: 'reminders', label: 'Reminders', icon: 'bell', path: '/settings/reminders' },
   { id: 'language', label: 'Language', icon: 'globe', path: '/settings/language' },
-  { id: 'billing', label: 'Billing', icon: 'card', path: '/settings/billing' },
+  { id: 'updates', label: 'Latest Updates', icon: 'sparkle', path: '/settings/updates' },
+  { id: 'tutorials', label: 'Tutorials', icon: 'play', path: '/settings/tutorials' },
+  { id: 'profile', label: 'Profile', icon: 'user', path: '/settings/profile' },
 ];
 
 const supportItems = [
@@ -192,10 +192,31 @@ export default function SettingsLayout() {
           borderBottom: '1px solid #e5e7eb',
           background: '#ffffff',
         }}>
-        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', cursor: 'pointer' }}>
-          <img src="/favicon.png" alt="Helply AI" style={{ width: 32, height: 32, borderRadius: 8 }} />
-          <span style={{ color: '#000000', fontSize: 16, fontWeight: 700, letterSpacing: '-0.02em' }}>Helply AI</span>
-        </a>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', cursor: 'pointer' }}>
+            <img src="/favicon.png" alt="Helply AI" style={{ width: 32, height: 32, borderRadius: 8 }} />
+            <span style={{ color: '#000000', fontSize: 16, fontWeight: 700, letterSpacing: '-0.02em' }}>Helply AI</span>
+          </a>
+          {isAuthenticated && (
+            <button
+              onClick={() => navigate('/')}
+              style={{
+                padding: '8px 16px', borderRadius: 8,
+                background: '#f3f4f6', border: '1px solid #e5e7eb',
+                color: '#6b7280', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 6, transition: 'all 0.2s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#e5e7eb'; e.currentTarget.style.color = '#000000'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#f3f4f6'; e.currentTarget.style.color = '#6b7280'; }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+              Home
+            </button>
+          )}
+        </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {isAuthenticated ? (
@@ -321,29 +342,11 @@ export default function SettingsLayout() {
               borderTop: '1px solid #e5e7eb',
             }}>
               <button
-                onClick={() => navigate('/')}
-                style={{
-                  width: '100%', padding: '11px 16px', borderRadius: 10,
-                  background: '#ffffff', border: '1px solid #e5e7eb',
-                  color: '#6b7280', fontSize: 14, fontWeight: 500,
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                  transition: 'all 0.2s', marginBottom: 8,
-                }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#f3f4f6'; e.currentTarget.style.color = '#000000'; e.currentTarget.style.borderColor = '#d1d5db'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.color = '#6b7280'; e.currentTarget.style.borderColor = '#e5e7eb'; }}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-                  <polyline points="9 22 9 12 15 12 15 22"/>
-                </svg>
-                Home
-              </button>
-              <button
                 onClick={async () => { await signOut(); navigate('/settings'); }}
                 style={{
                   width: '100%', padding: '11px 16px', borderRadius: 10,
                   background: '#ffffff', border: '1px solid #e5e7eb',
-                  color: '#6b7280', fontSize: 14, fontWeight: 500,
+                  color: '#6b7280', fontSize: 14, fontWeight: 600,
                   cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
                   transition: 'all 0.2s',
                 }}
