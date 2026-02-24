@@ -64,7 +64,15 @@ export function usePlanLimits() {
         const planConfig = PLANS[planId] || PLANS.free;
         const trialStart = data.trial_start_date || session.user.created_at || null;
         const trialExpired = planId === 'free' && isTrialExpired(trialStart, planConfig.limits.trialDays);
-        setPlanState({ plan: planId, billingCycle: (data.billing_cycle || 'monthly') as 'monthly' | 'annually', trialStart, isTrialActive: planId === 'free' && !trialExpired, isExpired: trialExpired });
+        
+        // Check if day plan has expired (24 hours from next_billing_date or created_at)
+        let dayPlanExpired = false;
+        if (planId === 'day' && data.next_billing_date) {
+          const expiryTime = new Date(data.next_billing_date).getTime();
+          dayPlanExpired = Date.now() > expiryTime;
+        }
+        
+        setPlanState({ plan: planId, billingCycle: (data.billing_cycle || 'monthly') as 'monthly' | 'annually', trialStart, isTrialActive: planId === 'free' && !trialExpired, isExpired: trialExpired || dayPlanExpired });
       }
       setLoaded(true);
     };
@@ -76,6 +84,9 @@ export function usePlanLimits() {
     const limitKey = ACTION_TO_LIMIT_KEY[action];
     const limit = planConfig.limits[limitKey] as number;
     if (planState.isExpired) {
+      if (planState.plan === 'day') {
+        return { allowed: false, reason: 'Your 24-hour Day Pass has expired. Purchase a new pass or upgrade to continue.' };
+      }
       return { allowed: false, reason: 'Your 2-day free trial has expired. Subscribe to a plan to continue using all features.' };
     }
     if (limit === -1) return { allowed: true, reason: '' };
@@ -101,7 +112,8 @@ export function usePlanLimits() {
       const cycle: 'monthly' | 'annually' = newPlan === 'pro_plus' ? 'annually' : 'monthly';
       const now = new Date();
       const nextBilling = new Date(now);
-      if (newPlan === 'weekly') nextBilling.setDate(nextBilling.getDate() + 7);
+      if (newPlan === 'day') nextBilling.setHours(nextBilling.getHours() + 24);
+      else if (newPlan === 'weekly') nextBilling.setDate(nextBilling.getDate() + 7);
       else if (newPlan === 'pro') nextBilling.setMonth(nextBilling.getMonth() + 1);
       else if (newPlan === 'pro_plus') nextBilling.setFullYear(nextBilling.getFullYear() + 1);
       const { error } = await supabase.from('billing').update({ plan: newPlan, billing_cycle: cycle, next_billing_date: newPlan === 'free' ? null : nextBilling.toISOString(), updated_at: now.toISOString() }).eq('user_id', session.user.id);

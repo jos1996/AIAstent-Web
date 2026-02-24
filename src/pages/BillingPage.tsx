@@ -16,6 +16,7 @@ const RAZORPAY_KEY = 'rzp_live_RXT3VUdM3gaV4e';
 // Price mapping in INR (₹)
 const PLAN_PRICES: Record<PlanId, number> = {
   free: 0,
+  day: 450,         // ~$5 USD
   weekly: 1710,     // ~$19 USD
   pro: 3150,        // ~$35 USD
   pro_plus: 35910,  // ~$399 USD
@@ -48,6 +49,10 @@ export default function BillingPage() {
       // For free plan, end date is trial_start + 2 days
       if (data.plan === 'free' && data.trial_start_date) {
         const end = new Date(new Date(data.trial_start_date).getTime() + 2 * 24 * 60 * 60 * 1000);
+        setPlanEndDate(end.toISOString());
+      } else if (data.plan === 'day' && data.created_at) {
+        // For day plan, end date is created_at + 24 hours
+        const end = new Date(new Date(data.created_at).getTime() + 24 * 60 * 60 * 1000);
         setPlanEndDate(end.toISOString());
       } else if (data.trial_end_date) {
         setPlanEndDate(data.trial_end_date);
@@ -180,11 +185,16 @@ export default function BillingPage() {
                 </div>
               </div>
             )}
-            {planEndDate && planState.plan === 'free' && (
+            {planEndDate && (planState.plan === 'free' || planState.plan === 'day') && (
               <div style={{ textAlign: 'right' }}>
-                <div style={{ color: '#6b7280', fontSize: 12 }}>Trial Ends</div>
+                <div style={{ color: '#6b7280', fontSize: 12 }}>
+                  {planState.plan === 'day' ? 'Pass Expires' : 'Trial Ends'}
+                </div>
                 <div style={{ color: planState.isExpired ? '#dc2626' : '#000000', fontSize: 13, marginTop: 2, fontWeight: 500 }}>
-                  {new Date(planEndDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  {planState.plan === 'day' 
+                    ? new Date(planEndDate).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })
+                    : new Date(planEndDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                  }
                 </div>
               </div>
             )}
