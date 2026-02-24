@@ -47,21 +47,22 @@ export default function LanguagePage() {
 
   return (
     <div>
-      <h1 style={{ color: '#fff', fontSize: 22, fontWeight: 700, margin: '0 0 6px' }}>Language</h1>
-      <p style={{ color: '#6b7280', fontSize: 14, margin: '0 0 28px' }}>Select the language you want to use for your interactions.</p>
+      <h1 style={{ color: '#000000', fontSize: 24, fontWeight: 700, margin: '0 0 8px', letterSpacing: '-0.02em' }}>Language</h1>
+      <p style={{ color: '#6b7280', fontSize: 14, margin: '0 0 24px' }}>Select the language you want to use for your interactions.</p>
 
       {msg && (
         <div style={{
-          padding: '10px 16px', borderRadius: 10, marginBottom: 20,
-          background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)',
-          color: '#4ade80', fontSize: 13,
+          padding: '12px 16px', borderRadius: 10, marginBottom: 24,
+          background: '#d1fae5', border: '1px solid #86efac',
+          color: '#065f46', fontSize: 14, fontWeight: 500,
         }}>{msg}</div>
       )}
 
       {/* Transcription Language */}
       <div style={{
-        marginBottom: 20, padding: 24, borderRadius: 14,
-        background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
+        marginBottom: 20, padding: 28, borderRadius: 12,
+        background: '#ffffff', border: '1px solid #e5e7eb',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
           <div style={{
@@ -75,7 +76,7 @@ export default function LanguagePage() {
             </svg>
           </div>
           <div>
-            <div style={{ color: '#fff', fontSize: 15, fontWeight: 600 }}>Transcription language</div>
+            <div style={{ color: '#000000', fontSize: 16, fontWeight: 700 }}>Transcription language</div>
             <div style={{ color: '#6b7280', fontSize: 13 }}>Select the language you speak in interactions.</div>
           </div>
         </div>
@@ -83,11 +84,11 @@ export default function LanguagePage() {
           {languages.map(lang => (
             <button key={lang} onClick={() => { setInputLang(lang); handleSave('input_language', lang); }}
               style={{
-                padding: '8px 16px', borderRadius: 8, fontSize: 13,
-                background: inputLang === lang ? 'rgba(37,99,235,0.2)' : 'rgba(255,255,255,0.04)',
-                border: inputLang === lang ? '1px solid rgba(37,99,235,0.4)' : '1px solid rgba(255,255,255,0.08)',
-                color: inputLang === lang ? '#60a5fa' : '#9ca3af',
-                cursor: 'pointer', transition: 'all 0.15s', fontWeight: inputLang === lang ? 600 : 400,
+                padding: '10px 16px', borderRadius: 8, fontSize: 13,
+                background: inputLang === lang ? '#2563eb' : '#f3f4f6',
+                border: 'none',
+                color: inputLang === lang ? '#ffffff' : '#6b7280',
+                cursor: 'pointer', transition: 'all 0.2s', fontWeight: 600,
               }}
             >
               {inputLang === lang && '✓ '}{lang}
@@ -98,8 +99,9 @@ export default function LanguagePage() {
 
       {/* Output Language */}
       <div style={{
-        marginBottom: 20, padding: 24, borderRadius: 14,
-        background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
+        marginBottom: 20, padding: 28, borderRadius: 12,
+        background: '#ffffff', border: '1px solid #e5e7eb',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
           <div style={{
@@ -113,7 +115,7 @@ export default function LanguagePage() {
             </svg>
           </div>
           <div>
-            <div style={{ color: '#fff', fontSize: 15, fontWeight: 600 }}>Output language</div>
+            <div style={{ color: '#000000', fontSize: 16, fontWeight: 700 }}>Output language</div>
             <div style={{ color: '#6b7280', fontSize: 13 }}>Select your preferred language for responses.</div>
           </div>
         </div>
@@ -121,11 +123,11 @@ export default function LanguagePage() {
           {languages.map(lang => (
             <button key={lang} onClick={() => { setOutputLang(lang); handleSave('output_language', lang); }}
               style={{
-                padding: '8px 16px', borderRadius: 8, fontSize: 13,
-                background: outputLang === lang ? 'rgba(124,58,237,0.2)' : 'rgba(255,255,255,0.04)',
-                border: outputLang === lang ? '1px solid rgba(124,58,237,0.4)' : '1px solid rgba(255,255,255,0.08)',
-                color: outputLang === lang ? '#a78bfa' : '#9ca3af',
-                cursor: 'pointer', transition: 'all 0.15s', fontWeight: outputLang === lang ? 600 : 400,
+                padding: '10px 16px', borderRadius: 8, fontSize: 13,
+                background: outputLang === lang ? '#7c3aed' : '#f3f4f6',
+                border: 'none',
+                color: outputLang === lang ? '#ffffff' : '#6b7280',
+                cursor: 'pointer', transition: 'all 0.2s', fontWeight: 600,
               }}
             >
               {outputLang === lang && '✓ '}{lang}
@@ -136,19 +138,20 @@ export default function LanguagePage() {
 
       {/* Auto-detect */}
       <div style={{
-        padding: 24, borderRadius: 14,
-        background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
+        padding: 28, borderRadius: 12,
+        background: '#ffffff', border: '1px solid #e5e7eb',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
         <div>
-          <div style={{ color: '#fff', fontSize: 15, fontWeight: 600 }}>Auto-detect language</div>
-          <div style={{ color: '#6b7280', fontSize: 13, marginTop: 2 }}>Automatically detect the language you are speaking.</div>
+          <div style={{ color: '#000000', fontSize: 16, fontWeight: 700 }}>Auto-detect language</div>
+          <div style={{ color: '#6b7280', fontSize: 13, marginTop: 4 }}>Automatically detect the language you are speaking.</div>
         </div>
         <button
           onClick={() => { const v = !autoDetect; setAutoDetect(v); handleSave('auto_detect', v); }}
           style={{
             width: 48, height: 26, borderRadius: 13, padding: 3,
-            background: autoDetect ? '#2563eb' : 'rgba(255,255,255,0.15)',
+            background: autoDetect ? '#2563eb' : '#d1d5db',
             border: 'none', cursor: 'pointer', transition: 'all 0.2s',
             display: 'flex', alignItems: 'center',
           }}

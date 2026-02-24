@@ -144,28 +144,28 @@ export default function BillingPage() {
 
   return (
     <div style={{ maxWidth: '100%' }}>
-      <h1 style={{ color: '#fff', fontSize: 28, fontWeight: 700, margin: '0 0 8px', letterSpacing: '-0.5px' }}>Billing & Plans</h1>
-      <p style={{ color: '#9ca3af', fontSize: 15, margin: '0 0 32px' }}>Choose the plan that works best for you</p>
+      <h1 style={{ color: '#000000', fontSize: 24, fontWeight: 700, margin: '0 0 8px', letterSpacing: '-0.02em' }}>Billing & Plans</h1>
+      <p style={{ color: '#6b7280', fontSize: 14, margin: '0 0 24px' }}>Choose the plan that works best for you</p>
 
       {/* Current Plan Status */}
       <div style={{
-        marginBottom: 32, padding: 28, borderRadius: 16,
-        background: planState.isExpired ? 'linear-gradient(135deg, rgba(239,68,68,0.12) 0%, rgba(239,68,68,0.06) 100%)' : 'linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(147,51,234,0.08) 100%)',
-        border: planState.isExpired ? '1px solid rgba(239,68,68,0.3)' : '1px solid rgba(59,130,246,0.25)',
-        boxShadow: planState.isExpired ? '0 4px 20px rgba(239,68,68,0.15)' : '0 4px 20px rgba(59,130,246,0.15)',
+        marginBottom: 24, padding: 28, borderRadius: 12,
+        background: planState.isExpired ? '#fee2e2' : '#eff6ff',
+        border: planState.isExpired ? '1px solid #fca5a5' : '1px solid #93c5fd',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ color: '#9ca3af', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>Current Plan</div>
-            <div style={{ color: '#fff', fontSize: 22, fontWeight: 700, marginTop: 4 }}>
+            <div style={{ color: '#6b7280', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>Current Plan</div>
+            <div style={{ color: '#000000', fontSize: 20, fontWeight: 700, marginTop: 4 }}>
               {PLANS[planState.plan]?.name || 'Free'}
               {planState.plan === 'free' && !planState.isExpired && (
-                <span style={{ fontSize: 12, fontWeight: 500, color: '#60a5fa', marginLeft: 8 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#2563eb', marginLeft: 8 }}>
                   {daysLeft} day{daysLeft !== 1 ? 's' : ''} left in trial
                 </span>
               )}
               {planState.isExpired && (
-                <span style={{ fontSize: 12, fontWeight: 500, color: '#ef4444', marginLeft: 8 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#dc2626', marginLeft: 8 }}>
                   Trial expired — upgrade to continue
                 </span>
               )}
@@ -174,24 +174,24 @@ export default function BillingPage() {
           <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
             {planStartDate && (
               <div style={{ textAlign: 'right' }}>
-                <div style={{ color: '#9ca3af', fontSize: 12 }}>Start Date</div>
-                <div style={{ color: '#e5e7eb', fontSize: 13, marginTop: 2 }}>
+                <div style={{ color: '#6b7280', fontSize: 12 }}>Start Date</div>
+                <div style={{ color: '#000000', fontSize: 13, marginTop: 2, fontWeight: 500 }}>
                   {new Date(planStartDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </div>
               </div>
             )}
             {planEndDate && planState.plan === 'free' && (
               <div style={{ textAlign: 'right' }}>
-                <div style={{ color: '#9ca3af', fontSize: 12 }}>Trial Ends</div>
-                <div style={{ color: planState.isExpired ? '#ef4444' : '#e5e7eb', fontSize: 13, marginTop: 2 }}>
+                <div style={{ color: '#6b7280', fontSize: 12 }}>Trial Ends</div>
+                <div style={{ color: planState.isExpired ? '#dc2626' : '#000000', fontSize: 13, marginTop: 2, fontWeight: 500 }}>
                   {new Date(planEndDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </div>
               </div>
             )}
             {nextBillingDate && planState.plan !== 'free' && (
               <div style={{ textAlign: 'right' }}>
-                <div style={{ color: '#9ca3af', fontSize: 12 }}>Next Billing</div>
-                <div style={{ color: '#e5e7eb', fontSize: 13, marginTop: 2 }}>
+                <div style={{ color: '#6b7280', fontSize: 12 }}>Next Billing</div>
+                <div style={{ color: '#000000', fontSize: 13, marginTop: 2, fontWeight: 500 }}>
                   {new Date(nextBillingDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </div>
               </div>
@@ -203,11 +203,11 @@ export default function BillingPage() {
       {/* Daily Usage (Free plan only) */}
       {planState.plan === 'free' && !planState.isExpired && (
         <div style={{
-          marginBottom: 32, padding: 28, borderRadius: 16,
-          background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
-          boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
+          marginBottom: 24, padding: 28, borderRadius: 12,
+          background: '#ffffff', border: '1px solid #e5e7eb',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
         }}>
-          <div style={{ color: '#fff', fontSize: 16, fontWeight: 700, marginBottom: 18 }}>Today's Usage</div>
+          <div style={{ color: '#000000', fontSize: 16, fontWeight: 700, marginBottom: 18 }}>Today's Usage</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 10 }}>
             {([
               { label: 'Chat', action: 'chat_message' as const, limit: 5 },
@@ -222,13 +222,13 @@ export default function BillingPage() {
               return (
                 <div key={item.action} style={{
                   padding: '10px 12px', borderRadius: 10,
-                  background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
+                  background: '#f9fafb', border: '1px solid #e5e7eb',
                 }}>
                   <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 6 }}>{item.label}</div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: remaining === 0 ? '#ef4444' : '#e5e7eb' }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: remaining === 0 ? '#dc2626' : '#000000' }}>
                     {used}/{item.limit}
                   </div>
-                  <div style={{ height: 3, borderRadius: 2, background: 'rgba(255,255,255,0.08)', marginTop: 6 }}>
+                  <div style={{ height: 3, borderRadius: 2, background: '#e5e7eb', marginTop: 6 }}>
                     <div style={{
                       height: '100%', borderRadius: 2, transition: 'width 0.3s',
                       width: `${Math.min(pct, 100)}%`,
@@ -242,8 +242,8 @@ export default function BillingPage() {
         </div>
       )}
 
-      {/* Plan Cards — 4 cards including new weekly plan */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
+      {/* Plan Cards — 4 cards in one line, reduced width by 20% */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 0.8fr))', gap: 12, marginBottom: 24, justifyContent: 'center' }}>
         {PLAN_ORDER.map(planId => {
           const plan = PLANS[planId];
           const isCurrent = planState.plan === planId;
@@ -251,15 +251,15 @@ export default function BillingPage() {
 
           return (
             <div key={planId} style={{
-              padding: 20, borderRadius: 16, position: 'relative',
-              background: isCurrent ? 'linear-gradient(135deg, rgba(37,99,235,0.15) 0%, rgba(37,99,235,0.08) 100%)' 
-                : plan.highlighted ? 'linear-gradient(135deg, rgba(59,130,246,0.15) 0%, rgba(147,51,234,0.1) 100%)'
-                : 'rgba(255,255,255,0.03)',
-              border: isCurrent ? '2px solid rgba(37,99,235,0.5)' 
-                : plan.highlighted ? '2px solid rgba(59,130,246,0.6)'
-                : '1px solid rgba(255,255,255,0.08)',
-              transition: 'all 0.3s',
-              boxShadow: plan.highlighted ? '0 12px 40px rgba(59,130,246,0.2)' : isCurrent ? '0 8px 24px rgba(37,99,235,0.2)' : '0 2px 8px rgba(0,0,0,0.1)',
+              padding: 20, borderRadius: 12, position: 'relative',
+              background: isCurrent ? '#eff6ff' 
+                : plan.highlighted ? '#f0f9ff'
+                : '#ffffff',
+              border: isCurrent ? '2px solid #2563eb' 
+                : plan.highlighted ? '2px solid #3b82f6'
+                : '1px solid #e5e7eb',
+              transition: 'all 0.2s',
+              boxShadow: plan.highlighted ? '0 4px 12px rgba(59,130,246,0.15)' : '0 1px 3px rgba(0,0,0,0.05)',
             }}>
               {/* Most Popular Badge */}
               {plan.highlighted && (
@@ -282,11 +282,11 @@ export default function BillingPage() {
                 </div>
               )}
               {/* Plan Name */}
-              <div style={{ color: '#fff', fontSize: 16, fontWeight: 700, marginBottom: 8 }}>{plan.name}</div>
+              <div style={{ color: '#000000', fontSize: 15, fontWeight: 700, marginBottom: 8 }}>{plan.name}</div>
 
               {/* Price */}
               <div style={{ marginBottom: 6 }}>
-                <span style={{ color: '#fff', fontSize: 32, fontWeight: 800, letterSpacing: '-1px' }}>{plan.priceLabel}</span>
+                <span style={{ color: '#000000', fontSize: 28, fontWeight: 800, letterSpacing: '-1px' }}>{plan.priceLabel}</span>
                 {planId !== 'free' && (
                   <span style={{ color: '#6b7280', fontSize: 13 }}> {plan.priceSuffix}</span>
                 )}
@@ -305,11 +305,11 @@ export default function BillingPage() {
 
               {/* Tagline */}
               <div style={{ 
-                color: plan.highlighted ? '#d1d5db' : '#9ca3af', 
-                fontSize: 13, 
-                marginBottom: 18, 
+                color: '#6b7280', 
+                fontSize: 12, 
+                marginBottom: 16, 
                 marginTop: plan.savingsNote ? 0 : 10,
-                fontWeight: plan.highlighted ? 500 : 400,
+                fontWeight: 400,
                 lineHeight: 1.5,
               }}>{plan.tagline}</div>
 
@@ -318,16 +318,16 @@ export default function BillingPage() {
                 onClick={() => handleSelectPlan(planId)}
                 disabled={isCurrent || upgradeLoading !== null}
                 style={{
-                  width: '100%', padding: '11px 0', borderRadius: 10, marginBottom: 18,
+                  width: '100%', padding: '10px 0', borderRadius: 10, marginBottom: 16,
                   background: isCurrent ? 'transparent'
-                    : plan.highlighted ? '#fff'
-                    : planId === 'pro_plus' ? '#fff'
-                    : 'rgba(255,255,255,0.06)',
-                  border: isCurrent ? '1px solid rgba(37,99,235,0.3)' : 'none',
-                  color: isCurrent ? '#60a5fa'
-                    : plan.highlighted || planId === 'pro_plus' ? '#000'
-                    : '#fff',
-                  fontSize: 14, fontWeight: 700,
+                    : plan.highlighted ? '#2563eb'
+                    : planId === 'pro_plus' ? '#2563eb'
+                    : '#f3f4f6',
+                  border: isCurrent ? '2px solid #2563eb' : 'none',
+                  color: isCurrent ? '#2563eb'
+                    : plan.highlighted || planId === 'pro_plus' ? '#ffffff'
+                    : '#000000',
+                  fontSize: 13, fontWeight: 700,
                   cursor: isCurrent ? 'default' : 'pointer',
                   transition: 'all 0.2s',
                   opacity: upgradeLoading === planId ? 0.6 : 1,
@@ -342,7 +342,7 @@ export default function BillingPage() {
 
               {/* Intro text for non-free */}
               {planId !== 'free' && (
-                <div style={{ color: '#9ca3af', fontSize: 11, fontWeight: 600, marginBottom: 8 }}>
+                <div style={{ color: '#6b7280', fontSize: 11, fontWeight: 600, marginBottom: 8 }}>
                   {planId === 'weekly' ? 'Everything in Free, plus...' 
                    : planId === 'pro' ? 'Everything in Free, plus...' 
                    : 'Everything in Pro, plus...'}
@@ -352,7 +352,7 @@ export default function BillingPage() {
               {/* Features */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {plan.features.map(f => (
-                  <div key={f} style={{ color: '#d1d5db', fontSize: 12, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                  <div key={f} style={{ color: '#374151', fontSize: 11, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 2 }}>
                       <polyline points="20 6 9 17 4 12"/>
                     </svg>
@@ -367,14 +367,14 @@ export default function BillingPage() {
 
       {/* Payment Details */}
       <div style={{
-        padding: 28, borderRadius: 16,
-        background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
-        boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
+        padding: 28, borderRadius: 12,
+        background: '#ffffff', border: '1px solid #e5e7eb',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
       }}>
-        <h3 style={{ color: '#fff', fontSize: 17, fontWeight: 700, margin: '0 0 14px' }}>Payment Details</h3>
+        <h3 style={{ color: '#000000', fontSize: 16, fontWeight: 700, margin: '0 0 14px' }}>Payment Details</h3>
         <div style={{ color: '#6b7280', fontSize: 14 }}>
           {billingEmail ? (
-            <div>Billing email: <span style={{ color: '#e5e7eb' }}>{billingEmail}</span></div>
+            <div>Billing email: <span style={{ color: '#000000', fontWeight: 500 }}>{billingEmail}</span></div>
           ) : (
             'No payment method on file. Payment gateway integration coming soon.'
           )}
