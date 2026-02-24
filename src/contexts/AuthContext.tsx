@@ -93,6 +93,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      // Write session to session_bridge table so the Tauri chatbot can detect login
+      if ((_event === 'SIGNED_IN' || _event === 'TOKEN_REFRESHED') && session?.user) {
+        void supabase.from('session_bridge').upsert({
+          user_id: session.user.id,
+          access_token: session.access_token,
+          refresh_token: session.refresh_token,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id' }).then(() => {});
+      }
+      if (_event === 'SIGNED_OUT') {
+        // Clean up session_bridge on sign out
+        if (user) {
+          void supabase.from('session_bridge').delete()
+            .eq('user_id', user.id).then(() => {});
+        }
+      }
     });
 
     return () => subscription.unsubscribe();
