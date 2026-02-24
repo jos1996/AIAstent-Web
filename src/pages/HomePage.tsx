@@ -34,7 +34,7 @@ export default function HomePage() {
   }
 
   return (
-    <div style={{ background: '#fff', minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f8f8f8 25%, #f0f0f0 50%, #e8e8e8 75%, #e0e0e0 100%)', minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
       
       {/* Animated Background */}
       <div style={{
@@ -185,34 +185,42 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div style={{ marginTop: 24, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ marginTop: 32, display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap', justifyContent: 'center', padding: '20px 32px', background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(10px)', borderRadius: 16, border: '1px solid rgba(0,0,0,0.08)', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ display: 'flex', marginLeft: -8 }}>
-              {[1,2,3,4,5].map(i => (
-                <div key={i} style={{
-                  width: 32, height: 32, borderRadius: '50%',
-                  background: `linear-gradient(135deg, ${i % 2 === 0 ? '#000' : '#333'}, ${i % 2 === 0 ? '#1a1a1a' : '#555'})`,
-                  border: '2px solid #fff',
-                  marginLeft: -8,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: '#fff',
-                }}>{String.fromCharCode(65 + i)}</div>
+              {[
+                'https://randomuser.me/api/portraits/men/32.jpg',
+                'https://randomuser.me/api/portraits/women/44.jpg',
+                'https://randomuser.me/api/portraits/men/67.jpg',
+                'https://randomuser.me/api/portraits/women/21.jpg',
+                'https://randomuser.me/api/portraits/men/85.jpg',
+              ].map((img, i) => (
+                <img key={i} src={img} alt="User" style={{
+                  width: 40, height: 40, borderRadius: '50%',
+                  border: '3px solid #fff',
+                  marginLeft: -12,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                  objectFit: 'cover',
+                }} />
               ))}
             </div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#000' }}>
-              Used by <span style={{ fontWeight: 800 }}>1,534,135+</span> people
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#000', marginLeft: 8 }}>
+              <span style={{ fontWeight: 800, fontSize: 16 }}>100K+</span> users worldwide
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 2 }}>
-            {[1,2,3,4,5].map(i => (
-              <Icon key={i} name="Star" size={16} />
-            ))}
-            <span style={{ marginLeft: 6, fontSize: 13, fontWeight: 700, color: '#000' }}>4.88</span>
-            <span style={{ fontSize: 13, color: '#666' }}>/ 340,088+ reviews</span>
+          <div style={{ width: 1, height: 24, background: 'rgba(0,0,0,0.15)' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 3 }}>
+              {[1,2,3,4,5].map(i => (
+                <svg key={i} width="18" height="18" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFB800" strokeWidth="1.5">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+              ))}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+              <span style={{ fontSize: 16, fontWeight: 800, color: '#000' }}>4.9</span>
+              <span style={{ fontSize: 14, color: '#666', fontWeight: 500 }}>from <span style={{ fontWeight: 700, color: '#000' }}>30K+</span> reviews</span>
+            </div>
           </div>
         </div>
 
