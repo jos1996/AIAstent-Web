@@ -98,7 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const notConfiguredError = 'Supabase is not configured. Please add valid VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your .env file.';
+  const notConfiguredError = 'Supabase is not configured. Please add valid VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your .env file. If deployed, add these environment variables in your hosting platform (Vercel/Cloudflare) settings and redeploy. See ENV_SETUP_GUIDE.md for details.';
 
   const signUp = async (email: string, password: string, fullName: string) => {
     if (!supabaseConfigured) return { error: notConfiguredError };
