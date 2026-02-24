@@ -123,8 +123,8 @@ export default function HomePage() {
         </div>
 
         <h1 style={{
-          fontSize: 'clamp(29px, 5vw, 54px)', fontWeight: 900,
-          lineHeight: 1.1, letterSpacing: '-1.2px', maxWidth: 900,
+          fontSize: 'clamp(22px, 3.75vw, 40px)', fontWeight: 900,
+          lineHeight: 1.1, letterSpacing: '-1px', maxWidth: 900,
           marginBottom: 20,
           color: '#000',
         }}>
