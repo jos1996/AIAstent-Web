@@ -62,18 +62,20 @@ export default function HistoryPage() {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <div>
-          <h1 style={{ color: '#fff', fontSize: 22, fontWeight: 700, margin: 0 }}>History</h1>
-          <p style={{ color: '#6b7280', fontSize: 14, margin: '6px 0 0' }}>All your interactions and generated content</p>
+          <h1 style={{ color: '#000000', fontSize: 24, fontWeight: 700, margin: 0, letterSpacing: '-0.02em' }}>History</h1>
+          <p style={{ color: '#6b7280', fontSize: 14, margin: '8px 0 0' }}>All your interactions and generated content</p>
         </div>
         {items.length > 0 && (
           <button onClick={handleClearAll}
             style={{
-              padding: '8px 16px', borderRadius: 8,
-              background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)',
-              color: '#f87171', fontSize: 12, fontWeight: 500, cursor: 'pointer',
+              padding: '10px 20px', borderRadius: 10,
+              background: '#fee2e2', border: '2px solid #fca5a5',
+              color: '#dc2626', fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
             }}
+            onMouseEnter={e => e.currentTarget.style.background = '#fecaca'}
+            onMouseLeave={e => e.currentTarget.style.background = '#fee2e2'}
           >Clear All</button>
         )}
       </div>
@@ -84,29 +86,32 @@ export default function HistoryPage() {
           value={search} onChange={e => setSearch(e.target.value)}
           placeholder="Search history..."
           style={{
-            flex: 1, padding: '10px 16px', borderRadius: 10,
-            background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-            color: '#fff', fontSize: 14, outline: 'none',
+            flex: 1, padding: '14px 16px', borderRadius: 10,
+            background: '#ffffff', border: '2px solid #e5e7eb',
+            color: '#000000', fontSize: 14, outline: 'none', fontWeight: 500,
           }}
         />
         <div style={{ display: 'flex', gap: 6 }}>
           {filterOptions.map(opt => (
             <button key={opt.value} onClick={() => setFilterType(opt.value)}
               style={{
-                padding: '8px 14px', borderRadius: 8, fontSize: 12, fontWeight: 500,
-                background: filterType === opt.value ? 'rgba(37,99,235,0.2)' : 'transparent',
-                border: filterType === opt.value ? '1px solid rgba(37,99,235,0.3)' : '1px solid rgba(255,255,255,0.08)',
-                color: filterType === opt.value ? '#60a5fa' : '#9ca3af', cursor: 'pointer',
+                padding: '10px 16px', borderRadius: 10, fontSize: 13, fontWeight: 600,
+                background: filterType === opt.value ? '#2563eb' : '#f3f4f6',
+                border: 'none',
+                color: filterType === opt.value ? '#ffffff' : '#6b7280', cursor: 'pointer', transition: 'all 0.2s',
               }}
             >{opt.label}</button>
           ))}
         </div>
       </div>
 
-      {/* History List */}
+      {/* History List - Scrollable */}
       <div style={{
-        borderRadius: 14, background: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(255,255,255,0.06)',
+        borderRadius: 12, background: '#ffffff',
+        border: '1px solid #e5e7eb',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+        maxHeight: 'calc(100vh - 320px)',
+        overflowY: 'auto',
       }}>
         {loading ? (
           <div style={{ padding: 40, textAlign: 'center', color: '#6b7280' }}>Loading...</div>
@@ -117,40 +122,40 @@ export default function HistoryPage() {
         ) : (
           filtered.map(item => (
             <div key={item.id} style={{
-              padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.04)',
+              padding: '16px 24px', borderBottom: '1px solid #f3f4f6',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => setExpandedId(expandedId === item.id ? null : item.id)}>
-                  <div style={{ color: '#e5e7eb', fontSize: 14, marginBottom: 4 }}>
+                  <div style={{ color: '#000000', fontSize: 14, marginBottom: 6, fontWeight: 500 }}>
                     {item.query ? (item.query.length > 100 ? item.query.slice(0, 100) + '...' : item.query) : 'Screen Analysis'}
                   </div>
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                     <span style={{
-                      padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 500,
-                      background: item.type === 'chat' ? 'rgba(37,99,235,0.15)' : item.type === 'interview' ? 'rgba(5,150,105,0.15)' : 'rgba(124,58,237,0.15)',
-                      color: item.type === 'chat' ? '#60a5fa' : item.type === 'interview' ? '#34d399' : '#a78bfa',
+                      padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600,
+                      background: item.type === 'chat' ? '#dbeafe' : item.type === 'interview' ? '#d1fae5' : '#ede9fe',
+                      color: item.type === 'chat' ? '#1e40af' : item.type === 'interview' ? '#065f46' : '#5b21b6',
                     }}>{item.type.replace('_', ' ')}</span>
-                    <span style={{ color: '#4b5563', fontSize: 11 }}>
+                    <span style={{ color: '#6b7280', fontSize: 12, fontWeight: 500 }}>
                       {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
                 </div>
                 <button onClick={() => handleDelete(item.id)}
                   style={{
-                    padding: '6px 12px', borderRadius: 6,
-                    background: 'transparent', border: '1px solid rgba(255,255,255,0.08)',
-                    color: '#6b7280', fontSize: 11, cursor: 'pointer', transition: 'all 0.15s',
+                    padding: '8px 16px', borderRadius: 8,
+                    background: '#ffffff', border: '2px solid #e5e7eb',
+                    color: '#6b7280', fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.color = '#f87171'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = '#6b7280'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#dc2626'; e.currentTarget.style.borderColor = '#fca5a5'; e.currentTarget.style.background = '#fee2e2'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = '#6b7280'; e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.background = '#ffffff'; }}
                 >Delete</button>
               </div>
               {expandedId === item.id && item.response && (
                 <div style={{
-                  marginTop: 12, padding: 16, borderRadius: 10,
-                  background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)',
-                  color: '#9ca3af', fontSize: 13, lineHeight: 1.6, whiteSpace: 'pre-wrap',
-                  maxHeight: 300, overflowY: 'auto',
+                  marginTop: 16, padding: 20, borderRadius: 10,
+                  background: '#f9fafb', border: '1px solid #e5e7eb',
+                  color: '#374151', fontSize: 14, lineHeight: 1.7, whiteSpace: 'pre-wrap', fontWeight: 400,
+                  maxHeight: 400, overflowY: 'auto',
                 }}>{item.response}</div>
               )}
             </div>
