@@ -147,7 +147,7 @@ export default function HomePage() {
           fontSize: 12, fontWeight: 600, color: '#000', marginBottom: 24,
         }}>
           <Icon name="Sparkles" size={14} />
-          ✨ FULL CODING INTERVIEW SUPPORT
+          ✨ PRACTICE & IMPROVE YOUR INTERVIEW SKILLS
         </div>
 
         <h1 style={{
@@ -160,22 +160,21 @@ export default function HomePage() {
             background: 'linear-gradient(135deg, #000 0%, #000 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
-          }}>AI</span> Interview Assistant
+          }}>Mock Interview</span> Assistant
         </h1>
 
         <p style={{
-          fontSize: 'clamp(16px, 2.2vw, 20px)', color: '#1a1a1a',
-          maxWidth: 800, lineHeight: 1.5, marginBottom: 24, fontWeight: 600,
+          fontSize: 'clamp(15px, 2vw, 18px)', color: '#1a1a1a',
+          maxWidth: 720, lineHeight: 1.6, marginBottom: 20, fontWeight: 600,
         }}>
-          Crack interviews with confidence and land your first job faster.
+          Build confidence and master interview skills to land your dream job.
         </p>
 
         <p style={{
-          fontSize: 'clamp(14px, 1.8vw, 17px)', color: '#666',
-          maxWidth: 780, lineHeight: 1.7, marginBottom: 32, fontWeight: 400,
+          fontSize: 'clamp(13px, 1.6vw, 15px)', color: '#666',
+          maxWidth: 680, lineHeight: 1.7, marginBottom: 32, fontWeight: 400,
         }}>
-          Your AI copilot helps you deliver smart answers in real time, rewrite professional emails, 
-          analyze your screen, and generate instant responses—so you always stay one step ahead.
+          Practice with AI-powered mock interviews, improve communication skills, and get instant feedback to ace any job interview.
         </p>
 
         {/* Download Buttons */}
@@ -261,7 +260,7 @@ export default function HomePage() {
 
         {/* Video Demo */}
         <div style={{
-          marginTop: 60, maxWidth: 1000, width: '100%',
+          marginTop: 60, maxWidth: 1000, width: '100%', margin: '60px auto 0',
           borderRadius: 20, overflow: 'hidden',
           border: '1px solid rgba(0,0,0,0.12)',
           background: '#000',
