@@ -873,12 +873,13 @@ export default function HomePage() {
       }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', textAlign: 'center' }}>
           <div style={{
-            background: 'linear-gradient(135deg, #84cc16 0%, #65a30d 100%)',
+            background: '#000',
             borderRadius: 24,
             padding: '50px 40px',
             position: 'relative',
             overflow: 'hidden',
-            boxShadow: '0 20px 60px rgba(132, 204, 22, 0.4)',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6)',
+            border: '1px solid rgba(255,255,255,0.1)',
           }}>
             <div style={{ position: 'relative', zIndex: 1 }}>
               <h2 style={{
