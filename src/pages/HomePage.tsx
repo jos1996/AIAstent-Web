@@ -1048,7 +1048,7 @@ export default function HomePage() {
           </div>
 
           {/* Row 2: Additional Features */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24, marginTop: 24 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24, marginTop: 24 }}>
             {/* Reminders */}
             <div style={{
               borderRadius: 18, background: '#fff', border: '1px solid rgba(0,0,0,0.1)',
@@ -1169,47 +1169,47 @@ export default function HomePage() {
           <div style={{ overflow: 'hidden', width: '100%' }}>
             <div className="testimonials-scroll" style={{ display: 'flex', gap: 20, width: 'max-content' }}>
               {[
-                { name: 'Rajesh Kumar', role: 'Software Engineer @ TCS', text: 'HelplyAI helped me crack my dream job at TCS! The AI answers were spot-on during technical rounds.', avatar: 'https://i.pravatar.cc/150?img=33' },
-                { name: 'Priya Sharma', role: 'Data Analyst @ Infosys', text: 'Amazing tool for freshers! Got my first job with 100% confidence thanks to HelplyAI.', avatar: 'https://i.pravatar.cc/150?img=47' },
-                { name: 'Amit Patel', role: 'Full Stack Developer @ Wipro', text: 'The screen analysis feature saved me during coding interviews. Highly recommended!', avatar: 'https://i.pravatar.cc/150?img=13' },
-                { name: 'Sneha Reddy', role: 'Product Manager @ Flipkart', text: 'Best investment for interview preparation. Landed my dream role at Flipkart!', avatar: 'https://i.pravatar.cc/150?img=45' },
-                { name: 'Vikram Singh', role: 'DevOps Engineer @ Amazon', text: 'HelplyAI made my Amazon interview so much easier. The real-time suggestions were perfect.', avatar: 'https://i.pravatar.cc/150?img=14' },
-                { name: 'Ananya Iyer', role: 'Frontend Developer @ Google', text: 'Cracked Google interview on my first attempt! HelplyAI is a game-changer.', avatar: 'https://i.pravatar.cc/150?img=32' },
-                { name: 'Karthik Menon', role: 'Backend Developer @ Microsoft', text: 'The AI-powered answers helped me ace Microsoft technical rounds. Worth every penny!', avatar: 'https://i.pravatar.cc/150?img=51' },
-                { name: 'Divya Nair', role: 'ML Engineer @ Swiggy', text: 'Perfect for technical interviews. Got my ML role at Swiggy thanks to this tool.', avatar: 'https://i.pravatar.cc/150?img=44' },
-                { name: 'Arjun Desai', role: 'Cloud Architect @ IBM', text: 'HelplyAI gave me the confidence I needed. Now working at IBM as Cloud Architect!', avatar: 'https://i.pravatar.cc/150?img=12' },
-                { name: 'Pooja Gupta', role: 'QA Engineer @ Zomato', text: 'Excellent for freshers preparing for interviews. Highly accurate AI responses!', avatar: 'https://i.pravatar.cc/150?img=23' },
-                { name: 'Rohit Verma', role: 'Java Developer @ Accenture', text: 'The interview mode is brilliant. Helped me prepare for Accenture technical rounds.', avatar: 'https://i.pravatar.cc/150?img=15' },
-                { name: 'Kavya Rao', role: 'UI/UX Designer @ Paytm', text: 'Not just for developers! Helped me with design interviews at Paytm too.', avatar: 'https://i.pravatar.cc/150?img=38' },
-                { name: 'Sanjay Joshi', role: 'Data Scientist @ Ola', text: 'The AI understands context so well. Aced my data science interviews at Ola!', avatar: 'https://i.pravatar.cc/150?img=52' },
-                { name: 'Meera Krishnan', role: 'Python Developer @ HCL', text: 'Best tool for coding interviews. Got placed at HCL with great package!', avatar: 'https://i.pravatar.cc/150?img=26' },
-                { name: 'Aditya Bhatt', role: 'iOS Developer @ Apple', text: 'HelplyAI helped me prepare for Apple interviews. The quality is unmatched!', avatar: 'https://i.pravatar.cc/150?img=68' },
-                { name: 'Ritu Malhotra', role: 'Scrum Master @ Cognizant', text: 'Perfect for both technical and HR rounds. Landed my Scrum Master role!', avatar: 'https://i.pravatar.cc/150?img=41' },
-                { name: 'Nikhil Agarwal', role: 'Android Developer @ Samsung', text: 'The real-time transcription is incredibly fast. Helped me at Samsung interview!', avatar: 'https://i.pravatar.cc/150?img=59' },
-                { name: 'Shruti Kapoor', role: 'Business Analyst @ Deloitte', text: 'Great for non-technical roles too! Got my BA position at Deloitte.', avatar: 'https://i.pravatar.cc/150?img=29' },
-                { name: 'Manish Tiwari', role: 'React Developer @ Netflix', text: 'HelplyAI is a must-have for interview prep. Now at Netflix thanks to this!', avatar: 'https://i.pravatar.cc/150?img=57' },
-                { name: 'Lakshmi Pillai', role: 'Salesforce Developer @ Tech Mahindra', text: 'Affordable and effective! Cracked Tech Mahindra interview easily.', avatar: 'https://i.pravatar.cc/150?img=48' },
-                { name: 'Varun Chopra', role: 'Security Engineer @ Meta', text: 'The screen analysis helped me solve coding problems during Meta interview.', avatar: 'https://i.pravatar.cc/150?img=70' },
+                { name: 'Rajesh Kumar', role: 'Software Engineer @ TCS', text: 'HelplyAI helped me crack my dream job at TCS! The AI answers were spot-on during technical rounds.', avatar: 'https://ui-avatars.com/api/?name=Rajesh+Kumar&background=2563eb&color=fff&size=150' },
+                { name: 'Priya Sharma', role: 'Data Analyst @ Infosys', text: 'Amazing tool for freshers! Got my first job with 100% confidence thanks to HelplyAI.', avatar: 'https://ui-avatars.com/api/?name=Priya+Sharma&background=7c3aed&color=fff&size=150' },
+                { name: 'Amit Patel', role: 'Full Stack Developer @ Wipro', text: 'The screen analysis feature saved me during coding interviews. Highly recommended!', avatar: 'https://ui-avatars.com/api/?name=Amit+Patel&background=059669&color=fff&size=150' },
+                { name: 'Sneha Reddy', role: 'Product Manager @ Flipkart', text: 'Best investment for interview preparation. Landed my dream role at Flipkart!', avatar: 'https://ui-avatars.com/api/?name=Sneha+Reddy&background=dc2626&color=fff&size=150' },
+                { name: 'Vikram Singh', role: 'DevOps Engineer @ Amazon', text: 'HelplyAI made my Amazon interview so much easier. The real-time suggestions were perfect.', avatar: 'https://ui-avatars.com/api/?name=Vikram+Singh&background=ea580c&color=fff&size=150' },
+                { name: 'Ananya Iyer', role: 'Frontend Developer @ Google', text: 'Cracked Google interview on my first attempt! HelplyAI is a game-changer.', avatar: 'https://ui-avatars.com/api/?name=Ananya+Iyer&background=0891b2&color=fff&size=150' },
+                { name: 'Karthik Menon', role: 'Backend Developer @ Microsoft', text: 'The AI-powered answers helped me ace Microsoft technical rounds. Worth every penny!', avatar: 'https://ui-avatars.com/api/?name=Karthik+Menon&background=9333ea&color=fff&size=150' },
+                { name: 'Divya Nair', role: 'ML Engineer @ Swiggy', text: 'Perfect for technical interviews. Got my ML role at Swiggy thanks to this tool.', avatar: 'https://ui-avatars.com/api/?name=Divya+Nair&background=0d9488&color=fff&size=150' },
+                { name: 'Arjun Desai', role: 'Cloud Architect @ IBM', text: 'HelplyAI gave me the confidence I needed. Now working at IBM as Cloud Architect!', avatar: 'https://ui-avatars.com/api/?name=Arjun+Desai&background=3b82f6&color=fff&size=150' },
+                { name: 'Pooja Gupta', role: 'QA Engineer @ Zomato', text: 'Excellent for freshers preparing for interviews. Highly accurate AI responses!', avatar: 'https://ui-avatars.com/api/?name=Pooja+Gupta&background=ec4899&color=fff&size=150' },
+                { name: 'Rohit Verma', role: 'Java Developer @ Accenture', text: 'The interview mode is brilliant. Helped me prepare for Accenture technical rounds.', avatar: 'https://ui-avatars.com/api/?name=Rohit+Verma&background=f59e0b&color=fff&size=150' },
+                { name: 'Kavya Rao', role: 'UI/UX Designer @ Paytm', text: 'Not just for developers! Helped me with design interviews at Paytm too.', avatar: 'https://ui-avatars.com/api/?name=Kavya+Rao&background=8b5cf6&color=fff&size=150' },
+                { name: 'Sanjay Joshi', role: 'Data Scientist @ Ola', text: 'The AI understands context so well. Aced my data science interviews at Ola!', avatar: 'https://ui-avatars.com/api/?name=Sanjay+Joshi&background=06b6d4&color=fff&size=150' },
+                { name: 'Meera Krishnan', role: 'Python Developer @ HCL', text: 'Best tool for coding interviews. Got placed at HCL with great package!', avatar: 'https://ui-avatars.com/api/?name=Meera+Krishnan&background=10b981&color=fff&size=150' },
+                { name: 'Aditya Bhatt', role: 'iOS Developer @ Apple', text: 'HelplyAI helped me prepare for Apple interviews. The quality is unmatched!', avatar: 'https://ui-avatars.com/api/?name=Aditya+Bhatt&background=6366f1&color=fff&size=150' },
+                { name: 'Ritu Malhotra', role: 'Scrum Master @ Cognizant', text: 'Perfect for both technical and HR rounds. Landed my Scrum Master role!', avatar: 'https://ui-avatars.com/api/?name=Ritu+Malhotra&background=f43f5e&color=fff&size=150' },
+                { name: 'Nikhil Agarwal', role: 'Android Developer @ Samsung', text: 'The real-time transcription is incredibly fast. Helped me at Samsung interview!', avatar: 'https://ui-avatars.com/api/?name=Nikhil+Agarwal&background=14b8a6&color=fff&size=150' },
+                { name: 'Shruti Kapoor', role: 'Business Analyst @ Deloitte', text: 'Great for non-technical roles too! Got my BA position at Deloitte.', avatar: 'https://ui-avatars.com/api/?name=Shruti+Kapoor&background=a855f7&color=fff&size=150' },
+                { name: 'Manish Tiwari', role: 'React Developer @ Netflix', text: 'HelplyAI is a must-have for interview prep. Now at Netflix thanks to this!', avatar: 'https://ui-avatars.com/api/?name=Manish+Tiwari&background=ef4444&color=fff&size=150' },
+                { name: 'Lakshmi Pillai', role: 'Salesforce Developer @ Tech Mahindra', text: 'Affordable and effective! Cracked Tech Mahindra interview easily.', avatar: 'https://ui-avatars.com/api/?name=Lakshmi+Pillai&background=f97316&color=fff&size=150' },
+                { name: 'Varun Chopra', role: 'Security Engineer @ Meta', text: 'The screen analysis helped me solve coding problems during Meta interview.', avatar: 'https://ui-avatars.com/api/?name=Varun+Chopra&background=84cc16&color=fff&size=150' },
                 { name: 'Sarah Chen', role: 'Software Engineer @ Google', text: 'HelplyAI helped me ace my coding interviews! The real-time suggestions were incredibly accurate.', avatar: 'https://i.pravatar.cc/150?img=5' },
-                { name: 'Deepak Yadav', role: 'Node.js Developer @ Uber', text: 'Best investment for my career. Got Uber offer with HelplyAI preparation!', avatar: 'https://i.pravatar.cc/150?img=63' },
-                { name: 'Nisha Bansal', role: 'HR Manager @ LinkedIn', text: 'Even for HR roles, this tool is fantastic. Helped me prepare for LinkedIn!', avatar: 'https://i.pravatar.cc/150?img=31' },
-                { name: 'Gaurav Saxena', role: 'Blockchain Developer @ Polygon', text: 'Perfect for Web3 interviews too! Now working at Polygon.', avatar: 'https://i.pravatar.cc/150?img=66' },
-                { name: 'Anjali Mehta', role: 'Marketing Manager @ Amazon', text: 'HelplyAI works for all roles. Helped me with Amazon marketing interview!', avatar: 'https://i.pravatar.cc/150?img=36' },
-                { name: 'Suresh Babu', role: 'SAP Consultant @ Capgemini', text: 'Great for SAP interviews. The AI understood technical SAP questions perfectly.', avatar: 'https://i.pravatar.cc/150?img=54' },
+                { name: 'Deepak Yadav', role: 'Node.js Developer @ Uber', text: 'Best investment for my career. Got Uber offer with HelplyAI preparation!', avatar: 'https://ui-avatars.com/api/?name=Deepak+Yadav&background=22c55e&color=fff&size=150' },
+                { name: 'Nisha Bansal', role: 'HR Manager @ LinkedIn', text: 'Even for HR roles, this tool is fantastic. Helped me prepare for LinkedIn!', avatar: 'https://ui-avatars.com/api/?name=Nisha+Bansal&background=d946ef&color=fff&size=150' },
+                { name: 'Gaurav Saxena', role: 'Blockchain Developer @ Polygon', text: 'Perfect for Web3 interviews too! Now working at Polygon.', avatar: 'https://ui-avatars.com/api/?name=Gaurav+Saxena&background=0ea5e9&color=fff&size=150' },
+                { name: 'Anjali Mehta', role: 'Marketing Manager @ Amazon', text: 'HelplyAI works for all roles. Helped me with Amazon marketing interview!', avatar: 'https://ui-avatars.com/api/?name=Anjali+Mehta&background=f472b6&color=fff&size=150' },
+                { name: 'Suresh Babu', role: 'SAP Consultant @ Capgemini', text: 'Great for SAP interviews. The AI understood technical SAP questions perfectly.', avatar: 'https://ui-avatars.com/api/?name=Suresh+Babu&background=fb923c&color=fff&size=150' },
                 { name: 'Michael Rodriguez', role: 'Product Manager @ Meta', text: 'The screen analysis feature is a game-changer. Saved me during technical rounds.', avatar: 'https://i.pravatar.cc/150?img=12' },
-                { name: 'Harish Kumar', role: 'AI/ML Engineer @ NVIDIA', text: 'As an ML engineer, I appreciate the AI quality. Helped me join NVIDIA!', avatar: 'https://i.pravatar.cc/150?img=71' },
+                { name: 'Harish Kumar', role: 'AI/ML Engineer @ NVIDIA', text: 'As an ML engineer, I appreciate the AI quality. Helped me join NVIDIA!', avatar: 'https://ui-avatars.com/api/?name=Harish+Kumar&background=4ade80&color=fff&size=150' },
                 { name: 'Emily Watson', role: 'Data Scientist @ Amazon', text: 'Best AI interview helper I\'ve used. Gave me confidence during my interviews.', avatar: 'https://i.pravatar.cc/150?img=9' },
               ].concat([
-                { name: 'Rajesh Kumar', role: 'Software Engineer @ TCS', text: 'HelplyAI helped me crack my dream job at TCS! The AI answers were spot-on during technical rounds.', avatar: 'https://i.pravatar.cc/150?img=33' },
-                { name: 'Priya Sharma', role: 'Data Analyst @ Infosys', text: 'Amazing tool for freshers! Got my first job with 100% confidence thanks to HelplyAI.', avatar: 'https://i.pravatar.cc/150?img=47' },
-                { name: 'Amit Patel', role: 'Full Stack Developer @ Wipro', text: 'The screen analysis feature saved me during coding interviews. Highly recommended!', avatar: 'https://i.pravatar.cc/150?img=13' },
-                { name: 'Sneha Reddy', role: 'Product Manager @ Flipkart', text: 'Best investment for interview preparation. Landed my dream role at Flipkart!', avatar: 'https://i.pravatar.cc/150?img=45' },
-                { name: 'Vikram Singh', role: 'DevOps Engineer @ Amazon', text: 'HelplyAI made my Amazon interview so much easier. The real-time suggestions were perfect.', avatar: 'https://i.pravatar.cc/150?img=14' },
-                { name: 'Ananya Iyer', role: 'Frontend Developer @ Google', text: 'Cracked Google interview on my first attempt! HelplyAI is a game-changer.', avatar: 'https://i.pravatar.cc/150?img=32' },
-                { name: 'Karthik Menon', role: 'Backend Developer @ Microsoft', text: 'The AI-powered answers helped me ace Microsoft technical rounds. Worth every penny!', avatar: 'https://i.pravatar.cc/150?img=51' },
-                { name: 'Divya Nair', role: 'ML Engineer @ Swiggy', text: 'Perfect for technical interviews. Got my ML role at Swiggy thanks to this tool.', avatar: 'https://i.pravatar.cc/150?img=44' },
-                { name: 'Arjun Desai', role: 'Cloud Architect @ IBM', text: 'HelplyAI gave me the confidence I needed. Now working at IBM as Cloud Architect!', avatar: 'https://i.pravatar.cc/150?img=12' },
-                { name: 'Pooja Gupta', role: 'QA Engineer @ Zomato', text: 'Excellent for freshers preparing for interviews. Highly accurate AI responses!', avatar: 'https://i.pravatar.cc/150?img=23' },
+                { name: 'Rajesh Kumar', role: 'Software Engineer @ TCS', text: 'HelplyAI helped me crack my dream job at TCS! The AI answers were spot-on during technical rounds.', avatar: 'https://ui-avatars.com/api/?name=Rajesh+Kumar&background=2563eb&color=fff&size=150' },
+                { name: 'Priya Sharma', role: 'Data Analyst @ Infosys', text: 'Amazing tool for freshers! Got my first job with 100% confidence thanks to HelplyAI.', avatar: 'https://ui-avatars.com/api/?name=Priya+Sharma&background=7c3aed&color=fff&size=150' },
+                { name: 'Amit Patel', role: 'Full Stack Developer @ Wipro', text: 'The screen analysis feature saved me during coding interviews. Highly recommended!', avatar: 'https://ui-avatars.com/api/?name=Amit+Patel&background=059669&color=fff&size=150' },
+                { name: 'Sneha Reddy', role: 'Product Manager @ Flipkart', text: 'Best investment for interview preparation. Landed my dream role at Flipkart!', avatar: 'https://ui-avatars.com/api/?name=Sneha+Reddy&background=dc2626&color=fff&size=150' },
+                { name: 'Vikram Singh', role: 'DevOps Engineer @ Amazon', text: 'HelplyAI made my Amazon interview so much easier. The real-time suggestions were perfect.', avatar: 'https://ui-avatars.com/api/?name=Vikram+Singh&background=ea580c&color=fff&size=150' },
+                { name: 'Ananya Iyer', role: 'Frontend Developer @ Google', text: 'Cracked Google interview on my first attempt! HelplyAI is a game-changer.', avatar: 'https://ui-avatars.com/api/?name=Ananya+Iyer&background=0891b2&color=fff&size=150' },
+                { name: 'Karthik Menon', role: 'Backend Developer @ Microsoft', text: 'The AI-powered answers helped me ace Microsoft technical rounds. Worth every penny!', avatar: 'https://ui-avatars.com/api/?name=Karthik+Menon&background=9333ea&color=fff&size=150' },
+                { name: 'Divya Nair', role: 'ML Engineer @ Swiggy', text: 'Perfect for technical interviews. Got my ML role at Swiggy thanks to this tool.', avatar: 'https://ui-avatars.com/api/?name=Divya+Nair&background=0d9488&color=fff&size=150' },
+                { name: 'Arjun Desai', role: 'Cloud Architect @ IBM', text: 'HelplyAI gave me the confidence I needed. Now working at IBM as Cloud Architect!', avatar: 'https://ui-avatars.com/api/?name=Arjun+Desai&background=3b82f6&color=fff&size=150' },
+                { name: 'Pooja Gupta', role: 'QA Engineer @ Zomato', text: 'Excellent for freshers preparing for interviews. Highly accurate AI responses!', avatar: 'https://ui-avatars.com/api/?name=Pooja+Gupta&background=ec4899&color=fff&size=150' },
               ]).map((testimonial, i) => (
                 <div key={i} style={{
                   padding: 24,
@@ -1239,36 +1239,6 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Payment Methods Section */}
-      <section style={{
-        padding: '60px 24px',
-        background: '#fff',
-        borderTop: '1px solid rgba(0,0,0,0.08)',
-      }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', textAlign: 'center' }}>
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: '#666', marginBottom: 24 }}>
-            Accepted Payment Methods
-          </h3>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, justifyContent: 'center', alignItems: 'center' }}>
-            {['💳 Visa', '💳 Mastercard', '💳 Amex', '📱 Apple Pay', '🔵 Google Pay', '💰 UPI', '💵 GPay', '📲 PhonePe'].map((method, i) => (
-              <div key={i} style={{
-                padding: '8px 16px',
-                borderRadius: 8,
-                background: '#fafafa',
-                border: '1px solid rgba(0,0,0,0.08)',
-                fontSize: 13,
-                fontWeight: 600,
-                color: '#666',
-                transition: 'all 0.3s',
-              }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#000' }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#fafafa'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.08)' }}
-              >{method}</div>
-            ))}
           </div>
         </div>
       </section>
