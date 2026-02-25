@@ -867,10 +867,11 @@ export default function HomePage() {
 
       {/* Features Section */}
       <section id="features" style={{ padding: '40px 24px', maxWidth: 1100, margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
+        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
           
           {/* Speech Recognition */}
           <div style={{
+            flex: '1 1 300px',
             borderRadius: 18,
             background: '#fff',
             border: '1px solid rgba(0,0,0,0.1)',
@@ -939,6 +940,7 @@ export default function HomePage() {
 
           {/* AI Answers */}
           <div style={{
+            flex: '1 1 300px',
             borderRadius: 18,
             background: '#fff',
             border: '1px solid rgba(0,0,0,0.1)',
@@ -997,6 +999,7 @@ export default function HomePage() {
 
           {/* Programming */}
           <div style={{
+            flex: '1 1 300px',
             borderRadius: 18,
             background: '#fff',
             border: '1px solid rgba(0,0,0,0.1)',
