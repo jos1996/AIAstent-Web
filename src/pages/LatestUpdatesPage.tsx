@@ -94,8 +94,8 @@ export default function LatestUpdatesPage() {
 
   return (
     <div style={{ padding: '32px 36px', maxWidth: 800 }}>
-      <h1 style={{ fontSize: 22, fontWeight: 700, color: '#f3f4f6', marginBottom: 4 }}>Latest Updates</h1>
-      <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 24 }}>See what's new in HelplyAI. New features, bug fixes, and improvements.</p>
+      <h1 style={{ fontSize: 22, fontWeight: 700, color: '#000000', marginBottom: 4 }}>Latest Updates</h1>
+      <p style={{ fontSize: 14, color: '#000000', marginBottom: 24 }}>See what's new in HelplyAI. New features, bug fixes, and improvements.</p>
 
       {/* Filter pills */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 28 }}>
@@ -108,7 +108,7 @@ export default function LatestUpdatesPage() {
               borderRadius: 20,
               background: filter === f ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.05)',
               border: filter === f ? '1px solid rgba(59,130,246,0.4)' : '1px solid rgba(255,255,255,0.1)',
-              color: filter === f ? '#60a5fa' : '#9ca3af',
+              color: filter === f ? '#60a5fa' : '#000000',
               fontSize: 13,
               fontWeight: 500,
               cursor: 'pointer',
@@ -132,7 +132,7 @@ export default function LatestUpdatesPage() {
                 background: '#3b82f6', border: '2px solid rgba(59,130,246,0.3)',
                 flexShrink: 0,
               }} />
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#9ca3af', letterSpacing: 0.3 }}>{date}</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#000000', letterSpacing: 0.3 }}>{date}</span>
               <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)' }} />
             </div>
 
@@ -166,10 +166,10 @@ export default function LatestUpdatesPage() {
                       }}>
                         {tc.label}
                       </span>
-                      <span style={{ fontSize: 11, color: '#4b5563' }}>v{entry.version}</span>
+                      <span style={{ fontSize: 11, color: '#000000' }}>v{entry.version}</span>
                     </div>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: '#e5e7eb', marginBottom: 4 }}>{entry.title}</div>
-                    <div style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.6 }}>{entry.description}</div>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: '#000000', marginBottom: 4 }}>{entry.title}</div>
+                    <div style={{ fontSize: 13, color: '#000000', lineHeight: 1.6 }}>{entry.description}</div>
                   </div>
                 );
               })}
@@ -179,7 +179,7 @@ export default function LatestUpdatesPage() {
       </div>
 
       {filtered.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '40px 0', color: '#4b5563', fontSize: 14 }}>
+        <div style={{ textAlign: 'center', padding: '40px 0', color: '#000000', fontSize: 14 }}>
           No updates found for this filter.
         </div>
       )}

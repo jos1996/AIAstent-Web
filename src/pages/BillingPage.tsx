@@ -136,7 +136,7 @@ export default function BillingPage() {
     }
   };
 
-  if (loading || !loaded) return <div style={{ color: '#6b7280', padding: 40 }}>Loading...</div>;
+  if (loading || !loaded) return <div style={{ color: '#000000', padding: 40 }}>Loading...</div>;
 
   // Trial info
   const daysLeft = (() => {
@@ -150,7 +150,7 @@ export default function BillingPage() {
   return (
     <div style={{ maxWidth: '100%' }}>
       <h1 style={{ color: '#000000', fontSize: 24, fontWeight: 700, margin: '0 0 8px', letterSpacing: '-0.02em' }}>Billing & Plans</h1>
-      <p style={{ color: '#6b7280', fontSize: 14, margin: '0 0 24px' }}>Choose the plan that works best for you</p>
+      <p style={{ color: '#000000', fontSize: 14, margin: '0 0 24px' }}>Choose the plan that works best for you</p>
 
       {/* Current Plan Status */}
       <div style={{
@@ -161,7 +161,7 @@ export default function BillingPage() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ color: '#6b7280', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>Current Plan</div>
+            <div style={{ color: '#000000', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>Current Plan</div>
             <div style={{ color: '#000000', fontSize: 20, fontWeight: 700, marginTop: 4 }}>
               {PLANS[planState.plan]?.name || 'Free'}
               {planState.plan === 'free' && !planState.isExpired && (
@@ -179,7 +179,7 @@ export default function BillingPage() {
           <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
             {planStartDate && (
               <div style={{ textAlign: 'right' }}>
-                <div style={{ color: '#6b7280', fontSize: 12 }}>Start Date</div>
+                <div style={{ color: '#000000', fontSize: 12 }}>Start Date</div>
                 <div style={{ color: '#000000', fontSize: 13, marginTop: 2, fontWeight: 500 }}>
                   {new Date(planStartDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </div>
@@ -187,7 +187,7 @@ export default function BillingPage() {
             )}
             {planEndDate && (planState.plan === 'free' || planState.plan === 'day') && (
               <div style={{ textAlign: 'right' }}>
-                <div style={{ color: '#6b7280', fontSize: 12 }}>
+                <div style={{ color: '#000000', fontSize: 12 }}>
                   {planState.plan === 'day' ? 'Pass Expires' : 'Trial Ends'}
                 </div>
                 <div style={{ color: planState.isExpired ? '#dc2626' : '#000000', fontSize: 13, marginTop: 2, fontWeight: 500 }}>
@@ -200,7 +200,7 @@ export default function BillingPage() {
             )}
             {nextBillingDate && planState.plan !== 'free' && (
               <div style={{ textAlign: 'right' }}>
-                <div style={{ color: '#6b7280', fontSize: 12 }}>Next Billing</div>
+                <div style={{ color: '#000000', fontSize: 12 }}>Next Billing</div>
                 <div style={{ color: '#000000', fontSize: 13, marginTop: 2, fontWeight: 500 }}>
                   {new Date(nextBillingDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </div>

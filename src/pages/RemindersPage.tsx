@@ -84,7 +84,7 @@ export default function RemindersPage() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <div>
           <h1 style={{ color: '#000000', fontSize: 24, fontWeight: 700, margin: 0, letterSpacing: '-0.02em' }}>Reminders</h1>
-          <p style={{ color: '#6b7280', fontSize: 14, margin: '8px 0 0' }}>Create and manage your reminders</p>
+          <p style={{ color: '#000000', fontSize: 14, margin: '8px 0 0' }}>Create and manage your reminders</p>
         </div>
         <button onClick={() => { resetForm(); setShowForm(true); }}
           style={{
@@ -141,7 +141,7 @@ export default function RemindersPage() {
                 style={{
                   padding: '12px 28px', borderRadius: 10,
                   background: '#ffffff', border: '2px solid #e5e7eb',
-                  color: '#6b7280', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                  color: '#000000', fontSize: 14, fontWeight: 600, cursor: 'pointer',
                 }}
               >Cancel</button>
             </div>
@@ -159,9 +159,9 @@ export default function RemindersPage() {
           <h2 style={{ color: '#000000', fontSize: 16, fontWeight: 700, margin: 0 }}>Upcoming ({upcoming.length})</h2>
         </div>
         {loading ? (
-          <div style={{ padding: 30, textAlign: 'center', color: '#6b7280' }}>Loading...</div>
+          <div style={{ padding: 30, textAlign: 'center', color: '#000000' }}>Loading...</div>
         ) : upcoming.length === 0 ? (
-          <div style={{ padding: 30, textAlign: 'center', color: '#6b7280' }}>No upcoming reminders.</div>
+          <div style={{ padding: 30, textAlign: 'center', color: '#000000' }}>No upcoming reminders.</div>
         ) : upcoming.map(r => (
           <ReminderItem key={r.id} reminder={r} onToggle={handleToggle} onEdit={handleEdit} onDelete={handleDelete} />
         ))}
@@ -175,7 +175,7 @@ export default function RemindersPage() {
           boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
         }}>
           <div style={{ padding: '16px 24px', borderBottom: '1px solid #e5e7eb' }}>
-            <h2 style={{ color: '#6b7280', fontSize: 16, fontWeight: 700, margin: 0 }}>Completed ({completed.length})</h2>
+            <h2 style={{ color: '#000000', fontSize: 16, fontWeight: 700, margin: 0 }}>Completed ({completed.length})</h2>
           </div>
           {completed.map(r => (
             <ReminderItem key={r.id} reminder={r} onToggle={handleToggle} onEdit={handleEdit} onDelete={handleDelete} />
@@ -212,8 +212,8 @@ function ReminderItem({ reminder: r, onToggle, onEdit, onDelete }: {
       </button>
       <div style={{ flex: 1 }}>
         <div style={{ color: '#000000', fontSize: 14, fontWeight: 600, textDecoration: r.is_completed ? 'line-through' : 'none' }}>{r.title}</div>
-        {r.description && <div style={{ color: '#6b7280', fontSize: 13, marginTop: 4 }}>{r.description}</div>}
-        <div style={{ color: isPast ? '#dc2626' : '#6b7280', fontSize: 12, marginTop: 6, fontWeight: 500 }}>
+        {r.description && <div style={{ color: '#000000', fontSize: 13, marginTop: 4 }}>{r.description}</div>}
+        <div style={{ color: isPast ? '#dc2626' : '#000000', fontSize: 12, marginTop: 6, fontWeight: 500 }}>
           {new Date(r.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
           {isPast && ' (overdue)'}
         </div>
@@ -222,14 +222,14 @@ function ReminderItem({ reminder: r, onToggle, onEdit, onDelete }: {
         <button onClick={() => onEdit(r)}
           style={{
             padding: '8px 14px', borderRadius: 8, background: '#ffffff',
-            border: '2px solid #e5e7eb', color: '#6b7280',
+            border: '2px solid #e5e7eb', color: '#000000',
             fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
           }}
         >Edit</button>
         <button onClick={() => onDelete(r.id)}
           style={{
             padding: '8px 14px', borderRadius: 8, background: '#ffffff',
-            border: '2px solid #e5e7eb', color: '#6b7280',
+            border: '2px solid #e5e7eb', color: '#000000',
             fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
           }}
         >Delete</button>

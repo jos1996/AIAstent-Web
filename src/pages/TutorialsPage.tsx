@@ -94,8 +94,8 @@ const categoryColors: Record<string, string> = {
 export default function TutorialsPage() {
   return (
     <div style={{ padding: '32px 36px', maxWidth: 900 }}>
-      <h1 style={{ fontSize: 22, fontWeight: 700, color: '#f3f4f6', marginBottom: 4 }}>Tutorials</h1>
-      <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 28 }}>
+      <h1 style={{ fontSize: 22, fontWeight: 700, color: '#000000', marginBottom: 4 }}>Tutorials</h1>
+      <p style={{ fontSize: 14, color: '#000000', marginBottom: 28 }}>
         Video guides to help you get the most out of HelplyAI. More tutorials coming soon!
       </p>
 
@@ -144,7 +144,7 @@ export default function TutorialsPage() {
                   <span style={{
                     fontSize: 12,
                     fontWeight: 700,
-                    color: '#6b7280',
+                    color: '#000000',
                     background: 'rgba(0,0,0,0.4)',
                     padding: '6px 14px',
                     borderRadius: 20,
@@ -172,7 +172,7 @@ export default function TutorialsPage() {
                   right: 8,
                   fontSize: 11,
                   fontWeight: 600,
-                  color: '#d1d5db',
+                  color: '#000000',
                   background: 'rgba(0,0,0,0.6)',
                   padding: '2px 8px',
                   borderRadius: 4,
@@ -192,10 +192,10 @@ export default function TutorialsPage() {
                     {tutorial.category}
                   </span>
                 </div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#e5e7eb', marginBottom: 6, lineHeight: 1.4 }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#000000', marginBottom: 6, lineHeight: 1.4 }}>
                   {tutorial.title}
                 </div>
-                <div style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.5 }}>
+                <div style={{ fontSize: 12, color: '#000000', lineHeight: 1.5 }}>
                   {tutorial.description}
                 </div>
               </div>

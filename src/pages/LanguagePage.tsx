@@ -43,12 +43,12 @@ export default function LanguagePage() {
     setTimeout(() => setMsg(''), 2000);
   };
 
-  if (loading) return <div style={{ color: '#6b7280', padding: 40 }}>Loading...</div>;
+  if (loading) return <div style={{ color: '#000000', padding: 40 }}>Loading...</div>;
 
   return (
     <div>
       <h1 style={{ color: '#000000', fontSize: 24, fontWeight: 700, margin: '0 0 8px', letterSpacing: '-0.02em' }}>Language</h1>
-      <p style={{ color: '#6b7280', fontSize: 14, margin: '0 0 24px' }}>Select the language you want to use for your interactions.</p>
+      <p style={{ color: '#000000', fontSize: 14, margin: '0 0 24px' }}>Select the language you want to use for your interactions.</p>
 
       {msg && (
         <div style={{
@@ -77,7 +77,7 @@ export default function LanguagePage() {
           </div>
           <div>
             <div style={{ color: '#000000', fontSize: 16, fontWeight: 700 }}>Transcription language</div>
-            <div style={{ color: '#6b7280', fontSize: 13 }}>Select the language you speak in interactions.</div>
+            <div style={{ color: '#000000', fontSize: 13 }}>Select the language you speak in interactions.</div>
           </div>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -87,7 +87,7 @@ export default function LanguagePage() {
                 padding: '10px 16px', borderRadius: 8, fontSize: 13,
                 background: inputLang === lang ? '#2563eb' : '#f3f4f6',
                 border: 'none',
-                color: inputLang === lang ? '#ffffff' : '#6b7280',
+                color: inputLang === lang ? '#ffffff' : '#000000',
                 cursor: 'pointer', transition: 'all 0.2s', fontWeight: 600,
               }}
             >
@@ -116,7 +116,7 @@ export default function LanguagePage() {
           </div>
           <div>
             <div style={{ color: '#000000', fontSize: 16, fontWeight: 700 }}>Output language</div>
-            <div style={{ color: '#6b7280', fontSize: 13 }}>Select your preferred language for responses.</div>
+            <div style={{ color: '#000000', fontSize: 13 }}>Select your preferred language for responses.</div>
           </div>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -126,7 +126,7 @@ export default function LanguagePage() {
                 padding: '10px 16px', borderRadius: 8, fontSize: 13,
                 background: outputLang === lang ? '#7c3aed' : '#f3f4f6',
                 border: 'none',
-                color: outputLang === lang ? '#ffffff' : '#6b7280',
+                color: outputLang === lang ? '#ffffff' : '#000000',
                 cursor: 'pointer', transition: 'all 0.2s', fontWeight: 600,
               }}
             >
@@ -145,7 +145,7 @@ export default function LanguagePage() {
       }}>
         <div>
           <div style={{ color: '#000000', fontSize: 16, fontWeight: 700 }}>Auto-detect language</div>
-          <div style={{ color: '#6b7280', fontSize: 13, marginTop: 4 }}>Automatically detect the language you are speaking.</div>
+          <div style={{ color: '#000000', fontSize: 13, marginTop: 4 }}>Automatically detect the language you are speaking.</div>
         </div>
         <button
           onClick={() => { const v = !autoDetect; setAutoDetect(v); handleSave('auto_detect', v); }}
