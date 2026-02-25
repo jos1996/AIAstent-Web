@@ -145,6 +145,7 @@ export default function HomePage() {
           display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 20px',
           background: 'rgba(0,0,0,0.04)', borderRadius: 24, border: '1px solid rgba(0,0,0,0.08)',
           fontSize: 12, fontWeight: 600, color: '#000', marginBottom: 24,
+          margin: '0 auto 24px',
         }}>
           <Icon name="Sparkles" size={14} />
           ✨ PRACTICE & IMPROVE YOUR INTERVIEW SKILLS
@@ -155,26 +156,32 @@ export default function HomePage() {
           lineHeight: 1.1, letterSpacing: '-1px', maxWidth: 900,
           marginBottom: 16,
           color: '#000',
+          textAlign: 'center',
+          margin: '0 auto 16px',
         }}>
           Your Real-Time <span style={{
             background: 'linear-gradient(135deg, #000 0%, #000 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
-          }}>Mock Interview</span> Assistant
+          }}>Interview</span> Assistant
         </h1>
 
         <p style={{
           fontSize: 'clamp(15px, 2vw, 18px)', color: '#1a1a1a',
           maxWidth: 720, lineHeight: 1.6, marginBottom: 20, fontWeight: 600,
+          textAlign: 'center',
+          margin: '0 auto 20px',
         }}>
-          Build confidence and master interview skills to land your dream job.
+          <strong>Crack your first job</strong> with AI-powered interview practice at an <strong>affordable price</strong>
         </p>
 
         <p style={{
           fontSize: 'clamp(13px, 1.6vw, 15px)', color: '#666',
           maxWidth: 680, lineHeight: 1.7, marginBottom: 32, fontWeight: 400,
+          textAlign: 'center',
+          margin: '0 auto 32px',
         }}>
-          Practice with AI-powered mock interviews, improve communication skills, and get instant feedback to ace any job interview.
+          Master <strong>interview skills</strong>, build <strong>confidence</strong>, and land your <strong>dream job</strong> with real-time AI feedback. Perfect for <strong>freshers</strong> and <strong>job seekers</strong> preparing for technical and HR interviews.
         </p>
 
         {/* Download Buttons */}
@@ -283,7 +290,7 @@ export default function HomePage() {
           </div>
           <div style={{ 
             padding: 50, 
-            minHeight: 380, 
+            minHeight: 500, 
             background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)',
             display: 'flex', 
             alignItems: 'center', 
