@@ -794,12 +794,12 @@ export default function HomePage() {
 
       {/* Privacy Demo Videos Section */}
       <section style={{
-        padding: '80px 24px',
+        padding: '40px 24px',
         background: '#fafafa',
         borderTop: '1px solid rgba(0,0,0,0.08)',
       }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 50 }}>
+          <div style={{ textAlign: 'center', marginBottom: 30 }}>
             <div style={{
               display: 'inline-block',
               padding: '6px 16px',
@@ -820,22 +820,17 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16, marginBottom: 60 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, maxWidth: 900, margin: '0 auto' }}>
             {[
               { name: 'Zoom', logo: 'https://cdn.worldvectorlogo.com/logos/zoom-communications-logo.svg', status: 'Undetectable, checked 15h ago' },
               { name: 'Microsoft Teams', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/c9/Microsoft_Office_Teams_%282018%E2%80%93present%29.svg', status: 'Undetectable, checked 15h ago' },
               { name: 'Google Meet', logo: 'https://upload.wikimedia.org/wikipedia/commons/9/9b/Google_Meet_icon_%282020%29.svg', status: 'Undetectable, checked 13h ago' },
-              { name: 'Webex', logo: 'https://upload.wikimedia.org/wikipedia/commons/4/4d/Webex_logo.svg', status: 'Undetectable, checked 13h ago' },
-              { name: 'Lark/Feishu', logo: 'https://sf16-va.larksuitecdn.com/obj/lark-artifact-storage/baas/lark_suite_logo.svg', status: 'Undetectable, checked 19h ago' },
-              { name: 'Amazon Chime', logo: 'https://a0.awsstatic.com/libra-css/images/logos/aws_logo_smile_1200x630.png', status: 'Undetectable, checked 16h ago' },
-              { name: 'Coderspad.io', logo: 'https://via.placeholder.com/40x40/000000/FFFFFF?text=CP', status: 'Undetectable, checked 16h ago' },
-              { name: 'HackerRank', logo: 'https://upload.wikimedia.org/wikipedia/commons/4/40/HackerRank_Icon-1000px.png', status: 'Undetectable, checked 16h ago' },
             ].map((platform, i) => (
               <div key={i} style={{
-                padding: 20,
-                borderRadius: 14,
+                padding: 24,
+                borderRadius: 16,
                 background: '#fff',
-                border: '1px solid rgba(0,0,0,0.08)',
+                border: '2px solid rgba(0,0,0,0.1)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -845,156 +840,26 @@ export default function HomePage() {
                 onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.1)' }}
                 onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none' }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <img src={platform.logo} alt={platform.name} style={{ width: 32, height: 32, objectFit: 'contain' }} onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/32x32/000000/FFFFFF?text=' + platform.name.charAt(0) }} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                  <img src={platform.logo} alt={platform.name} style={{ width: 48, height: 48, objectFit: 'contain' }} onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/48x48/000000/FFFFFF?text=' + platform.name.charAt(0) }} />
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#000', marginBottom: 4 }}>{platform.name}</div>
-                    <div style={{ fontSize: 11, color: '#000', display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#000' }}></span>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: '#000', marginBottom: 6 }}>{platform.name}</div>
+                    <div style={{ fontSize: 12, color: '#000', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e' }}></span>
                       {platform.status}
                     </div>
                   </div>
                 </div>
-                <div style={{ fontSize: 18, color: '#999' }}>→</div>
+                <Icon name="ArrowRight" size={24} />
               </div>
             ))}
           </div>
 
-          {/* Resume Upload & Auto Generate */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
-            {/* Upload Resume */}
-            <div style={{
-              borderRadius: 18,
-              background: '#fff',
-              border: '1px solid rgba(0,0,0,0.1)',
-              transition: 'all 0.4s',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
-              overflow: 'hidden',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.12)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.06)' }}
-            >
-              <div style={{ padding: 36 }}>
-                <div style={{
-                  display: 'inline-block',
-                  padding: '5px 14px',
-                  borderRadius: 100,
-                  background: '#000',
-                  fontSize: 10,
-                  fontWeight: 800,
-                  color: '#fff',
-                  marginBottom: 20,
-                  textTransform: 'uppercase',
-                  letterSpacing: 0.5,
-                }}>RESUME</div>
-                <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 20, color: '#000', lineHeight: 1.3 }}>
-                  Upload your Resume
-                </h3>
-                
-                <div style={{
-                  background: '#fafafa',
-                  borderRadius: 12,
-                  padding: 24,
-                  marginBottom: 20,
-                  textAlign: 'center',
-                  border: '2px dashed rgba(0,0,0,0.1)',
-                }}>
-                  <div style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: '50%',
-                    background: '#fff',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    margin: '0 auto 12px',
-                    border: '2px solid #000',
-                  }}>
-                    <span style={{ fontSize: 24 }}>⭐</span>
-                  </div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#000', marginBottom: 4 }}>Rob Parsley</div>
-                  <div style={{ fontSize: 11, color: '#999', marginBottom: 16 }}>Lorem ipsum dolor sit amet consectetuer...</div>
-                  <div style={{ fontSize: 10, color: '#000', fontWeight: 600 }}>Senior Software Engineer</div>
-                </div>
-
-                <p style={{ color: '#666', fontSize: 14, lineHeight: 1.7 }}>
-                  Upload once and get instant interview answers perfectly matched to your experience and background.
-                </p>
-              </div>
-            </div>
-
-            {/* Auto Generate */}
-            <div style={{
-              borderRadius: 18,
-              background: '#fff',
-              border: '1px solid rgba(0,0,0,0.1)',
-              transition: 'all 0.4s',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
-              overflow: 'hidden',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.12)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.06)' }}
-            >
-              <div style={{ padding: 36 }}>
-                <div style={{
-                  display: 'inline-block',
-                  padding: '5px 14px',
-                  borderRadius: 100,
-                  background: '#000',
-                  fontSize: 10,
-                  fontWeight: 800,
-                  color: '#fff',
-                  marginBottom: 20,
-                  textTransform: 'uppercase',
-                  letterSpacing: 0.5,
-                }}>INSTANT ANSWERS</div>
-                <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 20, color: '#000', lineHeight: 1.3 }}>
-                  Auto Generate
-                </h3>
-                
-                <div style={{
-                  background: '#fafafa',
-                  borderRadius: 12,
-                  padding: 20,
-                  marginBottom: 20,
-                  border: '1px solid #000',
-                }}>
-                  <div style={{ fontSize: 13, color: '#000', marginBottom: 12, fontWeight: 600 }}>
-                    Our platform integrates with major cloud providers. Do you have a preferred cloud environment?
-                  </div>
-                  <div style={{
-                    background: '#fff',
-                    borderRadius: 8,
-                    padding: 12,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                  }}>
-                    <div style={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: '50%',
-                      background: '#000',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 16,
-                    }}>👤</div>
-                    <div style={{ fontSize: 12, color: '#666' }}>...</div>
-                  </div>
-                </div>
-
-                <p style={{ color: '#666', fontSize: 14, lineHeight: 1.7 }}>
-                  Parakeet automatically detects questions and auto generate answers. This ensures you're well-prepared and confident.
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" style={{ padding: '80px 24px', maxWidth: 1100, margin: '0 auto' }}>
+      <section id="features" style={{ padding: '40px 24px', maxWidth: 1100, margin: '0 auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
           
           {/* Speech Recognition */}
@@ -1140,7 +1005,7 @@ export default function HomePage() {
                 display: 'inline-block',
                 padding: '5px 14px',
                 borderRadius: 100,
-                background: '#06b6d4',
+                background: '#000',
                 fontSize: 10,
                 fontWeight: 800,
                 color: '#000',
@@ -1172,6 +1037,93 @@ export default function HomePage() {
                 You can use HelplyAI for coding interviews. It can both listen for coding questions and capture the 
                 screen if a LeetCode-style question is being screen shared with you.
               </p>
+            </div>
+          </div>
+
+          {/* Row 2: Additional Features */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24, marginTop: 24 }}>
+            {/* Reminders */}
+            <div style={{
+              borderRadius: 18, background: '#fff', border: '1px solid rgba(0,0,0,0.1)',
+              transition: 'all 0.4s', boxShadow: '0 4px 24px rgba(0,0,0,0.06)', overflow: 'hidden',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.12)' }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.06)' }}
+            >
+              <div style={{ padding: 36 }}>
+                <div style={{ display: 'inline-block', padding: '5px 14px', borderRadius: 100, background: '#000',
+                  fontSize: 10, fontWeight: 800, color: '#fff', marginBottom: 20, textTransform: 'uppercase', letterSpacing: 0.5,
+                }}>REMINDERS</div>
+                <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 20, color: '#000', lineHeight: 1.3 }}>
+                  Smart Interview Reminders
+                </h3>
+                <p style={{ color: '#666', fontSize: 14, lineHeight: 1.7 }}>
+                  Set up smart reminders for interview follow-ups, job applications, and career deadlines. Never miss an important interview or deadline again.
+                </p>
+              </div>
+            </div>
+
+            {/* Screen Analyzer */}
+            <div style={{
+              borderRadius: 18, background: '#fff', border: '1px solid rgba(0,0,0,0.1)',
+              transition: 'all 0.4s', boxShadow: '0 4px 24px rgba(0,0,0,0.06)', overflow: 'hidden',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.12)' }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.06)' }}
+            >
+              <div style={{ padding: 36 }}>
+                <div style={{ display: 'inline-block', padding: '5px 14px', borderRadius: 100, background: '#000',
+                  fontSize: 10, fontWeight: 800, color: '#fff', marginBottom: 20, textTransform: 'uppercase', letterSpacing: 0.5,
+                }}>SCREEN ANALYZER</div>
+                <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 20, color: '#000', lineHeight: 1.3 }}>
+                  Analyze Any Screen Content
+                </h3>
+                <p style={{ color: '#666', fontSize: 14, lineHeight: 1.7 }}>
+                  Capture and analyze coding challenges, technical questions, and interview documents instantly. AI-powered screen analysis for problem-solving.
+                </p>
+              </div>
+            </div>
+
+            {/* 100% Accuracy */}
+            <div style={{
+              borderRadius: 18, background: '#fff', border: '1px solid rgba(0,0,0,0.1)',
+              transition: 'all 0.4s', boxShadow: '0 4px 24px rgba(0,0,0,0.06)', overflow: 'hidden',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.12)' }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.06)' }}
+            >
+              <div style={{ padding: 36 }}>
+                <div style={{ display: 'inline-block', padding: '5px 14px', borderRadius: 100, background: '#22c55e',
+                  fontSize: 10, fontWeight: 800, color: '#fff', marginBottom: 20, textTransform: 'uppercase', letterSpacing: 0.5,
+                }}>100% ACCURACY</div>
+                <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 20, color: '#000', lineHeight: 1.3 }}>
+                  Highly Accurate AI Responses
+                </h3>
+                <p style={{ color: '#666', fontSize: 14, lineHeight: 1.7 }}>
+                  Powered by GPT-4.1, Claude 4.0, and advanced AI models to provide the most accurate interview answers tailored to your resume and experience.
+                </p>
+              </div>
+            </div>
+
+            {/* Instant Answers */}
+            <div style={{
+              borderRadius: 18, background: '#fff', border: '1px solid rgba(0,0,0,0.1)',
+              transition: 'all 0.4s', boxShadow: '0 4px 24px rgba(0,0,0,0.06)', overflow: 'hidden',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.12)' }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.06)' }}
+            >
+              <div style={{ padding: 36 }}>
+                <div style={{ display: 'inline-block', padding: '5px 14px', borderRadius: 100, background: '#000',
+                  fontSize: 10, fontWeight: 800, color: '#fff', marginBottom: 20, textTransform: 'uppercase', letterSpacing: 0.5,
+                }}>INSTANT ANSWERS</div>
+                <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 20, color: '#000', lineHeight: 1.3 }}>
+                  Real-Time Interview Answers
+                </h3>
+                <p style={{ color: '#666', fontSize: 14, lineHeight: 1.7 }}>
+                  Get instant AI-generated answers during live interviews. Automatic question detection and personalized responses based on your background.
+                </p>
+              </div>
             </div>
           </div>
         </div>
