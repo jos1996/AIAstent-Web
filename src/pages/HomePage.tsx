@@ -701,7 +701,7 @@ export default function HomePage() {
                     margin: '0 auto 16px',
                     border: '2px solid #e5e5e5',
                   }}>
-                    <Icon name={item.iconName as any} size={32} strokeWidth={2} />
+                    <Icon name={item.iconName as any} size={32} />
                   </div>
                   <h3 style={{ fontSize: 17, fontWeight: 800, marginBottom: 10, color: '#000', lineHeight: 1.3 }}>{item.title}</h3>
                   <p style={{ fontSize: 13, color: '#666', lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
