@@ -551,12 +551,12 @@ export default function HomePage() {
 
       {/* How It Works Section */}
       <section style={{
-        padding: '80px 24px',
+        padding: '50px 24px',
         background: '#fafafa',
         borderBottom: '1px solid rgba(0,0,0,0.08)',
       }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 60 }}>
+          <div style={{ textAlign: 'center', marginBottom: 40 }}>
             <div style={{
               display: 'inline-block',
               padding: '8px 20px',
@@ -587,58 +587,58 @@ export default function HomePage() {
                 { 
                   step: '1', 
                   title: 'Setup & Install', 
-                  desc: 'Download and install Helply AI on your device. Quick 2-minute setup.',
-                  icon: '⚙️',
-                  color: '#2563eb'
+                  desc: 'Download AI interview assistant for iOS and Windows. Quick setup for job seekers and freshers preparing for interviews.',
+                  iconName: 'Settings',
+                  color: '#000'
                 },
                 { 
                   step: '2', 
                   title: 'Interview Mode', 
-                  desc: 'Switch to Interview mode and paste your resume & job description.',
-                  icon: '💼',
-                  color: '#7c3aed'
+                  desc: 'Activate interview preparation mode with resume and job description for personalized technical and HR interview practice.',
+                  iconName: 'Briefcase',
+                  color: '#000'
                 },
                 { 
                   step: '3', 
                   title: 'Start Interview', 
-                  desc: 'AI listens in real-time, transcribes questions instantly.',
-                  icon: '🎤',
-                  color: '#059669'
+                  desc: 'Real-time AI transcription captures interview questions instantly for mock interview practice and skill improvement.',
+                  iconName: 'Mic',
+                  color: '#000'
                 },
                 { 
                   step: '4', 
                   title: 'Get Answers', 
-                  desc: 'Receive personalized, accurate answers on your screen.',
-                  icon: '✨',
-                  color: '#dc2626'
+                  desc: 'AI-powered interview answers tailored to your resume help you crack job interviews with confidence.',
+                  iconName: 'Sparkles',
+                  color: '#000'
                 },
                 { 
                   step: '5', 
                   title: 'Screen Analysis', 
-                  desc: 'Analyze any screen content - emails, code, documents instantly.',
-                  icon: '🖥️',
-                  color: '#ea580c'
+                  desc: 'Analyze coding challenges, technical questions, and documents for interview preparation and problem-solving.',
+                  iconName: 'Monitor',
+                  color: '#000'
                 },
                 { 
                   step: '6', 
                   title: 'Set Reminders', 
-                  desc: 'Create smart reminders for tasks, follow-ups, and deadlines.',
-                  icon: '🔔',
-                  color: '#0891b2'
+                  desc: 'Smart reminders for interview follow-ups, job applications, and career deadlines to stay organized.',
+                  iconName: 'Bell',
+                  color: '#000'
                 },
                 { 
                   step: '7', 
                   title: 'Boost Productivity', 
-                  desc: 'Generate content, get coding help, and automate daily tasks.',
-                  icon: '🚀',
-                  color: '#9333ea'
+                  desc: 'AI coding assistant and content generation for technical interviews, projects, and daily work tasks.',
+                  iconName: 'Rocket',
+                  color: '#000'
                 },
                 { 
                   step: '8', 
                   title: 'Track Progress', 
-                  desc: 'View history, analytics, and improve with AI insights.',
-                  icon: '📊',
-                  color: '#0d9488'
+                  desc: 'Interview performance analytics and AI insights to improve communication skills and land your dream job.',
+                  iconName: 'BarChart3',
+                  color: '#000'
                 },
               ].map((item, i) => (
                 <div key={i} style={{
@@ -686,16 +686,15 @@ export default function HomePage() {
                     width: 72,
                     height: 72,
                     borderRadius: 16,
-                    background: `linear-gradient(135deg, ${item.color}15, ${item.color}25)`,
-                    color: item.color,
+                    background: '#f5f5f5',
+                    color: '#000',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: 36,
                     margin: '0 auto 16px',
-                    border: `2px solid ${item.color}30`,
+                    border: '2px solid #e5e5e5',
                   }}>
-                    {item.icon}
+                    <Icon name={item.iconName as any} size={32} strokeWidth={2} />
                   </div>
                   <h3 style={{ fontSize: 17, fontWeight: 800, marginBottom: 10, color: '#000', lineHeight: 1.3 }}>{item.title}</h3>
                   <p style={{ fontSize: 13, color: '#666', lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
@@ -704,8 +703,8 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div style={{ textAlign: 'center', marginTop: 60 }}>
-            <a href="/settings/dashboard" style={{
+          <div style={{ textAlign: 'center', marginTop: 50 }}>
+            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{
               display: 'inline-block',
               padding: '16px 40px',
               borderRadius: 100,
@@ -715,19 +714,22 @@ export default function HomePage() {
               fontWeight: 700,
               transition: 'all 0.3s',
               boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+              cursor: 'pointer',
+              border: 'none',
+              textDecoration: 'none',
             }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(0,0,0,0.25)' }}
               onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.15)' }}
             >
               Get Started Now →
-            </a>
+            </button>
           </div>
         </div>
       </section>
 
       {/* Land Your Job Section */}
       <section style={{
-        padding: '80px 24px',
+        padding: '50px 24px',
         background: '#fff',
       }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', textAlign: 'center' }}>
