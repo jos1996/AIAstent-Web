@@ -252,8 +252,8 @@ export default function BillingPage() {
         </div>
       )}
 
-      {/* Plan Cards — 4 cards in one line, reduced width by 20% */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 0.8fr))', gap: 12, marginBottom: 24, justifyContent: 'center' }}>
+      {/* Plan Cards — 5 cards in one line */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10, marginBottom: 24 }}>
         {PLAN_ORDER.map(planId => {
           const plan = PLANS[planId];
           const isCurrent = planState.plan === planId;
@@ -261,7 +261,7 @@ export default function BillingPage() {
 
           return (
             <div key={planId} style={{
-              padding: 20, borderRadius: 12, position: 'relative',
+              padding: 14, borderRadius: 10, position: 'relative',
               background: isCurrent ? '#eff6ff' 
                 : plan.highlighted ? '#f0f9ff'
                 : '#ffffff',
@@ -280,9 +280,9 @@ export default function BillingPage() {
                   transform: 'translateX(-50%)',
                   background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
                   color: '#fff',
-                  padding: '4px 16px',
-                  borderRadius: 12,
-                  fontSize: 11,
+                  padding: '3px 12px',
+                  borderRadius: 10,
+                  fontSize: 10,
                   fontWeight: 700,
                   textTransform: 'uppercase',
                   letterSpacing: 0.5,
@@ -292,22 +292,22 @@ export default function BillingPage() {
                 </div>
               )}
               {/* Plan Name */}
-              <div style={{ color: '#000000', fontSize: 15, fontWeight: 700, marginBottom: 8 }}>{plan.name}</div>
+              <div style={{ color: '#000000', fontSize: 14, fontWeight: 700, marginBottom: 6 }}>{plan.name}</div>
 
               {/* Price */}
               <div style={{ marginBottom: 6 }}>
-                <span style={{ color: '#000000', fontSize: 28, fontWeight: 800, letterSpacing: '-1px' }}>{plan.priceLabel}</span>
+                <span style={{ color: '#000000', fontSize: 24, fontWeight: 800, letterSpacing: '-1px' }}>{plan.priceLabel}</span>
                 {planId !== 'free' && (
-                  <span style={{ color: '#6b7280', fontSize: 13 }}> {plan.priceSuffix}</span>
+                  <span style={{ color: '#000000', fontSize: 11 }}> {plan.priceSuffix}</span>
                 )}
               </div>
 
               {/* Savings badge for Pro Plus */}
               {plan.savingsNote && (
                 <div style={{
-                  fontSize: 11, fontWeight: 700, color: '#22c55e',
-                  background: 'rgba(34,197,94,0.12)', padding: '3px 8px', borderRadius: 4,
-                  display: 'inline-block', marginBottom: 12,
+                  fontSize: 10, fontWeight: 700, color: '#22c55e',
+                  background: 'rgba(34,197,94,0.12)', padding: '2px 6px', borderRadius: 4,
+                  display: 'inline-block', marginBottom: 10,
                 }}>
                   {plan.savingsNote}
                 </div>
@@ -315,12 +315,12 @@ export default function BillingPage() {
 
               {/* Tagline */}
               <div style={{ 
-                color: '#6b7280', 
-                fontSize: 12, 
-                marginBottom: 16, 
-                marginTop: plan.savingsNote ? 0 : 10,
+                color: '#000000', 
+                fontSize: 11, 
+                marginBottom: 12, 
+                marginTop: plan.savingsNote ? 0 : 8,
                 fontWeight: 400,
-                lineHeight: 1.5,
+                lineHeight: 1.4,
               }}>{plan.tagline}</div>
 
               {/* CTA Button */}
@@ -328,7 +328,7 @@ export default function BillingPage() {
                 onClick={() => handleSelectPlan(planId)}
                 disabled={isCurrent || upgradeLoading !== null}
                 style={{
-                  width: '100%', padding: '10px 0', borderRadius: 10, marginBottom: 16,
+                  width: '100%', padding: '8px 0', borderRadius: 8, marginBottom: 12,
                   background: isCurrent ? 'transparent'
                     : plan.highlighted ? '#2563eb'
                     : planId === 'pro_plus' ? '#2563eb'
@@ -337,7 +337,7 @@ export default function BillingPage() {
                   color: isCurrent ? '#2563eb'
                     : plan.highlighted || planId === 'pro_plus' ? '#ffffff'
                     : '#000000',
-                  fontSize: 13, fontWeight: 700,
+                  fontSize: 12, fontWeight: 700,
                   cursor: isCurrent ? 'default' : 'pointer',
                   transition: 'all 0.2s',
                   opacity: upgradeLoading === planId ? 0.6 : 1,
@@ -352,7 +352,7 @@ export default function BillingPage() {
 
               {/* Intro text for non-free */}
               {planId !== 'free' && (
-                <div style={{ color: '#6b7280', fontSize: 11, fontWeight: 600, marginBottom: 8 }}>
+                <div style={{ color: '#000000', fontSize: 10, fontWeight: 600, marginBottom: 6 }}>
                   {planId === 'weekly' ? 'Everything in Free, plus...' 
                    : planId === 'pro' ? 'Everything in Weekly, plus...' 
                    : 'Everything in Pro, plus...'}
@@ -360,10 +360,10 @@ export default function BillingPage() {
               )}
 
               {/* Features */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                 {plan.features.map(f => (
-                  <div key={f} style={{ color: '#374151', fontSize: 11, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 2 }}>
+                  <div key={f} style={{ color: '#000000', fontSize: 10, display: 'flex', alignItems: 'flex-start', gap: 5 }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 2 }}>
                       <polyline points="20 6 9 17 4 12"/>
                     </svg>
                     {f}
