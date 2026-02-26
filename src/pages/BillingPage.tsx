@@ -100,14 +100,31 @@ export default function BillingPage() {
         name: 'HelplyAI',
         description: `${plan.name} Plan`,
         image: 'https://helplyai.co/logo.png',
-        handler: async function () {
-          // Payment successful
-          const result = await updatePlan(planId);
-          if (!result.success) {
-            alert(result.error || 'Failed to update plan');
-          } else {
-            alert('Payment successful! Your plan has been upgraded.');
-            await loadBilling();
+        handler: async function (response: any) {
+          // Payment successful - record in database
+          try {
+            const { data, error } = await supabase.rpc('record_payment', {
+              p_user_id: user!.id,
+              p_plan: planId,
+              p_amount: amount,
+              p_currency: 'INR',
+              p_razorpay_payment_id: response.razorpay_payment_id || null,
+              p_razorpay_order_id: response.razorpay_order_id || null,
+              p_razorpay_signature: response.razorpay_signature || null,
+              p_payment_method: null,
+              p_metadata: response || {}
+            });
+            
+            if (error) {
+              console.error('Failed to record payment:', error);
+              alert('Payment successful but failed to update records. Please contact support.');
+            } else {
+              alert('Payment successful! Your plan has been upgraded.');
+              await loadBilling();
+            }
+          } catch (err) {
+            console.error('Payment recording error:', err);
+            alert('Payment successful but failed to update records. Please contact support.');
           }
           setUpgradeLoading(null);
         },
@@ -120,11 +137,37 @@ export default function BillingPage() {
         modal: {
           ondismiss: function() {
             setUpgradeLoading(null);
-          }
+          },
+          confirm_close: true
         }
       };
 
       const razorpay = new window.Razorpay(options);
+      
+      // Handle payment failures
+      razorpay.on('payment.failed', async function (response: any) {
+        console.error('Payment failed:', response.error);
+        
+        // Record failed payment in database
+        try {
+          await supabase.rpc('record_failed_payment', {
+            p_user_id: user!.id,
+            p_plan: planId,
+            p_amount: amount,
+            p_currency: 'INR',
+            p_razorpay_payment_id: response.error?.metadata?.payment_id || null,
+            p_failure_reason: response.error?.description || 'Payment failed',
+            p_failure_code: response.error?.code || null,
+            p_metadata: response.error || {}
+          });
+        } catch (err) {
+          console.error('Failed to record payment failure:', err);
+        }
+        
+        alert(`Payment failed: ${response.error?.description || 'Unknown error'}. Please try again.`);
+        setUpgradeLoading(null);
+      });
+      
       razorpay.open();
     } else {
       // Free plan - no payment needed
