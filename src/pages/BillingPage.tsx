@@ -100,6 +100,10 @@ export default function BillingPage() {
         name: 'HelplyAI',
         description: `${plan.name} Plan`,
         image: 'https://helplyai.co/logo.png',
+        notes: {
+          user_id: user!.id,
+          plan: planId,
+        },
         handler: async function (response: any) {
           // Payment successful - record in database
           try {
