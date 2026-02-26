@@ -1,4 +1,4 @@
-export type PlanId = 'free' | 'day' | 'weekly' | 'pro' | 'pro_plus';
+export type PlanId = 'free' | 'test' | 'day' | 'weekly' | 'pro' | 'pro_plus';
 export type BillingCycle = 'monthly' | 'annually';
 
 export interface PlanLimits {
@@ -28,6 +28,13 @@ export const PLANS: Record<PlanId, PlanConfig> = {
     priceLabel: 'Free', priceSuffix: '2 days', savingsNote: '',
     limits: { interviewQuestionsPerDay: 3, screenAnalysisPerDay: 2, chatMessagesPerDay: 3, remindersPerDay: 5, generateAnswerPerDay: 3, trialDays: 2 },
     features: ['AI responses (3/day)', 'Interview mode (3 questions/day)', 'Screen analysis (2/day)', 'Generate answers (3/day)', 'Setup reminders (5/day)', '2-day free trial'],
+    highlighted: false,
+  },
+  test: {
+    id: 'test', name: 'Test Pass', tagline: 'Test payment - 1 hour unlimited access.',
+    priceLabel: '₹2', priceSuffix: '/ hour', savingsNote: '',
+    limits: { interviewQuestionsPerDay: -1, screenAnalysisPerDay: -1, chatMessagesPerDay: -1, remindersPerDay: -1, generateAnswerPerDay: -1, trialDays: 0 },
+    features: ['Unlimited AI responses', 'Unlimited interview mode', 'Unlimited screen analysis', 'Unlimited generate answers', 'Unlimited reminders', 'Valid for 1 hour', 'Perfect for testing payments'],
     highlighted: false,
   },
   day: {
@@ -60,7 +67,7 @@ export const PLANS: Record<PlanId, PlanConfig> = {
   },
 };
 
-export const PLAN_ORDER: PlanId[] = ['free', 'day', 'weekly', 'pro', 'pro_plus'];
+export const PLAN_ORDER: PlanId[] = ['free', 'test', 'day', 'weekly', 'pro', 'pro_plus'];
 
 export type UsageAction = 'interview_question' | 'screen_analysis' | 'chat_message' | 'reminder' | 'generate_answer';
 

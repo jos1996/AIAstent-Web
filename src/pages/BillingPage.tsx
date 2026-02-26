@@ -16,6 +16,7 @@ const RAZORPAY_KEY = 'rzp_live_RXT3VUdM3gaV4e';
 // Price mapping in INR (₹)
 const PLAN_PRICES: Record<PlanId, number> = {
   free: 0,
+  test: 2,          // ₹2 for testing
   day: 450,         // ~$5 USD
   weekly: 1710,     // ~$19 USD
   pro: 3150,        // ~$35 USD
