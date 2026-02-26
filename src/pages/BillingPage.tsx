@@ -11,7 +11,7 @@ declare global {
   }
 }
 
-const RAZORPAY_KEY = 'rzp_live_RXT3VUdM3gaV4e';
+const RAZORPAY_KEY = 'rzp_live_SKtIYRDuyTruqa';
 
 // Price mapping in INR (₹)
 const PLAN_PRICES: Record<PlanId, number> = {
