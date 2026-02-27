@@ -402,9 +402,10 @@ export default function PrivacyPolicyPage() {
         <div style={{
           maxWidth: 1100, margin: '40px auto 0', paddingTop: 24,
           borderTop: '1px solid rgba(0,0,0,0.08)',
-          display: 'flex', justifyContent: 'center', alignItems: 'center',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
         }}>
           <span style={{ color: '#999', fontSize: 13 }}>© 2026 HelplyAI. All rights reserved.</span>
+          <span style={{ color: '#999', fontSize: 12 }}>Powered by Levelon Technologies Private Limited</span>
         </div>
       </footer>
     </div>
