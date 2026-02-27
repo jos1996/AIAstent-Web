@@ -101,12 +101,19 @@ export default function HelpCenterPage() {
     e.preventDefault();
     if (!user) return;
     setContactLoading(true);
-    await supabase.from('support_tickets').insert({
+    const { error } = await supabase.from('support_tickets').insert({
       user_id: user.id,
-      type: 'contact',
+      ticket_type: 'contact',
       subject: contactSubject,
       message: contactMessage,
+      user_email: user.email || '',
+      status: 'open',
+      priority: 'normal',
     });
+    if (error) {
+      console.error('Error submitting contact form:', error);
+      alert('Failed to send message. Please try again.');
+    }
     setContactLoading(false);
     setContactSent(true);
     setContactSubject('');
@@ -118,12 +125,20 @@ export default function HelpCenterPage() {
     e.preventDefault();
     if (!user) return;
     setIssueLoading(true);
-    await supabase.from('support_tickets').insert({
+    const { error } = await supabase.from('support_tickets').insert({
       user_id: user.id,
-      type: issueType,
-      subject: `Issue Report: ${issueType}`,
-      message: issueDesc,
+      ticket_type: 'bug',
+      bug_category: issueType,
+      bug_description: issueDesc,
+      subject: `${issueType.charAt(0).toUpperCase() + issueType.slice(1)} Report`,
+      user_email: user.email || '',
+      status: 'open',
+      priority: issueType === 'bug' ? 'high' : 'normal',
     });
+    if (error) {
+      console.error('Error submitting bug report:', error);
+      alert('Failed to submit report. Please try again.');
+    }
     setIssueLoading(false);
     setIssueSent(true);
     setIssueDesc('');
