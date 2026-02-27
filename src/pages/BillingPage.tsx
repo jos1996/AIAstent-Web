@@ -23,14 +23,44 @@ const PLAN_PRICES: Record<PlanId, number> = {
   pro_plus: 35910,  // ~$399 USD
 };
 
+// Calculate plan end date based on plan type
+function calculatePlanEndDate(planId: PlanId): Date {
+  const now = new Date();
+  if (planId === 'test') return new Date(now.getTime() + 1 * 60 * 60 * 1000); // 1 hour
+  if (planId === 'day') return new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24 hours
+  if (planId === 'weekly') return new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days
+  if (planId === 'pro') { const d = new Date(now); d.setMonth(d.getMonth() + 1); return d; } // 1 month
+  if (planId === 'pro_plus') { const d = new Date(now); d.setFullYear(d.getFullYear() + 1); return d; } // 1 year
+  return now;
+}
+
+function getBillingCycle(planId: PlanId): string {
+  if (planId === 'test') return 'hourly';
+  if (planId === 'day') return 'daily';
+  if (planId === 'weekly') return 'weekly';
+  if (planId === 'pro') return 'monthly';
+  if (planId === 'pro_plus') return 'annually';
+  return 'monthly';
+}
+
+interface PaymentSuccessInfo {
+  planName: string;
+  planId: PlanId;
+  amount: string;
+  paymentId: string;
+  startDate: Date;
+  endDate: Date;
+}
+
 export default function BillingPage() {
   const { user } = useAuth();
   const [billingEmail, setBillingEmail] = useState('');
-  const [nextBillingDate, setNextBillingDate] = useState<string | null>(null);
+  const [, setNextBillingDate] = useState<string | null>(null);
   const [planStartDate, setPlanStartDate] = useState<string | null>(null);
   const [planEndDate, setPlanEndDate] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [upgradeLoading, setUpgradeLoading] = useState<PlanId | null>(null);
+  const [paymentSuccess, setPaymentSuccess] = useState<PaymentSuccessInfo | null>(null);
   const { planState, updatePlan, usage, getRemaining, loaded } = usePlanLimits();
 
   useEffect(() => {
@@ -108,29 +138,90 @@ export default function BillingPage() {
         },
         handler: async function (response: any) {
           // Payment successful - record in database
+          const startDate = new Date();
+          const endDate = calculatePlanEndDate(planId);
+          const razorpayPaymentId = response.razorpay_payment_id || null;
+          const razorpayOrderId = response.razorpay_order_id || null;
+          const razorpaySignature = response.razorpay_signature || null;
+          
           try {
-            const { error } = await supabase.rpc('record_payment', {
+            // Try RPC first
+            const { error: rpcError } = await supabase.rpc('record_payment', {
               p_user_id: user!.id,
               p_plan: planId,
               p_amount: amount,
               p_currency: 'INR',
-              p_razorpay_payment_id: response.razorpay_payment_id || null,
-              p_razorpay_order_id: response.razorpay_order_id || null,
-              p_razorpay_signature: response.razorpay_signature || null,
+              p_razorpay_payment_id: razorpayPaymentId,
+              p_razorpay_order_id: razorpayOrderId,
+              p_razorpay_signature: razorpaySignature,
               p_payment_method: null,
               p_metadata: response || {}
             });
             
-            if (error) {
-              console.error('Failed to record payment:', error);
-              alert('Payment successful but failed to update records. Please contact support.');
-            } else {
-              alert('Payment successful! Your plan has been upgraded.');
-              await loadBilling();
+            if (rpcError) {
+              console.warn('RPC record_payment failed, falling back to direct updates:', rpcError);
+              
+              // Fallback: directly insert into payments table
+              const { error: paymentInsertError } = await supabase.from('payments').insert({
+                user_id: user!.id,
+                plan: planId,
+                plan_name: plan.name,
+                amount: amount,
+                currency: 'INR',
+                amount_display: '₹' + (amount / 100),
+                razorpay_payment_id: razorpayPaymentId,
+                razorpay_order_id: razorpayOrderId,
+                razorpay_signature: razorpaySignature,
+                status: 'success',
+                period_start: startDate.toISOString(),
+                period_end: endDate.toISOString(),
+                metadata: response || {},
+              });
+              if (paymentInsertError) console.error('Payment insert error:', paymentInsertError);
+              
+              // Fallback: directly update billing table
+              const { error: billingUpdateError } = await supabase.from('billing').update({
+                plan: planId,
+                billing_cycle: getBillingCycle(planId),
+                next_billing_date: endDate.toISOString(),
+                plan_start_date: startDate.toISOString(),
+                plan_end_date: endDate.toISOString(),
+                trial_end_date: endDate.toISOString(),
+                razorpay_payment_id: razorpayPaymentId,
+                razorpay_order_id: razorpayOrderId,
+                last_payment_amount: amount,
+                last_payment_currency: 'INR',
+                last_payment_status: 'success',
+                last_payment_date: startDate.toISOString(),
+                updated_at: startDate.toISOString(),
+              }).eq('user_id', user!.id);
+              if (billingUpdateError) console.error('Billing update error:', billingUpdateError);
             }
+            
+            // Show success popup
+            setPaymentSuccess({
+              planName: plan.name,
+              planId: planId,
+              amount: '₹' + (amount / 100),
+              paymentId: razorpayPaymentId || 'N/A',
+              startDate: startDate,
+              endDate: endDate,
+            });
+            
+            // Refresh billing data
+            await loadBilling();
+            
           } catch (err) {
             console.error('Payment recording error:', err);
-            alert('Payment successful but failed to update records. Please contact support.');
+            // Even if recording fails, still show success since Razorpay confirmed payment
+            setPaymentSuccess({
+              planName: plan.name,
+              planId: planId,
+              amount: '₹' + (amount / 100),
+              paymentId: razorpayPaymentId || 'N/A',
+              startDate: startDate,
+              endDate: endDate,
+            });
           }
           setUpgradeLoading(null);
         },
@@ -231,28 +322,17 @@ export default function BillingPage() {
               <div style={{ textAlign: 'right' }}>
                 <div style={{ color: '#000000', fontSize: 12 }}>Start Date</div>
                 <div style={{ color: '#000000', fontSize: 13, marginTop: 2, fontWeight: 500 }}>
-                  {new Date(planStartDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  {new Date(planStartDate).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}
                 </div>
               </div>
             )}
-            {planEndDate && (planState.plan === 'free' || planState.plan === 'day') && (
+            {planEndDate && (
               <div style={{ textAlign: 'right' }}>
                 <div style={{ color: '#000000', fontSize: 12 }}>
-                  {planState.plan === 'day' ? 'Pass Expires' : 'Trial Ends'}
+                  {planState.plan === 'free' ? 'Trial Ends' : planState.plan === 'test' ? 'Pass Expires' : planState.plan === 'day' ? 'Pass Expires' : 'Plan Expires'}
                 </div>
                 <div style={{ color: planState.isExpired ? '#dc2626' : '#000000', fontSize: 13, marginTop: 2, fontWeight: 500 }}>
-                  {planState.plan === 'day' 
-                    ? new Date(planEndDate).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })
-                    : new Date(planEndDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                  }
-                </div>
-              </div>
-            )}
-            {nextBillingDate && planState.plan !== 'free' && (
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ color: '#000000', fontSize: 12 }}>Next Billing</div>
-                <div style={{ color: '#000000', fontSize: 13, marginTop: 2, fontWeight: 500 }}>
-                  {new Date(nextBillingDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  {new Date(planEndDate).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}
                 </div>
               </div>
             )}
@@ -443,6 +523,71 @@ export default function BillingPage() {
           Secure payments powered by Razorpay. All transactions are encrypted and secure.
         </div>
       </div>
+
+      {/* Payment Success Modal */}
+      {paymentSuccess && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 9999,
+        }} onClick={() => { setPaymentSuccess(null); window.location.reload(); }}>
+          <div style={{
+            background: '#fff', borderRadius: 16, padding: 32, maxWidth: 420, width: '90%',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)', textAlign: 'center',
+          }} onClick={e => e.stopPropagation()}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>&#10003;</div>
+            <h2 style={{ color: '#000', fontSize: 22, fontWeight: 700, margin: '0 0 8px' }}>Payment Successful!</h2>
+            <p style={{ color: '#4b5563', fontSize: 14, margin: '0 0 24px' }}>
+              You have subscribed to the <strong>{paymentSuccess.planName}</strong> plan.
+            </p>
+
+            <div style={{
+              background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 12, padding: 20,
+              textAlign: 'left', marginBottom: 20,
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+                <span style={{ color: '#6b7280', fontSize: 13 }}>Plan</span>
+                <span style={{ color: '#000', fontSize: 13, fontWeight: 600 }}>{paymentSuccess.planName}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+                <span style={{ color: '#6b7280', fontSize: 13 }}>Amount Paid</span>
+                <span style={{ color: '#000', fontSize: 13, fontWeight: 600 }}>{paymentSuccess.amount}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+                <span style={{ color: '#6b7280', fontSize: 13 }}>Payment ID</span>
+                <span style={{ color: '#000', fontSize: 11, fontWeight: 500, fontFamily: 'monospace' }}>{paymentSuccess.paymentId}</span>
+              </div>
+              <div style={{ borderTop: '1px solid #bbf7d0', paddingTop: 12, marginTop: 4 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <span style={{ color: '#6b7280', fontSize: 13 }}>Valid From</span>
+                  <span style={{ color: '#000', fontSize: 13, fontWeight: 600 }}>
+                    {paymentSuccess.startDate.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: '#6b7280', fontSize: 13 }}>Valid Until</span>
+                  <span style={{ color: '#16a34a', fontSize: 13, fontWeight: 700 }}>
+                    {paymentSuccess.endDate.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => { setPaymentSuccess(null); window.location.reload(); }}
+              style={{
+                width: '100%', padding: '12px 0', borderRadius: 10, border: 'none',
+                background: '#2563eb', color: '#fff', fontSize: 15, fontWeight: 700,
+                cursor: 'pointer', transition: 'background 0.2s',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#1d4ed8')}
+              onMouseLeave={e => (e.currentTarget.style.background = '#2563eb')}
+            >
+              Continue to Dashboard
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
