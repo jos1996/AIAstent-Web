@@ -46,17 +46,19 @@ export default function BillingPage() {
     if (data) {
       setBillingEmail(data.billing_email || '');
       setNextBillingDate(data.next_billing_date || null);
-      setPlanStartDate(data.trial_start_date || data.created_at || null);
-      // For free plan, end date is trial_start + 2 days
-      if (data.plan === 'free' && data.trial_start_date) {
-        const end = new Date(new Date(data.trial_start_date).getTime() + 2 * 24 * 60 * 60 * 1000);
-        setPlanEndDate(end.toISOString());
-      } else if (data.plan === 'day' && data.created_at) {
-        // For day plan, end date is created_at + 24 hours
-        const end = new Date(new Date(data.created_at).getTime() + 24 * 60 * 60 * 1000);
-        setPlanEndDate(end.toISOString());
+      
+      // Use plan_start_date if available (after payment), otherwise fall back to trial_start_date or created_at
+      setPlanStartDate(data.plan_start_date || data.trial_start_date || data.created_at || null);
+      
+      // Use plan_end_date if available (after payment), otherwise calculate based on plan type
+      if (data.plan_end_date) {
+        setPlanEndDate(data.plan_end_date);
       } else if (data.trial_end_date) {
         setPlanEndDate(data.trial_end_date);
+      } else if (data.plan === 'free' && data.trial_start_date) {
+        // For free plan, end date is trial_start + 2 days
+        const end = new Date(new Date(data.trial_start_date).getTime() + 2 * 24 * 60 * 60 * 1000);
+        setPlanEndDate(end.toISOString());
       } else {
         setPlanEndDate(null);
       }
