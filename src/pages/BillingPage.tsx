@@ -107,7 +107,7 @@ export default function BillingPage() {
         handler: async function (response: any) {
           // Payment successful - record in database
           try {
-            const { data, error } = await supabase.rpc('record_payment', {
+            const { error } = await supabase.rpc('record_payment', {
               p_user_id: user!.id,
               p_plan: planId,
               p_amount: amount,
