@@ -99,7 +99,10 @@ export default function HelpCenterPage() {
 
   const handleContact = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user) {
+      alert('Please sign in to submit a support request.');
+      return;
+    }
     setContactLoading(true);
     const { error } = await supabase.from('support_tickets').insert({
       user_id: user.id,
@@ -110,11 +113,15 @@ export default function HelpCenterPage() {
       status: 'open',
       priority: 'normal',
     });
+    setContactLoading(false);
+    
     if (error) {
       console.error('Error submitting contact form:', error);
-      alert('Failed to send message. Please try again.');
+      console.error('Error details:', JSON.stringify(error, null, 2));
+      alert(`Failed to send message: ${error.message || 'Unknown error'}. Please try again.`);
+      return;
     }
-    setContactLoading(false);
+    
     setContactSent(true);
     setContactSubject('');
     setContactMessage('');
@@ -123,7 +130,10 @@ export default function HelpCenterPage() {
 
   const handleReport = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user) {
+      alert('Please sign in to submit a bug report.');
+      return;
+    }
     setIssueLoading(true);
     const { error } = await supabase.from('support_tickets').insert({
       user_id: user.id,
@@ -135,11 +145,15 @@ export default function HelpCenterPage() {
       status: 'open',
       priority: issueType === 'bug' ? 'high' : 'normal',
     });
+    setIssueLoading(false);
+    
     if (error) {
       console.error('Error submitting bug report:', error);
-      alert('Failed to submit report. Please try again.');
+      console.error('Error details:', JSON.stringify(error, null, 2));
+      alert(`Failed to submit report: ${error.message || 'Unknown error'}. Please try again.`);
+      return;
     }
-    setIssueLoading(false);
+    
     setIssueSent(true);
     setIssueDesc('');
     setTimeout(() => setIssueSent(false), 4000);
