@@ -16,8 +16,8 @@ const RAZORPAY_KEY = 'rzp_live_SKtIYRDuyTruqa';
 // Price mapping in INR (₹)
 const PLAN_PRICES: Record<PlanId, number> = {
   free: 0,
-  day: 900,         // ~$10 USD
-  weekly: 2250,     // ~$25 USD
+  day: 999,         // ₹999 for Day Pass
+  weekly: 1999,     // ₹1999 for Weekly Pass
   pro: 3150,        // ~$35 USD
   pro_plus: 35910,  // ~$399 USD
 };

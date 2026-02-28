@@ -32,14 +32,14 @@ export const PLANS: Record<PlanId, PlanConfig> = {
   },
   day: {
     id: 'day', name: 'Day Pass', tagline: 'Unlimited access for 24 hours.',
-    priceLabel: '$10', priceSuffix: '/ day', savingsNote: '',
+    priceLabel: '₹999', priceSuffix: '/ day', savingsNote: '',
     limits: { interviewQuestionsPerDay: -1, screenAnalysisPerDay: -1, chatMessagesPerDay: -1, remindersPerDay: -1, generateAnswerPerDay: -1, trialDays: 0 },
     features: ['Unlimited AI responses', 'Unlimited interview mode', 'Unlimited screen analysis', 'Unlimited generate answers', 'Unlimited reminders', 'Valid for 24 hours', 'Perfect for interview prep'],
     highlighted: false,
   },
   weekly: {
     id: 'weekly', name: 'Weekly', tagline: 'Great for short-term projects & interviews.',
-    priceLabel: '$25', priceSuffix: '/ week', savingsNote: '',
+    priceLabel: '₹1999', priceSuffix: '/ week', savingsNote: '',
     limits: { interviewQuestionsPerDay: 25, screenAnalysisPerDay: 20, chatMessagesPerDay: 25, remindersPerDay: -1, generateAnswerPerDay: 30, trialDays: 0 },
     features: ['25 AI responses/day', 'Interview mode (25 questions/day)', 'Screen analysis (20/day)', 'Generate answers (30/day)', 'Unlimited reminders', 'Access to latest AI models', 'Priority support'],
     highlighted: false,
