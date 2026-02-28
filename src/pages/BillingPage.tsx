@@ -16,9 +16,8 @@ const RAZORPAY_KEY = 'rzp_live_SKtIYRDuyTruqa';
 // Price mapping in INR (₹)
 const PLAN_PRICES: Record<PlanId, number> = {
   free: 0,
-  test: 2,          // ₹2 for testing
-  day: 450,         // ~$5 USD
-  weekly: 1710,     // ~$19 USD
+  day: 900,         // ~$10 USD
+  weekly: 2250,     // ~$25 USD
   pro: 3150,        // ~$35 USD
   pro_plus: 35910,  // ~$399 USD
 };
@@ -26,7 +25,6 @@ const PLAN_PRICES: Record<PlanId, number> = {
 // Calculate plan end date based on plan type
 function calculatePlanEndDate(planId: PlanId): Date {
   const now = new Date();
-  if (planId === 'test') return new Date(now.getTime() + 1 * 60 * 60 * 1000); // 1 hour
   if (planId === 'day') return new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24 hours
   if (planId === 'weekly') return new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days
   if (planId === 'pro') { const d = new Date(now); d.setMonth(d.getMonth() + 1); return d; } // 1 month
@@ -35,7 +33,6 @@ function calculatePlanEndDate(planId: PlanId): Date {
 }
 
 function getBillingCycle(planId: PlanId): string {
-  if (planId === 'test') return 'hourly';
   if (planId === 'day') return 'daily';
   if (planId === 'weekly') return 'weekly';
   if (planId === 'pro') return 'monthly';
@@ -329,7 +326,7 @@ export default function BillingPage() {
             {planEndDate && (
               <div style={{ textAlign: 'right' }}>
                 <div style={{ color: '#000000', fontSize: 12 }}>
-                  {planState.plan === 'free' ? 'Trial Ends' : planState.plan === 'test' ? 'Pass Expires' : planState.plan === 'day' ? 'Pass Expires' : 'Plan Expires'}
+                  {planState.plan === 'free' ? 'Trial Ends' : planState.plan === 'day' ? 'Pass Expires' : 'Plan Expires'}
                 </div>
                 <div style={{ color: planState.isExpired ? '#dc2626' : '#000000', fontSize: 13, marginTop: 2, fontWeight: 500 }}>
                   {new Date(planEndDate).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}
