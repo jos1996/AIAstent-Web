@@ -34,6 +34,24 @@ export default function DashboardPage() {
   const [recentActivity, setRecentActivity] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState<string>('all');
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [selectedPlatform, setSelectedPlatform] = useState<'ios' | 'windows' | null>(null);
+
+  const downloadLinks = {
+    macOS: 'https://giftsandcoins.s3.eu-north-1.amazonaws.com/Helply+AI_0.1.0_aarch64+(1).dmg',
+    windowsMSI: 'https://giftsandcoins.s3.eu-north-1.amazonaws.com/Helply-AI-Windows-MSI-Installer+(1).zip',
+    windowsNSIS: 'https://giftsandcoins.s3.eu-north-1.amazonaws.com/Helply-AI-Windows-NSIS-Installer+(1).zip',
+  };
+
+  const handleDirectDownload = (url: string) => {
+    window.open(url, '_blank');
+    setShowDownloadModal(false);
+  };
+
+  const handleDownloadClick = (platform: 'ios' | 'windows') => {
+    setSelectedPlatform(platform);
+    setShowDownloadModal(true);
+  };
 
   useEffect(() => {
     if (user) {
@@ -136,14 +154,12 @@ export default function DashboardPage() {
       {/* Action Buttons - Top Right */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginBottom: 16 }}>
         {/* Download for Mac */}
-        <a
-          href="https://github.com/jos1996/AIAstent/releases/latest"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          onClick={() => handleDownloadClick('ios')}
           style={{
             padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 600,
             background: '#ffffff', border: '1px solid #e5e7eb',
-            color: '#000000', cursor: 'pointer', textDecoration: 'none',
+            color: '#000000', cursor: 'pointer',
             display: 'flex', alignItems: 'center', gap: 8,
             transition: 'all 0.2s',
           }}
@@ -154,17 +170,15 @@ export default function DashboardPage() {
             <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
           </svg>
           Download for Mac
-        </a>
+        </button>
 
         {/* Download for Windows */}
-        <a
-          href="https://github.com/jos1996/AIAstent/releases/latest"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          onClick={() => handleDownloadClick('windows')}
           style={{
             padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 600,
             background: '#ffffff', border: '1px solid #e5e7eb',
-            color: '#1f2937', cursor: 'pointer', textDecoration: 'none',
+            color: '#1f2937', cursor: 'pointer',
             display: 'flex', alignItems: 'center', gap: 8,
             transition: 'all 0.2s',
           }}
@@ -175,7 +189,7 @@ export default function DashboardPage() {
             <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/>
           </svg>
           Download for Windows
-        </a>
+        </button>
 
         {/* Open Chatbot */}
         <button
@@ -319,6 +333,108 @@ export default function DashboardPage() {
           )}
         </div>
       </div>
+
+      {/* Download Modal */}
+      {showDownloadModal && (
+        <div onClick={() => setShowDownloadModal(false)} style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 1000, padding: 24,
+        }}>
+          <div onClick={(e) => e.stopPropagation()} style={{
+            background: '#fff', borderRadius: 20, padding: 40,
+            maxWidth: 500, width: '100%',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+            position: 'relative',
+          }}>
+            <button onClick={() => setShowDownloadModal(false)} style={{
+              position: 'absolute', top: 16, right: 16,
+              background: 'rgba(0,0,0,0.05)', border: 'none',
+              borderRadius: '50%', width: 32, height: 32,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', fontSize: 18, color: '#666',
+              transition: 'all 0.2s',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.1)'; e.currentTarget.style.color = '#000' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = '#666' }}
+            >×</button>
+
+            <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8, color: '#000' }}>
+              {selectedPlatform === 'ios' ? 'Download for macOS' : 'Download for Windows'}
+            </h3>
+            <p style={{ color: '#666', fontSize: 14, marginBottom: 24 }}>
+              {selectedPlatform === 'ios' 
+                ? 'Download the DMG installer for macOS (Apple Silicon)' 
+                : 'Choose the installer type that best suits your needs'}
+            </p>
+
+            {selectedPlatform === 'ios' ? (
+              <button onClick={() => handleDirectDownload(downloadLinks.macOS)} style={{
+                width: '100%', padding: '16px 24px', borderRadius: 12,
+                background: '#000', color: '#fff', border: 'none',
+                fontSize: 15, fontWeight: 600, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
+                transition: 'all 0.3s',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#1a1a1a'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#000'; e.currentTarget.style.transform = 'translateY(0)' }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Download DMG (Apple Silicon)
+              </button>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <button onClick={() => handleDirectDownload(downloadLinks.windowsMSI)} style={{
+                  width: '100%', padding: '16px 24px', borderRadius: 12,
+                  background: '#000', color: '#fff', border: 'none',
+                  fontSize: 15, fontWeight: 600, cursor: 'pointer',
+                  display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
+                  transition: 'all 0.3s',
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#1a1a1a'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#000'; e.currentTarget.style.transform = 'translateY(0)' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    <span>MSI Installer (Individual)</span>
+                  </div>
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', fontWeight: 400 }}>Traditional Windows installer for personal use</span>
+                </button>
+
+                <button onClick={() => handleDirectDownload(downloadLinks.windowsNSIS)} style={{
+                  width: '100%', padding: '16px 24px', borderRadius: 12,
+                  background: '#fff', color: '#000', border: '2px solid #000',
+                  fontSize: 15, fontWeight: 600, cursor: 'pointer',
+                  display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
+                  transition: 'all 0.3s',
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#f5f5f5'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.transform = 'translateY(0)' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    <span>NSIS Installer (Organization)</span>
+                  </div>
+                  <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.6)', fontWeight: 400 }}>Modern installer for enterprise deployment</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

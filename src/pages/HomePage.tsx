@@ -40,6 +40,17 @@ export default function HomePage() {
     setShowDownloadModal(true)
   }
 
+  const downloadLinks = {
+    macOS: 'https://giftsandcoins.s3.eu-north-1.amazonaws.com/Helply+AI_0.1.0_aarch64+(1).dmg',
+    windowsMSI: 'https://giftsandcoins.s3.eu-north-1.amazonaws.com/Helply-AI-Windows-MSI-Installer+(1).zip',
+    windowsNSIS: 'https://giftsandcoins.s3.eu-north-1.amazonaws.com/Helply-AI-Windows-NSIS-Installer+(1).zip',
+  }
+
+  const handleDirectDownload = (url: string) => {
+    window.open(url, '_blank')
+    setShowDownloadModal(false)
+  }
+
   return (
     <div style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f8f8f8 25%, #f0f0f0 50%, #e8e8e8 75%, #e0e0e0 100%)', minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
       
@@ -1666,6 +1677,108 @@ export default function HomePage() {
           <span style={{ color: '#999', fontSize: 12 }}>Powered by Levelon Technologies Private Limited</span>
         </div>
       </footer>
+
+      {/* Download Modal */}
+      {showDownloadModal && (
+        <div onClick={() => setShowDownloadModal(false)} style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 1000, padding: 24,
+        }}>
+          <div onClick={(e) => e.stopPropagation()} style={{
+            background: '#fff', borderRadius: 20, padding: 40,
+            maxWidth: 500, width: '100%',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+            position: 'relative',
+          }}>
+            <button onClick={() => setShowDownloadModal(false)} style={{
+              position: 'absolute', top: 16, right: 16,
+              background: 'rgba(0,0,0,0.05)', border: 'none',
+              borderRadius: '50%', width: 32, height: 32,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', fontSize: 18, color: '#666',
+              transition: 'all 0.2s',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.1)'; e.currentTarget.style.color = '#000' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = '#666' }}
+            >×</button>
+
+            <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8, color: '#000' }}>
+              {selectedPlatform === 'ios' ? 'Download for macOS' : 'Download for Windows'}
+            </h3>
+            <p style={{ color: '#666', fontSize: 14, marginBottom: 24 }}>
+              {selectedPlatform === 'ios' 
+                ? 'Download the DMG installer for macOS (Apple Silicon)' 
+                : 'Choose the installer type that best suits your needs'}
+            </p>
+
+            {selectedPlatform === 'ios' ? (
+              <button onClick={() => handleDirectDownload(downloadLinks.macOS)} style={{
+                width: '100%', padding: '16px 24px', borderRadius: 12,
+                background: '#000', color: '#fff', border: 'none',
+                fontSize: 15, fontWeight: 600, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
+                transition: 'all 0.3s',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#1a1a1a'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#000'; e.currentTarget.style.transform = 'translateY(0)' }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Download DMG (Apple Silicon)
+              </button>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <button onClick={() => handleDirectDownload(downloadLinks.windowsMSI)} style={{
+                  width: '100%', padding: '16px 24px', borderRadius: 12,
+                  background: '#000', color: '#fff', border: 'none',
+                  fontSize: 15, fontWeight: 600, cursor: 'pointer',
+                  display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
+                  transition: 'all 0.3s',
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#1a1a1a'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#000'; e.currentTarget.style.transform = 'translateY(0)' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    <span>MSI Installer (Individual)</span>
+                  </div>
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', fontWeight: 400 }}>Traditional Windows installer for personal use</span>
+                </button>
+
+                <button onClick={() => handleDirectDownload(downloadLinks.windowsNSIS)} style={{
+                  width: '100%', padding: '16px 24px', borderRadius: 12,
+                  background: '#fff', color: '#000', border: '2px solid #000',
+                  fontSize: 15, fontWeight: 600, cursor: 'pointer',
+                  display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
+                  transition: 'all 0.3s',
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#f5f5f5'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.transform = 'translateY(0)' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    <span>NSIS Installer (Organization)</span>
+                  </div>
+                  <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.6)', fontWeight: 400 }}>Modern installer for enterprise deployment</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <style>{`
         @keyframes float {
