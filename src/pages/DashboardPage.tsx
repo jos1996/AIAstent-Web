@@ -38,9 +38,9 @@ export default function DashboardPage() {
   const [selectedPlatform, setSelectedPlatform] = useState<'ios' | 'windows' | null>(null);
 
   const downloadLinks = {
-    macOS: 'https://giftsandcoins.s3.eu-north-1.amazonaws.com/Helply+AI_0.1.0_aarch64.dmg',
-    windowsMSI: 'https://giftsandcoins.s3.eu-north-1.amazonaws.com/windows-msi-installer.zip',
-    windowsNSIS: 'https://giftsandcoins.s3.eu-north-1.amazonaws.com/windows-nsis-installer.zip',
+    macOS: 'https://giftsandcoins.s3.eu-north-1.amazonaws.com/Helply+AI_0.1.0_aarch64+(1).dmg',
+    windowsMSI: 'https://giftsandcoins.s3.eu-north-1.amazonaws.com/windows-msi-installer+(1).zip',
+    windowsNSIS: 'https://giftsandcoins.s3.eu-north-1.amazonaws.com/windows-nsis-installer+(1).zip',
   };
 
   const handleDirectDownload = (url: string) => {
