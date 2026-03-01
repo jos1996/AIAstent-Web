@@ -381,7 +381,7 @@ export default function SettingsLayout() {
           <div style={{
             width: 400, padding: 40, borderRadius: 20,
             background: '#ffffff',
-            border: '1px solid rgba(0,0,0,0.1)',
+            border: '2px solid #000',
             boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
           }}>
             <div style={{ textAlign: 'center', marginBottom: 32 }}>
