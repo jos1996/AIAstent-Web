@@ -433,7 +433,7 @@ export default function SettingsLayout() {
                   placeholder="you@example.com" required
                   style={{
                     width: '100%', padding: '12px 14px', borderRadius: 10,
-                    background: '#f9fafb', border: '1px solid #e5e7eb',
+                    background: '#f9fafb', border: '1.5px solid #d1d5db',
                     color: '#000', fontSize: 14, outline: 'none', boxSizing: 'border-box',
                   }}
                 />
@@ -447,7 +447,7 @@ export default function SettingsLayout() {
                     placeholder="At least 8 characters" required minLength={8}
                     style={{
                       width: '100%', padding: '12px 14px', borderRadius: 10,
-                      background: '#f9fafb', border: '1px solid #e5e7eb',
+                      background: '#f9fafb', border: '1.5px solid #d1d5db',
                       color: '#000', fontSize: 14, outline: 'none', boxSizing: 'border-box',
                     }}
                   />
@@ -478,13 +478,13 @@ export default function SettingsLayout() {
                   onClick={handleGoogleAuth}
                   style={{
                     width: '100%', padding: '12px 0', borderRadius: 10,
-                    background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
-                    color: '#e5e7eb', fontSize: 14, fontWeight: 500,
+                    background: '#fff', border: '1.5px solid #d1d5db',
+                    color: '#000', fontSize: 14, fontWeight: 500,
                     cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
                     transition: 'all 0.2s',
                   }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+                  onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'}
+                  onMouseLeave={e => e.currentTarget.style.background = '#fff'}
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
