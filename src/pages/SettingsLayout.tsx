@@ -380,16 +380,16 @@ export default function SettingsLayout() {
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{
             width: 400, padding: 40, borderRadius: 20,
-            background: 'rgba(30,30,30,0.9)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            backdropFilter: 'blur(20px)',
+            background: '#ffffff',
+            border: '1px solid rgba(0,0,0,0.1)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
           }}>
             <div style={{ textAlign: 'center', marginBottom: 32 }}>
               <img src="/favicon.png" alt="HelplyAI" style={{ width: 56, height: 56, borderRadius: '50%', marginBottom: 16 }} />
-              <h1 style={{ color: '#fff', fontSize: 22, fontWeight: 700, margin: 0 }}>
+              <h1 style={{ color: '#000', fontSize: 22, fontWeight: 700, margin: 0 }}>
                 {authMode === 'login' ? 'Welcome back' : authMode === 'signup' ? 'Create account' : 'Reset password'}
               </h1>
-              <p style={{ color: '#9ca3af', fontSize: 14, marginTop: 8 }}>
+              <p style={{ color: '#666', fontSize: 14, marginTop: 8 }}>
                 {authMode === 'login' ? 'Sign in to unlock all features' : authMode === 'signup' ? 'Get started with HelplyAI' : 'Enter your email to reset'}
               </p>
             </div>
@@ -413,42 +413,42 @@ export default function SettingsLayout() {
             <form onSubmit={handleAuthSubmit}>
               {authMode === 'signup' && (
                 <div style={{ marginBottom: 16 }}>
-                  <label style={{ color: '#9ca3af', fontSize: 13, marginBottom: 6, display: 'block' }}>Full Name</label>
+                  <label style={{ color: '#666', fontSize: 13, marginBottom: 6, display: 'block' }}>Full Name</label>
                   <input
                     type="text" value={authFullName} onChange={e => setAuthFullName(e.target.value)}
                     placeholder="John Doe" required
                     style={{
                       width: '100%', padding: '12px 14px', borderRadius: 10,
-                      background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
-                      color: '#fff', fontSize: 14, outline: 'none', boxSizing: 'border-box',
+                      background: '#f9fafb', border: '1px solid #e5e7eb',
+                      color: '#000', fontSize: 14, outline: 'none', boxSizing: 'border-box',
                     }}
                   />
                 </div>
               )}
 
               <div style={{ marginBottom: 16 }}>
-                <label style={{ color: '#9ca3af', fontSize: 13, marginBottom: 6, display: 'block' }}>Email</label>
+                <label style={{ color: '#666', fontSize: 13, marginBottom: 6, display: 'block' }}>Email</label>
                 <input
                   type="email" value={authEmail} onChange={e => setAuthEmail(e.target.value)}
                   placeholder="you@example.com" required
                   style={{
                     width: '100%', padding: '12px 14px', borderRadius: 10,
-                    background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
-                    color: '#fff', fontSize: 14, outline: 'none', boxSizing: 'border-box',
+                    background: '#f9fafb', border: '1px solid #e5e7eb',
+                    color: '#000', fontSize: 14, outline: 'none', boxSizing: 'border-box',
                   }}
                 />
               </div>
 
               {authMode !== 'forgot' && (
                 <div style={{ marginBottom: 24 }}>
-                  <label style={{ color: '#9ca3af', fontSize: 13, marginBottom: 6, display: 'block' }}>Password</label>
+                  <label style={{ color: '#666', fontSize: 13, marginBottom: 6, display: 'block' }}>Password</label>
                   <input
                     type="password" value={authPassword} onChange={e => setAuthPassword(e.target.value)}
                     placeholder="At least 8 characters" required minLength={8}
                     style={{
                       width: '100%', padding: '12px 14px', borderRadius: 10,
-                      background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
-                      color: '#fff', fontSize: 14, outline: 'none', boxSizing: 'border-box',
+                      background: '#f9fafb', border: '1px solid #e5e7eb',
+                      color: '#000', fontSize: 14, outline: 'none', boxSizing: 'border-box',
                     }}
                   />
                 </div>
