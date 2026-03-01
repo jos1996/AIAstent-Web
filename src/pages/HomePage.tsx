@@ -901,7 +901,7 @@ export default function HomePage() {
                 letterSpacing: '-1px',
                 textShadow: '0 2px 10px rgba(0,0,0,0.2)',
               }}>
-                🎯 Crack Your Interview for Just ₹450!
+                🎯 Crack Your Interview for Just ₹999!
               </h2>
               <p style={{
                 fontSize: 'clamp(18px, 3vw, 24px)',
@@ -922,7 +922,7 @@ export default function HomePage() {
                   border: '2px solid rgba(255,255,255,0.3)',
                   minWidth: 280,
                 }}>
-                  <div style={{ fontSize: 48, fontWeight: 900, color: '#fff', marginBottom: 8 }}>₹450</div>
+                  <div style={{ fontSize: 48, fontWeight: 900, color: '#fff', marginBottom: 8 }}>₹999</div>
                   <div style={{ fontSize: 18, color: '#fff', fontWeight: 600, marginBottom: 4 }}>Day Pass</div>
                   <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)' }}>24 hours unlimited access</div>
                 </div>
@@ -947,7 +947,7 @@ export default function HomePage() {
                     fontSize: 11,
                     fontWeight: 800,
                   }}>BEST VALUE</div>
-                  <div style={{ fontSize: 48, fontWeight: 900, color: '#fff', marginBottom: 8 }}>₹1,790</div>
+                  <div style={{ fontSize: 48, fontWeight: 900, color: '#fff', marginBottom: 8 }}>₹1,999</div>
                   <div style={{ fontSize: 18, color: '#fff', fontWeight: 600, marginBottom: 4 }}>Week Pass</div>
                   <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)' }}>7 days unlimited access</div>
                 </div>
