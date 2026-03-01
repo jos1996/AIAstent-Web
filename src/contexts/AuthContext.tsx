@@ -103,6 +103,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           updated_at: new Date().toISOString(),
         }, { onConflict: 'user_id' }).then(() => {});
       }
+      // On sign-in, ensure user exists in public.users table
+      if (_event === 'SIGNED_IN' && session?.user) {
+        void supabase.rpc('sync_user_login', { user_platform: 'web', user_app_version: '1.0.0' }).then(() => {});
+      }
       if (_event === 'SIGNED_OUT') {
         // Clean up session_bridge on sign out
         if (user) {
