@@ -15,6 +15,12 @@ import HelpCenterPage from './pages/HelpCenterPage';
 import LatestUpdatesPage from './pages/LatestUpdatesPage';
 import TutorialsPage from './pages/TutorialsPage';
 import AuthCallbackPage from './pages/AuthCallbackPage';
+import AIInterviewHelperPage from './pages/AIInterviewHelperPage';
+import ComparisonPage from './pages/ComparisonPage';
+import { competitors } from './data/competitors';
+import HowToCrackInterviewPage from './pages/blog/HowToCrackInterviewPage';
+import AIInterviewTipsPage from './pages/blog/AIInterviewTipsPage';
+import STARMethodGuidePage from './pages/blog/STARMethodGuidePage';
 
 export default function App() {
   return (
@@ -38,6 +44,18 @@ export default function App() {
             <Route path="help" element={<HelpCenterPage />} />
           </Route>
           <Route path="/auth/callback" element={<AuthCallbackPage />} />
+          {/* SEO Pages */}
+          <Route path="/ai-interview-helper" element={<AIInterviewHelperPage />} />
+          {/* Competitor Comparison Pages */}
+          <Route path="/vs/final-round-ai" element={<ComparisonPage competitor={competitors['final-round-ai']} />} />
+          <Route path="/vs/lockedin-ai" element={<ComparisonPage competitor={competitors['lockedin-ai']} />} />
+          <Route path="/vs/hirin-ai" element={<ComparisonPage competitor={competitors['hirin-ai']} />} />
+          <Route path="/vs/parakeet-ai" element={<ComparisonPage competitor={competitors['parakeet-ai']} />} />
+          <Route path="/vs/uncharted-career" element={<ComparisonPage competitor={competitors['uncharted-career']} />} />
+          {/* Blog Pages */}
+          <Route path="/blog/how-to-crack-interview" element={<HowToCrackInterviewPage />} />
+          <Route path="/blog/ai-interview-tips" element={<AIInterviewTipsPage />} />
+          <Route path="/blog/star-method-guide" element={<STARMethodGuidePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

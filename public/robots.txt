@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Allow: /ai-interview-helper
+Allow: /vs/
+Allow: /blog/
+Allow: /about
+Allow: /privacy
+Allow: /refund
+
+Disallow: /settings/
+Disallow: /api/
+
+Sitemap: https://www.helplyai.co/sitemap.xml
