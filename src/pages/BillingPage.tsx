@@ -307,7 +307,6 @@ export default function BillingPage() {
 
   // Derived general subscription state
   const isGeneralActive = generalSub?.plan === 'general_monthly' && generalSub?.end && new Date(generalSub.end) > new Date();
-  const generalDaysLeft = isGeneralActive ? Math.max(0, (GENERAL_PLANS.general_monthly.limits.accessDaysPerMonth) - (generalSub?.daysUsed || 0)) : 0;
 
   if (loading || !loaded) return <div style={{ color: '#000000', padding: 40 }}>Loading...</div>;
 
