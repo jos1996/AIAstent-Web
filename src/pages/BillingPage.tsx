@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { PLANS, PLAN_ORDER, formatMinutes } from '../lib/plans';
-import type { PlanId } from '../lib/plans';
+import { PLANS, PLAN_ORDER, GENERAL_PLANS, GENERAL_PLAN_ORDER, formatMinutes } from '../lib/plans';
+import type { PlanId, GeneralPlanId } from '../lib/plans';
 import { usePlanLimits } from '../hooks/usePlanLimits';
 
 declare global {
@@ -26,7 +26,9 @@ export default function BillingPage() {
   const [billingEmail, setBillingEmail] = useState('');
   const [loading, setLoading] = useState(true);
   const [upgradeLoading, setUpgradeLoading] = useState<PlanId | null>(null);
+  const [generalUpgradeLoading, setGeneralUpgradeLoading] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState<PaymentSuccessInfo | null>(null);
+  const [generalSub, setGeneralSub] = useState<{ plan: string; end: string | null; daysUsed: number } | null>(null);
   const { planState, loaded, refreshPlan } = usePlanLimits();
 
   useEffect(() => {
@@ -36,11 +38,16 @@ export default function BillingPage() {
   const loadBilling = async () => {
     const { data } = await supabase
       .from('billing')
-      .select('billing_email, credits_total_minutes, credits_used_minutes, free_minutes_used')
+      .select('billing_email, credits_total_minutes, credits_used_minutes, free_minutes_used, general_plan, general_subscription_end, general_days_used')
       .eq('user_id', user!.id)
       .single();
     if (data) {
       setBillingEmail(data.billing_email || '');
+      setGeneralSub({
+        plan: data.general_plan || 'general_free',
+        end: data.general_subscription_end || null,
+        daysUsed: data.general_days_used || 0,
+      });
 
       // ONE-TIME FIX: Credit ₹299 payment on 2026-03-10 for beeptalkapp@gmail.com
       // This user paid but credits weren't added due to a bug (now fixed).
@@ -74,7 +81,7 @@ export default function BillingPage() {
     if (planId === 'free') return; // Can't purchase free
     setUpgradeLoading(planId);
 
-    const plan = PLANS[planId];
+    const plan = PLANS[planId as keyof typeof PLANS];
     const amount = plan.priceInPaise;
 
     const scriptLoaded = await loadRazorpayScript();
@@ -200,6 +207,107 @@ export default function BillingPage() {
     razorpay.open();
   };
 
+  // ── General Mode Subscription Purchase ──────────────────────────────────────
+  const handlePurchaseGeneralPro = async () => {
+    setGeneralUpgradeLoading(true);
+    const plan = GENERAL_PLANS.general_monthly;
+
+    const scriptLoaded = await loadRazorpayScript();
+    if (!scriptLoaded) {
+      alert('Failed to load payment gateway. Please try again.');
+      setGeneralUpgradeLoading(false);
+      return;
+    }
+
+    const options = {
+      key: RAZORPAY_KEY,
+      amount: plan.priceInPaise,
+      currency: 'INR',
+      name: 'HelplyAI',
+      description: `${plan.name} — Monthly Subscription`,
+      image: 'https://helplyai.co/logo.png',
+      notes: {
+        user_id: user!.id,
+        plan: 'general_monthly',
+        type: 'subscription',
+      },
+      handler: async function (response: any) {
+        const razorpayPaymentId = response.razorpay_payment_id || null;
+        const now = new Date();
+        const subscriptionEnd = new Date(now);
+        subscriptionEnd.setMonth(subscriptionEnd.getMonth() + 1);
+
+        try {
+          // Record payment
+          try {
+            await supabase.from('payments').insert({
+              user_id: user!.id,
+              plan: 'general_monthly',
+              plan_name: plan.name,
+              amount: plan.priceInPaise,
+              currency: 'INR',
+              amount_display: plan.priceLabel,
+              razorpay_payment_id: razorpayPaymentId,
+              razorpay_order_id: response.razorpay_order_id || null,
+              razorpay_signature: response.razorpay_signature || null,
+              status: 'success',
+              period_start: now.toISOString(),
+              metadata: { ...response, type: 'general_subscription' },
+            });
+          } catch (payErr) {
+            console.warn('Payment record insert failed (non-critical):', payErr);
+          }
+
+          // Update billing with general subscription
+          const { error: updateErr } = await supabase.from('billing').update({
+            general_plan: 'general_monthly',
+            general_subscription_end: subscriptionEnd.toISOString(),
+            general_days_used: 0,
+            general_last_access_date: null,
+            updated_at: now.toISOString(),
+          }).eq('user_id', user!.id);
+
+          if (updateErr) {
+            console.error('CRITICAL: Failed to activate general subscription:', updateErr);
+            alert('Payment received but subscription failed to activate. Please contact support with payment ID: ' + razorpayPaymentId);
+          }
+
+          setPaymentSuccess({
+            planName: 'General Pro (Monthly)',
+            planId: 'general_monthly' as PlanId,
+            amount: plan.priceLabel,
+            paymentId: razorpayPaymentId || 'N/A',
+            creditsAdded: 0,
+          });
+
+          await loadBilling();
+        } catch (err) {
+          console.error('General subscription error:', err);
+          alert('Payment received but an error occurred. Please contact support with payment ID: ' + razorpayPaymentId);
+        }
+        setGeneralUpgradeLoading(false);
+      },
+      prefill: { email: user?.email || '' },
+      theme: { color: '#16a34a' },
+      modal: {
+        ondismiss: function() { setGeneralUpgradeLoading(false); },
+        confirm_close: true
+      }
+    };
+
+    const razorpay = new window.Razorpay(options);
+    razorpay.on('payment.failed', async function (response: any) {
+      console.error('General subscription payment failed:', response.error);
+      alert(`Payment failed: ${response.error?.description || 'Unknown error'}. Please try again.`);
+      setGeneralUpgradeLoading(false);
+    });
+    razorpay.open();
+  };
+
+  // Derived general subscription state
+  const isGeneralActive = generalSub?.plan === 'general_monthly' && generalSub?.end && new Date(generalSub.end) > new Date();
+  const generalDaysLeft = isGeneralActive ? Math.max(0, (GENERAL_PLANS.general_monthly.limits.accessDaysPerMonth) - (generalSub?.daysUsed || 0)) : 0;
+
   if (loading || !loaded) return <div style={{ color: '#000000', padding: 40 }}>Loading...</div>;
 
   // Calculate credit usage percentage
@@ -209,8 +317,8 @@ export default function BillingPage() {
 
   return (
     <div style={{ maxWidth: '100%' }}>
-      <h1 style={{ color: '#000000', fontSize: 24, fontWeight: 700, margin: '0 0 8px', letterSpacing: '-0.02em' }}>Billing & Credits</h1>
-      <p style={{ color: '#6b7280', fontSize: 14, margin: '0 0 24px' }}>Purchase credits to use HelplyAI. 1 credit = 1 hour of usage.</p>
+      <h1 style={{ color: '#000000', fontSize: 24, fontWeight: 700, margin: '0 0 8px', letterSpacing: '-0.02em' }}>Billing & Plans</h1>
+      <p style={{ color: '#6b7280', fontSize: 14, margin: '0 0 24px' }}>Manage your Interview Mode credits and General Mode subscription.</p>
 
       {/* ── Credit Balance Card ── */}
       <div style={{
@@ -350,6 +458,100 @@ export default function BillingPage() {
             </div>
           );
         })}
+      </div>
+
+      {/* ── General Mode Subscription ── */}
+      <div style={{ marginBottom: 24 }}>
+        <h2 style={{ color: '#000000', fontSize: 20, fontWeight: 700, margin: '0 0 6px', letterSpacing: '-0.01em' }}>General Mode</h2>
+        <p style={{ color: '#6b7280', fontSize: 13, margin: '0 0 16px' }}>Monthly subscription for the general assistant — screen analysis, content rewriting, reminders & chat.</p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          {/* General Mode Status Card */}
+          <div style={{
+            padding: 24, borderRadius: 14,
+            background: isGeneralActive
+              ? 'linear-gradient(135deg, #f0fdf4, #dcfce7)'
+              : 'linear-gradient(135deg, #fefce8, #fef9c3)',
+            border: isGeneralActive ? '1px solid #86efac' : '1px solid #fde68a',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+          }}>
+            <div style={{ color: '#374151', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>General Mode Status</div>
+            <div style={{ color: isGeneralActive ? '#16a34a' : '#ca8a04', fontSize: 28, fontWeight: 800, marginTop: 6 }}>
+              {isGeneralActive ? 'Active' : 'Not Subscribed'}
+            </div>
+            {isGeneralActive && (
+              <>
+                <div style={{ color: '#374151', fontSize: 13, marginTop: 8 }}>
+                  <strong>{generalDaysLeft}</strong> of {GENERAL_PLANS.general_monthly.limits.accessDaysPerMonth} access days remaining
+                </div>
+                <div style={{ color: '#6b7280', fontSize: 12, marginTop: 4 }}>
+                  Renews: {generalSub?.end ? new Date(generalSub.end).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                </div>
+              </>
+            )}
+            {!isGeneralActive && (
+              <div style={{ color: '#92400e', fontSize: 13, marginTop: 8 }}>
+                Subscribe to unlock screen analysis, content rewriting, and unlimited chat in General Mode.
+              </div>
+            )}
+          </div>
+
+          {/* General Pro Plan Card */}
+          <div style={{
+            padding: 24, borderRadius: 14, position: 'relative',
+            background: '#f0fdf4',
+            border: '2px solid #16a34a',
+            boxShadow: '0 4px 16px rgba(22,163,74,0.15)',
+          }}>
+            <div style={{
+              position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)',
+              background: 'linear-gradient(135deg, #16a34a, #059669)',
+              color: '#fff', padding: '4px 14px', borderRadius: 12,
+              fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5,
+              boxShadow: '0 4px 12px rgba(22,163,74,0.4)',
+            }}>
+              General Mode
+            </div>
+
+            <div style={{ color: '#111827', fontSize: 18, fontWeight: 700, marginBottom: 4 }}>General Pro</div>
+            <div style={{ marginBottom: 4 }}>
+              <span style={{ color: '#111827', fontSize: 32, fontWeight: 800, letterSpacing: '-1px' }}>₹1,999</span>
+              <span style={{ color: '#6b7280', fontSize: 12, marginLeft: 4 }}>/ month</span>
+            </div>
+            <div style={{ color: '#6b7280', fontSize: 11, marginBottom: 4 }}>International: $20/month</div>
+            <div style={{ color: '#6b7280', fontSize: 12, marginBottom: 14, lineHeight: 1.5 }}>
+              Full general assistant — monthly subscription.
+            </div>
+
+            <button
+              onClick={handlePurchaseGeneralPro}
+              disabled={generalUpgradeLoading}
+              style={{
+                width: '100%', padding: '10px 0', borderRadius: 10, marginBottom: 14,
+                background: isGeneralActive ? '#d1fae5' : '#16a34a',
+                border: 'none',
+                color: isGeneralActive ? '#065f46' : '#ffffff',
+                fontSize: 13, fontWeight: 700,
+                cursor: isGeneralActive ? 'default' : 'pointer',
+                transition: 'all 0.2s',
+                opacity: generalUpgradeLoading ? 0.6 : 1,
+              }}
+            >
+              {generalUpgradeLoading ? 'Processing...' : isGeneralActive ? 'Active ✓' : 'Subscribe Now'}
+            </button>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {GENERAL_PLANS.general_monthly.features.map(f => (
+                <div key={f} style={{ color: '#374151', fontSize: 11, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 1 }}>
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  {f}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* ── How Credits Work ── */}

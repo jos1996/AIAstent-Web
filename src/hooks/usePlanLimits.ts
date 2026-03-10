@@ -121,7 +121,7 @@ export function usePlanLimits() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) return { success: false, error: 'Not logged in' };
 
-      const planConfig = PLANS[newPlan];
+      const planConfig = PLANS[newPlan as keyof typeof PLANS];
       if (!planConfig) return { success: false, error: 'Invalid plan' };
 
       const now = new Date().toISOString();
@@ -170,6 +170,6 @@ export function usePlanLimits() {
     updatePlan,
     getRemaining,
     refreshPlan: loadPlan,
-    currentPlan: PLANS[planState.plan as PlanId] || PLANS.free,
+    currentPlan: PLANS[planState.plan as keyof typeof PLANS] || PLANS.free,
   };
 }

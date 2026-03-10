@@ -1,12 +1,23 @@
-// ── Credit-Based Plan System ─────────────────────────────────────────────────
-// 1 credit = 1 hour of usage. Time tracked in minutes.
+// ── Dual Pricing System ──────────────────────────────────────────────────────
+// Interview Mode: Credit-based (1 credit = 1 hour, time-tracked in minutes)
+// General Mode: Monthly subscription (₹1,999/mo) with daily limits
 
-export type PlanId = 'free' | 'credit_1hr' | 'credit_3hr' | 'credit_10hr';
-export type BillingCycle = 'one_time';
+export type InterviewPlanId = 'free' | 'credit_1hr' | 'credit_3hr' | 'credit_10hr';
+export type GeneralPlanId = 'general_free' | 'general_monthly';
+export type PlanId = InterviewPlanId | GeneralPlanId;
+export type BillingCycle = 'one_time' | 'monthly';
 
 export interface PlanLimits {
-  totalMinutes: number;       // Total minutes included in plan (15 for free, 60/180/600 for credits)
-  freeMinutes: number;        // Free minutes for new users (15 min)
+  totalMinutes: number;
+  freeMinutes: number;
+}
+
+export interface GeneralPlanLimits {
+  accessDaysPerMonth: number;      // Days user can access within subscription
+  screenAnalysisPerDay: number;    // Max screen analyses per day (5)
+  rewritesPerDay: number;          // Max content rewrites per day (5)
+  remindersPerDay: number;         // -1 = unlimited
+  chatMessagesPerDay: number;      // -1 = unlimited
 }
 
 export interface PlanConfig {
@@ -16,13 +27,26 @@ export interface PlanConfig {
   priceLabel: string;
   priceSuffix: string;
   savingsNote: string;
-  priceInPaise: number;       // Price in paise (INR × 100) for Razorpay
+  priceInPaise: number;
   limits: PlanLimits;
   features: string[];
   highlighted: boolean;
 }
 
-export const PLANS: Record<PlanId, PlanConfig> = {
+export interface GeneralPlanConfig {
+  id: GeneralPlanId;
+  name: string;
+  tagline: string;
+  priceLabel: string;
+  priceSuffix: string;
+  priceInPaise: number;
+  priceUSD: string;
+  limits: GeneralPlanLimits;
+  features: string[];
+  highlighted: boolean;
+}
+
+export const PLANS: Record<InterviewPlanId, PlanConfig> = {
   free: {
     id: 'free',
     name: 'Free Trial',
@@ -104,12 +128,74 @@ export const PLANS: Record<PlanId, PlanConfig> = {
   },
 };
 
-export const PLAN_ORDER: PlanId[] = ['free', 'credit_1hr', 'credit_3hr', 'credit_10hr'];
+export const PLAN_ORDER: InterviewPlanId[] = ['free', 'credit_1hr', 'credit_3hr', 'credit_10hr'];
 
-// ── Usage Action Types (kept for backward compat but no daily limits) ────────
-export type UsageAction = 'interview_question' | 'screen_analysis' | 'chat_message' | 'reminder' | 'generate_answer';
+// ── General Mode Plans (subscription-based) ─────────────────────────────────
+export const GENERAL_PLANS: Record<GeneralPlanId, GeneralPlanConfig> = {
+  general_free: {
+    id: 'general_free',
+    name: 'General Free',
+    tagline: 'Limited general assistant access.',
+    priceLabel: 'Free',
+    priceSuffix: '',
+    priceInPaise: 0,
+    priceUSD: '$0',
+    limits: {
+      accessDaysPerMonth: 0,
+      screenAnalysisPerDay: 0,
+      rewritesPerDay: 0,
+      remindersPerDay: 3,
+      chatMessagesPerDay: 5,
+    },
+    features: [
+      'Basic chat (5 messages/day)',
+      '3 reminders/day',
+      'No screen analysis',
+      'No content rewriting',
+    ],
+    highlighted: false,
+  },
+  general_monthly: {
+    id: 'general_monthly',
+    name: 'General Pro',
+    tagline: 'Full general assistant — monthly subscription.',
+    priceLabel: '₹1,999',
+    priceSuffix: '/ month',
+    priceInPaise: 199900,
+    priceUSD: '$20',
+    limits: {
+      accessDaysPerMonth: 2,
+      screenAnalysisPerDay: 5,
+      rewritesPerDay: 5,
+      remindersPerDay: -1,
+      chatMessagesPerDay: -1,
+    },
+    features: [
+      '2 days of access per month',
+      'Up to 5 screen analyses per day',
+      'Up to 5 content rewrites per day',
+      'Unlimited reminders',
+      'Unlimited chat messages',
+      'No Listen or What to Say',
+    ],
+    highlighted: true,
+  },
+};
+
+export const GENERAL_PLAN_ORDER: GeneralPlanId[] = ['general_free', 'general_monthly'];
+
+// ── Usage Action Types ──────────────────────────────────────────────────────
+
+export type UsageAction =
+  | 'interview_question'
+  | 'screen_analysis'
+  | 'chat_message'
+  | 'reminder'
+  | 'generate_answer'
+  | 'rewrite';
 
 // ── Helper: format minutes to human-readable ─────────────────────────────────
+
 export function formatMinutes(mins: number): string {
   if (mins <= 0) return '0 min';
   const hours = Math.floor(mins / 60);
@@ -118,6 +204,8 @@ export function formatMinutes(mins: number): string {
   if (remaining === 0) return `${hours}h`;
   return `${hours}h ${remaining}m`;
 }
+
+// ── Helper: get today's date key for localStorage usage tracking ─────────────
 
 export function getTodayKey(): string {
   const d = new Date();
