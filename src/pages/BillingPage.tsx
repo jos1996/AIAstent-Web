@@ -29,6 +29,7 @@ export default function BillingPage() {
   const [generalUpgradeLoading, setGeneralUpgradeLoading] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState<PaymentSuccessInfo | null>(null);
   const [generalSub, setGeneralSub] = useState<{ plan: string; end: string | null; daysUsed: number } | null>(null);
+  const [pricingMode, setPricingMode] = useState<'interview' | 'general'>('interview');
   const { planState, loaded, refreshPlan } = usePlanLimits();
 
   useEffect(() => {
@@ -318,9 +319,56 @@ export default function BillingPage() {
   return (
     <div style={{ maxWidth: '100%' }}>
       <h1 style={{ color: '#000000', fontSize: 24, fontWeight: 700, margin: '0 0 8px', letterSpacing: '-0.02em' }}>Billing & Plans</h1>
-      <p style={{ color: '#6b7280', fontSize: 14, margin: '0 0 24px' }}>Manage your Interview Mode credits and General Mode subscription.</p>
+      <p style={{ color: '#6b7280', fontSize: 14, margin: '0 0 16px' }}>Choose between Interview Mode (credit-based) or General Mode (monthly subscription).</p>
 
-      {/* ── Credit Balance Card ── */}
+      {/* ── Mode Toggle ── */}
+      <div style={{ 
+        display: 'flex', 
+        gap: 8, 
+        marginBottom: 24,
+        padding: 4,
+        background: '#f3f4f6',
+        borderRadius: 12,
+        width: 'fit-content',
+      }}>
+        <button
+          onClick={() => setPricingMode('interview')}
+          style={{
+            padding: '8px 20px',
+            borderRadius: 8,
+            border: 'none',
+            background: pricingMode === 'interview' ? '#2563eb' : 'transparent',
+            color: pricingMode === 'interview' ? '#ffffff' : '#6b7280',
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+          }}
+        >
+          Interview Mode
+        </button>
+        <button
+          onClick={() => setPricingMode('general')}
+          style={{
+            padding: '8px 20px',
+            borderRadius: 8,
+            border: 'none',
+            background: pricingMode === 'general' ? '#16a34a' : 'transparent',
+            color: pricingMode === 'general' ? '#ffffff' : '#6b7280',
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+          }}
+        >
+          General Mode
+        </button>
+      </div>
+
+      {/* ── Interview Mode Section ── */}
+      {pricingMode === 'interview' && (
+        <>
+          {/* ── Credit Balance Card ── */}
       <div style={{
         marginBottom: 24, padding: 28, borderRadius: 16,
         background: planState.isExpired
@@ -460,9 +508,45 @@ export default function BillingPage() {
         })}
       </div>
 
+      {/* ── How Credits Work (Interview Mode) ── */}
+      <div style={{
+        marginBottom: 24, padding: 24, borderRadius: 14,
+        background: '#f9fafb', border: '1px solid #e5e7eb',
+      }}>
+        <h3 style={{ color: '#111827', fontSize: 16, fontWeight: 700, margin: '0 0 14px' }}>How Credits Work</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+          <div>
+            <div style={{ fontSize: 24, marginBottom: 6 }}>⏱</div>
+            <div style={{ color: '#111827', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Time-Based Billing</div>
+            <div style={{ color: '#6b7280', fontSize: 12, lineHeight: 1.5 }}>
+              Credits are deducted based on actual usage time. Use 10 minutes? Only 10 minutes deducted.
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: 24, marginBottom: 6 }}>💡</div>
+            <div style={{ color: '#111827', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>All Features Included</div>
+            <div style={{ color: '#6b7280', fontSize: 12, lineHeight: 1.5 }}>
+              Every credit gives full access: AI chat, interview mode, screen analysis, and more.
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: 24, marginBottom: 6 }}>💰</div>
+            <div style={{ color: '#111827', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>No Expiry</div>
+            <div style={{ color: '#6b7280', fontSize: 12, lineHeight: 1.5 }}>
+              Purchased credits never expire. Use them whenever you need — no time pressure.
+            </div>
+          </div>
+        </div>
+      </div>
+        </>
+      )}
+
+      {/* ── General Mode Section ── */}
+      {pricingMode === 'general' && (
+        <>
       {/* ── General Mode Subscription ── */}
       <div style={{ marginBottom: 24 }}>
-        <h2 style={{ color: '#000000', fontSize: 20, fontWeight: 700, margin: '0 0 6px', letterSpacing: '-0.01em' }}>General Mode</h2>
+        <h2 style={{ color: '#000000', fontSize: 20, fontWeight: 700, margin: '0 0 6px', letterSpacing: '-0.01em' }}>General Mode Subscription</h2>
         <p style={{ color: '#6b7280', fontSize: 13, margin: '0 0 16px' }}>Monthly subscription for the general assistant — screen analysis, content rewriting, reminders & chat.</p>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
@@ -554,36 +638,38 @@ export default function BillingPage() {
         </div>
       </div>
 
-      {/* ── How Credits Work ── */}
+      {/* ── How General Mode Works ── */}
       <div style={{
         marginBottom: 24, padding: 24, borderRadius: 14,
         background: '#f9fafb', border: '1px solid #e5e7eb',
       }}>
-        <h3 style={{ color: '#111827', fontSize: 16, fontWeight: 700, margin: '0 0 14px' }}>How Credits Work</h3>
+        <h3 style={{ color: '#111827', fontSize: 16, fontWeight: 700, margin: '0 0 14px' }}>How General Mode Works</h3>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
           <div>
-            <div style={{ fontSize: 24, marginBottom: 6 }}>&#9201;</div>
-            <div style={{ color: '#111827', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Time-Based Billing</div>
+            <div style={{ fontSize: 24, marginBottom: 6 }}>📅</div>
+            <div style={{ color: '#111827', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>2 Days Access/Month</div>
             <div style={{ color: '#6b7280', fontSize: 12, lineHeight: 1.5 }}>
-              Credits are deducted based on actual usage time. Use 10 minutes? Only 10 minutes deducted.
+              Use the app on any 2 days within your subscription month. Perfect for occasional use.
             </div>
           </div>
           <div>
-            <div style={{ fontSize: 24, marginBottom: 6 }}>&#128161;</div>
-            <div style={{ color: '#111827', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>All Features Included</div>
+            <div style={{ fontSize: 24, marginBottom: 6 }}>📊</div>
+            <div style={{ color: '#111827', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Daily Limits</div>
             <div style={{ color: '#6b7280', fontSize: 12, lineHeight: 1.5 }}>
-              Every credit gives full access: AI chat, interview mode, screen analysis, and more.
+              5 screen analyses, 5 rewrites per day. Unlimited chat and reminders.
             </div>
           </div>
           <div>
-            <div style={{ fontSize: 24, marginBottom: 6 }}>&#128176;</div>
-            <div style={{ color: '#111827', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>No Expiry</div>
+            <div style={{ fontSize: 24, marginBottom: 6 }}>🔄</div>
+            <div style={{ color: '#111827', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Monthly Renewal</div>
             <div style={{ color: '#6b7280', fontSize: 12, lineHeight: 1.5 }}>
-              Purchased credits never expire. Use them whenever you need — no time pressure.
+              Subscription auto-renews monthly. Cancel anytime from your account settings.
             </div>
           </div>
         </div>
       </div>
+        </>
+      )}
 
       {/* ── Payment Details ── */}
       <div style={{
