@@ -89,21 +89,8 @@ export default function BillingPage() {
         const now = new Date();
 
         try {
-          // 1. Record payment
+          // 1. Record payment (best-effort — don't block credit update)
           try {
-            await supabase.rpc('record_payment', {
-              p_user_id: user!.id,
-              p_plan: planId,
-              p_amount: amount,
-              p_currency: 'INR',
-              p_razorpay_payment_id: razorpayPaymentId,
-              p_razorpay_order_id: razorpayOrderId,
-              p_razorpay_signature: razorpaySignature,
-              p_payment_method: null,
-              p_metadata: response || {}
-            });
-          } catch {
-            // Fallback: direct insert
             await supabase.from('payments').insert({
               user_id: user!.id,
               plan: planId,
@@ -118,30 +105,36 @@ export default function BillingPage() {
               period_start: now.toISOString(),
               metadata: response || {},
             });
+          } catch (payErr) {
+            console.warn('Payment record insert failed (non-critical):', payErr);
           }
 
-          // 2. Add credits to billing table
-          const { data: current } = await supabase
+          // 2. Add credits to billing table — CRITICAL STEP
+          const { data: current, error: fetchErr } = await supabase
             .from('billing')
             .select('credits_total_minutes')
             .eq('user_id', user!.id)
             .single();
 
+          if (fetchErr) {
+            console.error('Failed to fetch current billing:', fetchErr);
+          }
+
           const existingMinutes = current?.credits_total_minutes || 0;
           const newTotalMinutes = existingMinutes + plan.limits.totalMinutes;
 
-          await supabase.from('billing').update({
+          // Only update columns that exist on billing table
+          const { error: updateErr } = await supabase.from('billing').update({
             plan: planId,
             billing_cycle: 'one_time',
             credits_total_minutes: newTotalMinutes,
-            razorpay_payment_id: razorpayPaymentId,
-            razorpay_order_id: razorpayOrderId,
-            last_payment_amount: amount,
-            last_payment_currency: 'INR',
-            last_payment_status: 'success',
-            last_payment_date: now.toISOString(),
             updated_at: now.toISOString(),
           }).eq('user_id', user!.id);
+
+          if (updateErr) {
+            console.error('CRITICAL: Failed to update credits in billing:', updateErr);
+            alert('Payment received but credits failed to update. Please contact support with payment ID: ' + razorpayPaymentId);
+          }
 
           // 3. Show success + refresh
           setPaymentSuccess({
@@ -156,13 +149,7 @@ export default function BillingPage() {
           await loadBilling();
         } catch (err) {
           console.error('Payment recording error:', err);
-          setPaymentSuccess({
-            planName: plan.name,
-            planId: planId,
-            amount: '₹' + (amount / 100),
-            paymentId: razorpayPaymentId || 'N/A',
-            creditsAdded: plan.limits.totalMinutes,
-          });
+          alert('Payment received but an error occurred updating your credits. Please contact support with payment ID: ' + razorpayPaymentId);
         }
         setUpgradeLoading(null);
       },
