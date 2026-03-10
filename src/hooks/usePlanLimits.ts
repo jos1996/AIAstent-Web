@@ -1,137 +1,175 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import type { PlanId, UsageAction } from '../lib/plans';
-import { PLANS, ACTION_TO_LIMIT_KEY, isTrialExpired, getTodayKey } from '../lib/plans';
+import { PLANS, formatMinutes } from '../lib/plans';
 
-const USAGE_STORAGE_KEY = 'aiassist_daily_usage';
-
-interface DailyUsage {
-  date: string;
-  interview_question: number;
-  screen_analysis: number;
-  chat_message: number;
-  reminder: number;
-  generate_answer: number;
-}
+// ── Credit-Based Plan Limits ─────────────────────────────────────────────────
+// Tracks remaining minutes instead of daily action counts.
+// Credits are stored in Supabase `billing` table:
+//   - credits_total_minutes: total purchased minutes
+//   - credits_used_minutes: minutes consumed
+//   - free_minutes_used: free trial minutes consumed (max 15)
 
 interface PlanState {
   plan: PlanId;
-  billingCycle: 'monthly' | 'annually';
-  trialStart: string | null;
-  isTrialActive: boolean;
-  isExpired: boolean;
-}
-
-function getEmptyUsage(): DailyUsage {
-  return { date: getTodayKey(), interview_question: 0, screen_analysis: 0, chat_message: 0, reminder: 0, generate_answer: 0 };
-}
-
-function loadDailyUsage(): DailyUsage {
-  try {
-    const raw = localStorage.getItem(USAGE_STORAGE_KEY);
-    if (!raw) return getEmptyUsage();
-    const parsed: DailyUsage = JSON.parse(raw);
-    if (parsed.date !== getTodayKey()) return getEmptyUsage();
-    return parsed;
-  } catch { return getEmptyUsage(); }
-}
-
-function saveDailyUsage(usage: DailyUsage) {
-  try { localStorage.setItem(USAGE_STORAGE_KEY, JSON.stringify(usage)); } catch { /* ignore */ }
+  totalMinutes: number;       // Total minutes available (purchased + free)
+  usedMinutes: number;        // Minutes consumed
+  remainingMinutes: number;   // Minutes left
+  isExpired: boolean;         // No credits left
+  isFreeUser: boolean;        // Using free trial
 }
 
 export function usePlanLimits() {
-  const [planState, setPlanState] = useState<PlanState>({ plan: 'free', billingCycle: 'monthly', trialStart: null, isTrialActive: false, isExpired: false });
-  const [usage, setUsage] = useState<DailyUsage>(loadDailyUsage());
+  const [planState, setPlanState] = useState<PlanState>({
+    plan: 'free',
+    totalMinutes: 15,
+    usedMinutes: 0,
+    remainingMinutes: 15,
+    isExpired: false,
+    isFreeUser: true,
+  });
   const [loaded, setLoaded] = useState(false);
 
-  useEffect(() => {
-    const loadPlan = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) { setLoaded(true); return; }
-      let { data } = await supabase.from('billing').select('plan, billing_cycle, trial_start_date, next_billing_date').eq('user_id', session.user.id).single();
-      // Auto-create billing row if it doesn't exist
-      if (!data) {
-        const now = new Date().toISOString();
-        const { data: newRow } = await supabase.from('billing').insert({
-          user_id: session.user.id, plan: 'free', billing_cycle: 'monthly',
-          trial_start_date: now, billing_email: session.user.email || '',
-        }).select('plan, billing_cycle, trial_start_date, next_billing_date').single();
-        data = newRow;
-      }
-      if (data) {
-        const planId = (data.plan || 'free') as PlanId;
-        const planConfig = PLANS[planId] || PLANS.free;
-        const trialStart = data.trial_start_date || session.user.created_at || null;
-        const trialExpired = planId === 'free' && isTrialExpired(trialStart, planConfig.limits.trialDays);
-        
-        // Check if day plan has expired (24 hours from next_billing_date or created_at)
-        let dayPlanExpired = false;
-        if (planId === 'day' && data.next_billing_date) {
-          const expiryTime = new Date(data.next_billing_date).getTime();
-          dayPlanExpired = Date.now() > expiryTime;
-        }
-        
-        setPlanState({ plan: planId, billingCycle: (data.billing_cycle || 'monthly') as 'monthly' | 'annually', trialStart, isTrialActive: planId === 'free' && !trialExpired, isExpired: trialExpired || dayPlanExpired });
-      }
-      setLoaded(true);
-    };
-    loadPlan();
-  }, []);
+  const loadPlan = useCallback(async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) { setLoaded(true); return; }
 
-  const canPerformAction = useCallback((action: UsageAction): { allowed: boolean; reason: string } => {
-    const planConfig = PLANS[planState.plan] || PLANS.free;
-    const limitKey = ACTION_TO_LIMIT_KEY[action];
-    const limit = planConfig.limits[limitKey] as number;
-    if (planState.isExpired) {
-      if (planState.plan === 'day') {
-        return { allowed: false, reason: 'Your 24-hour Day Pass has expired. Purchase a new pass or upgrade to continue.' };
-      }
-      return { allowed: false, reason: 'Your 2-day free trial has expired. Subscribe to a plan to continue using all features.' };
+    let { data } = await supabase
+      .from('billing')
+      .select('plan, credits_total_minutes, credits_used_minutes, free_minutes_used, billing_email, trial_start_date')
+      .eq('user_id', session.user.id)
+      .single();
+
+    // Auto-create billing row if it doesn't exist (new user → 15 min free)
+    if (!data) {
+      const now = new Date().toISOString();
+      const { data: newRow } = await supabase
+        .from('billing')
+        .insert({
+          user_id: session.user.id,
+          plan: 'free',
+          billing_cycle: 'one_time',
+          trial_start_date: now,
+          billing_email: session.user.email || '',
+          credits_total_minutes: 0,
+          credits_used_minutes: 0,
+          free_minutes_used: 0,
+        })
+        .select('plan, credits_total_minutes, credits_used_minutes, free_minutes_used, billing_email, trial_start_date')
+        .single();
+      data = newRow;
     }
-    if (limit === -1) return { allowed: true, reason: '' };
-    const currentCount = usage[action] || 0;
-    if (currentCount >= limit) return { allowed: false, reason: `Daily limit reached (${limit}). Upgrade to Pro for unlimited access.` };
-    return { allowed: true, reason: '' };
-  }, [planState, usage]);
 
-  const recordUsage = useCallback((action: UsageAction) => {
-    setUsage(prev => {
-      const today = getTodayKey();
-      const updated = prev.date === today ? { ...prev } : getEmptyUsage();
-      updated[action] = (updated[action] || 0) + 1;
-      saveDailyUsage(updated);
-      return updated;
-    });
+    if (data) {
+      const planId = (data.plan || 'free') as PlanId;
+      const creditTotal = data.credits_total_minutes || 0;
+      const creditUsed = data.credits_used_minutes || 0;
+      const freeUsed = data.free_minutes_used || 0;
+
+      // Total available = purchased credits + remaining free minutes
+      const freeRemaining = Math.max(0, 15 - freeUsed);
+      const creditRemaining = Math.max(0, creditTotal - creditUsed);
+      const totalAvailable = creditTotal + 15; // purchased + free grant
+      const totalUsed = creditUsed + freeUsed;
+      const remaining = freeRemaining + creditRemaining;
+
+      setPlanState({
+        plan: planId,
+        totalMinutes: totalAvailable,
+        usedMinutes: totalUsed,
+        remainingMinutes: remaining,
+        isExpired: remaining <= 0,
+        isFreeUser: creditTotal === 0,
+      });
+    }
+    setLoaded(true);
   }, []);
 
+  // Initial load + periodic refresh every 60 seconds to reflect credit changes
+  useEffect(() => {
+    loadPlan();
+    const interval = setInterval(loadPlan, 60 * 1000);
+    return () => clearInterval(interval);
+  }, [loadPlan]);
+
+  // Check if user can perform any action (has remaining minutes)
+  const canPerformAction = useCallback((_action: UsageAction): { allowed: boolean; reason: string } => {
+    if (planState.isExpired) {
+      if (planState.isFreeUser) {
+        return {
+          allowed: false,
+          reason: 'Your 15-minute free trial has been used. Purchase credits to continue using HelplyAI.',
+        };
+      }
+      return {
+        allowed: false,
+        reason: `You've used all your credits (${formatMinutes(planState.totalMinutes)}). Purchase more credits to continue.`,
+      };
+    }
+    return { allowed: true, reason: '' };
+  }, [planState]);
+
+  // Record usage — in credit system this is a no-op (time tracking handles deduction)
+  const recordUsage = useCallback((_action: UsageAction) => {
+    // Credits are deducted by time, not by action count.
+    // The chatbot session timer handles deduction via Supabase.
+  }, []);
+
+  // Update plan after credit purchase
   const updatePlan = useCallback(async (newPlan: PlanId): Promise<{ success: boolean; error?: string }> => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) return { success: false, error: 'Not logged in' };
-      const cycle: 'monthly' | 'annually' = newPlan === 'pro_plus' ? 'annually' : 'monthly';
-      const now = new Date();
-      const nextBilling = new Date(now);
-      if (newPlan === 'day') nextBilling.setHours(nextBilling.getHours() + 24);
-      else if (newPlan === 'weekly') nextBilling.setDate(nextBilling.getDate() + 7);
-      else if (newPlan === 'pro') nextBilling.setMonth(nextBilling.getMonth() + 1);
-      else if (newPlan === 'pro_plus') nextBilling.setFullYear(nextBilling.getFullYear() + 1);
-      const { error } = await supabase.from('billing').update({ plan: newPlan, billing_cycle: cycle, next_billing_date: newPlan === 'free' ? null : nextBilling.toISOString(), updated_at: now.toISOString() }).eq('user_id', session.user.id);
+
+      const planConfig = PLANS[newPlan];
+      if (!planConfig) return { success: false, error: 'Invalid plan' };
+
+      const now = new Date().toISOString();
+
+      // Add credits (minutes) to existing balance
+      const { data: current } = await supabase
+        .from('billing')
+        .select('credits_total_minutes')
+        .eq('user_id', session.user.id)
+        .single();
+
+      const existingMinutes = current?.credits_total_minutes || 0;
+      const newTotalMinutes = existingMinutes + planConfig.limits.totalMinutes;
+
+      const { error } = await supabase
+        .from('billing')
+        .update({
+          plan: newPlan,
+          billing_cycle: 'one_time',
+          credits_total_minutes: newTotalMinutes,
+          updated_at: now,
+        })
+        .eq('user_id', session.user.id);
+
       if (error) throw error;
-      setPlanState(prev => ({ ...prev, plan: newPlan, billingCycle: cycle, isTrialActive: newPlan === 'free' && prev.isTrialActive, isExpired: false }));
+
+      // Refresh plan state
+      await loadPlan();
       return { success: true };
     } catch (err: unknown) {
       return { success: false, error: err instanceof Error ? err.message : 'Failed to update plan' };
     }
-  }, []);
+  }, [loadPlan]);
 
-  const getRemaining = useCallback((action: UsageAction): number | null => {
-    const planConfig = PLANS[planState.plan] || PLANS.free;
-    const limitKey = ACTION_TO_LIMIT_KEY[action];
-    const limit = planConfig.limits[limitKey] as number;
-    if (limit === -1) return null;
-    return Math.max(0, limit - (usage[action] || 0));
-  }, [planState, usage]);
+  // Get remaining minutes (not action-based anymore)
+  const getRemaining = useCallback((_action: UsageAction): number | null => {
+    return planState.remainingMinutes;
+  }, [planState]);
 
-  return { planState, usage, loaded, canPerformAction, recordUsage, updatePlan, getRemaining, currentPlan: PLANS[planState.plan] || PLANS.free };
+  return {
+    planState,
+    usage: {} as Record<string, number>,
+    loaded,
+    canPerformAction,
+    recordUsage,
+    updatePlan,
+    getRemaining,
+    refreshPlan: loadPlan,
+    currentPlan: PLANS[planState.plan as PlanId] || PLANS.free,
+  };
 }

@@ -1,13 +1,12 @@
-export type PlanId = 'free' | 'day' | 'weekly' | 'pro' | 'pro_plus';
-export type BillingCycle = 'monthly' | 'annually';
+// ── Credit-Based Plan System ─────────────────────────────────────────────────
+// 1 credit = 1 hour of usage. Time tracked in minutes.
+
+export type PlanId = 'free' | 'credit_1hr' | 'credit_3hr' | 'credit_10hr';
+export type BillingCycle = 'one_time';
 
 export interface PlanLimits {
-  interviewQuestionsPerDay: number;
-  screenAnalysisPerDay: number;
-  chatMessagesPerDay: number;
-  remindersPerDay: number;
-  generateAnswerPerDay: number;
-  trialDays: number;
+  totalMinutes: number;       // Total minutes included in plan (15 for free, 60/180/600 for credits)
+  freeMinutes: number;        // Free minutes for new users (15 min)
 }
 
 export interface PlanConfig {
@@ -17,6 +16,7 @@ export interface PlanConfig {
   priceLabel: string;
   priceSuffix: string;
   savingsNote: string;
+  priceInPaise: number;       // Price in paise (INR × 100) for Razorpay
   limits: PlanLimits;
   features: string[];
   highlighted: boolean;
@@ -24,60 +24,99 @@ export interface PlanConfig {
 
 export const PLANS: Record<PlanId, PlanConfig> = {
   free: {
-    id: 'free', name: 'Free Trial', tagline: 'Try it free for 2 days.',
-    priceLabel: 'Free', priceSuffix: '2 days', savingsNote: '',
-    limits: { interviewQuestionsPerDay: 3, screenAnalysisPerDay: 2, chatMessagesPerDay: 3, remindersPerDay: 5, generateAnswerPerDay: 3, trialDays: 2 },
-    features: ['AI responses (3/day)', 'Interview mode (3 questions/day)', 'Screen analysis (2/day)', 'Generate answers (3/day)', 'Setup reminders (5/day)', '2-day free trial'],
+    id: 'free',
+    name: 'Free Trial',
+    tagline: '15 minutes free to try all features.',
+    priceLabel: 'Free',
+    priceSuffix: '15 min',
+    savingsNote: '',
+    priceInPaise: 0,
+    limits: { totalMinutes: 15, freeMinutes: 15 },
+    features: [
+      '15 minutes free usage',
+      'Full AI chat access',
+      'Interview mode included',
+      'Screen analysis included',
+      'Generate answers included',
+      'No credit card required',
+    ],
     highlighted: false,
   },
-  day: {
-    id: 'day', name: 'Day Pass', tagline: 'Unlimited access for 24 hours.',
-    priceLabel: '₹999', priceSuffix: '/ day', savingsNote: '',
-    limits: { interviewQuestionsPerDay: -1, screenAnalysisPerDay: -1, chatMessagesPerDay: -1, remindersPerDay: -1, generateAnswerPerDay: -1, trialDays: 0 },
-    features: ['Unlimited AI responses', 'Unlimited interview mode', 'Unlimited screen analysis', 'Unlimited generate answers', 'Unlimited reminders', 'Valid for 24 hours', 'Perfect for interview prep'],
+  credit_1hr: {
+    id: 'credit_1hr',
+    name: '1 Credit',
+    tagline: '1 hour of full access.',
+    priceLabel: '₹299',
+    priceSuffix: '/ hour',
+    savingsNote: '',
+    priceInPaise: 29900,
+    limits: { totalMinutes: 60, freeMinutes: 0 },
+    features: [
+      '1 hour of usage',
+      'Unlimited AI responses',
+      'Unlimited interview mode',
+      'Unlimited screen analysis',
+      'Unlimited generate answers',
+      'All features unlocked',
+    ],
     highlighted: false,
   },
-  weekly: {
-    id: 'weekly', name: 'Weekly', tagline: 'Great for short-term projects & interviews.',
-    priceLabel: '₹1999', priceSuffix: '/ week', savingsNote: '',
-    limits: { interviewQuestionsPerDay: 25, screenAnalysisPerDay: 20, chatMessagesPerDay: 25, remindersPerDay: -1, generateAnswerPerDay: 30, trialDays: 0 },
-    features: ['25 AI responses/day', 'Interview mode (25 questions/day)', 'Screen analysis (20/day)', 'Generate answers (30/day)', 'Unlimited reminders', 'Access to latest AI models', 'Priority support'],
-    highlighted: false,
-  },
-  pro: {
-    id: 'pro', name: 'Pro', tagline: 'Unlimited access — best for professionals.',
-    priceLabel: '$35', priceSuffix: '/ month', savingsNote: '🌟 Most Popular',
-    limits: { interviewQuestionsPerDay: -1, screenAnalysisPerDay: -1, chatMessagesPerDay: -1, remindersPerDay: -1, generateAnswerPerDay: -1, trialDays: 0 },
-    features: ['Unlimited AI responses', 'Unlimited interview mode', 'Unlimited screen analysis', 'Unlimited generate answers', 'Unlimited reminders', 'Access to latest AI models', 'Priority support'],
+  credit_3hr: {
+    id: 'credit_3hr',
+    name: '3 Credits',
+    tagline: '3 hours — best for interview prep.',
+    priceLabel: '₹599',
+    priceSuffix: '/ 3 hours',
+    savingsNote: '₹200/hr — Save 33%',
+    priceInPaise: 59900,
+    limits: { totalMinutes: 180, freeMinutes: 0 },
+    features: [
+      '3 hours of usage',
+      'Unlimited AI responses',
+      'Unlimited interview mode',
+      'Unlimited screen analysis',
+      'Unlimited generate answers',
+      'All features unlocked',
+      'Best for interview prep',
+    ],
     highlighted: true,
   },
-  pro_plus: {
-    id: 'pro_plus', name: 'Pro (Yearly)', tagline: 'Best value — save big with annual billing.',
-    priceLabel: '$399', priceSuffix: '/ year', savingsNote: 'Save $21/year vs monthly',
-    limits: { interviewQuestionsPerDay: -1, screenAnalysisPerDay: -1, chatMessagesPerDay: -1, remindersPerDay: -1, generateAnswerPerDay: -1, trialDays: 0 },
-    features: ['Everything in Pro', 'Unlimited AI responses', 'Unlimited interview mode', 'Unlimited screen analysis', 'Unlimited generate answers', 'Unlimited reminders', 'Priority support', 'Best price — billed annually'],
+  credit_10hr: {
+    id: 'credit_10hr',
+    name: '10 Credits',
+    tagline: '10 hours — maximum value.',
+    priceLabel: '₹1,999',
+    priceSuffix: '/ 10 hours',
+    savingsNote: '₹200/hr — Save 33%',
+    priceInPaise: 199900,
+    limits: { totalMinutes: 600, freeMinutes: 0 },
+    features: [
+      '10 hours of usage',
+      'Unlimited AI responses',
+      'Unlimited interview mode',
+      'Unlimited screen analysis',
+      'Unlimited generate answers',
+      'All features unlocked',
+      'Maximum value pack',
+      'Priority support',
+    ],
     highlighted: false,
   },
 };
 
-export const PLAN_ORDER: PlanId[] = ['free', 'day', 'weekly', 'pro', 'pro_plus'];
+export const PLAN_ORDER: PlanId[] = ['free', 'credit_1hr', 'credit_3hr', 'credit_10hr'];
 
+// ── Usage Action Types (kept for backward compat but no daily limits) ────────
 export type UsageAction = 'interview_question' | 'screen_analysis' | 'chat_message' | 'reminder' | 'generate_answer';
 
-export const ACTION_TO_LIMIT_KEY: Record<UsageAction, keyof PlanLimits> = {
-  interview_question: 'interviewQuestionsPerDay',
-  screen_analysis: 'screenAnalysisPerDay',
-  chat_message: 'chatMessagesPerDay',
-  reminder: 'remindersPerDay',
-  generate_answer: 'generateAnswerPerDay',
-};
-
-export function isTrialExpired(trialStartDate: string | null, trialDays: number): boolean {
-  if (!trialStartDate || trialDays <= 0) return false;
-  const start = new Date(trialStartDate);
-  const now = new Date();
-  const diffDays = (now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
-  return diffDays > trialDays;
+// ── Helper: format minutes to human-readable ─────────────────────────────────
+export function formatMinutes(mins: number): string {
+  if (mins <= 0) return '0 min';
+  const hours = Math.floor(mins / 60);
+  const remaining = Math.round(mins % 60);
+  if (hours === 0) return `${remaining} min`;
+  if (remaining === 0) return `${hours}h`;
+  return `${hours}h ${remaining}m`;
 }
 
 export function getTodayKey(): string {
