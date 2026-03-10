@@ -353,7 +353,7 @@ export default function BillingPage() {
             padding: '8px 20px',
             borderRadius: 8,
             border: 'none',
-            background: pricingMode === 'general' ? '#16a34a' : 'transparent',
+            background: pricingMode === 'general' ? '#000000' : 'transparent',
             color: pricingMode === 'general' ? '#ffffff' : '#6b7280',
             fontSize: 14,
             fontWeight: 600,
@@ -544,57 +544,79 @@ export default function BillingPage() {
       {/* ── General Mode Section ── */}
       {pricingMode === 'general' && (
         <>
-      {/* ── General Mode Subscription ── */}
+      {/* ── General Mode Plans ── */}
       <div style={{ marginBottom: 24 }}>
-        <h2 style={{ color: '#000000', fontSize: 20, fontWeight: 700, margin: '0 0 6px', letterSpacing: '-0.01em' }}>General Mode Subscription</h2>
-        <p style={{ color: '#6b7280', fontSize: 13, margin: '0 0 16px' }}>Monthly subscription for the general assistant — screen analysis, content rewriting, reminders & chat.</p>
+        <h2 style={{ color: '#000000', fontSize: 20, fontWeight: 700, margin: '0 0 6px', letterSpacing: '-0.01em' }}>General Mode Plans</h2>
+        <p style={{ color: '#6b7280', fontSize: 13, margin: '0 0 16px' }}>Choose between free trial or monthly subscription for the general assistant.</p>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-          {/* General Mode Status Card */}
+          {/* General Free Plan Card */}
           <div style={{
-            padding: 24, borderRadius: 14,
-            background: isGeneralActive
-              ? 'linear-gradient(135deg, #f0fdf4, #dcfce7)'
-              : 'linear-gradient(135deg, #fefce8, #fef9c3)',
-            border: isGeneralActive ? '1px solid #86efac' : '1px solid #fde68a',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+            padding: 24, borderRadius: 14, position: 'relative',
+            background: '#ffffff',
+            border: '2px solid #e5e7eb',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
           }}>
-            <div style={{ color: '#374151', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>General Mode Status</div>
-            <div style={{ color: isGeneralActive ? '#16a34a' : '#ca8a04', fontSize: 28, fontWeight: 800, marginTop: 6 }}>
-              {isGeneralActive ? 'Active' : 'Not Subscribed'}
+            <div style={{
+              position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)',
+              background: '#000000',
+              color: '#fff', padding: '4px 14px', borderRadius: 12,
+              fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5,
+              boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            }}>
+              Free Trial
             </div>
-            {isGeneralActive && (
-              <>
-                <div style={{ color: '#374151', fontSize: 13, marginTop: 8 }}>
-                  <strong>{generalDaysLeft}</strong> of {GENERAL_PLANS.general_monthly.limits.accessDaysPerMonth} access days remaining
+
+            <div style={{ color: '#111827', fontSize: 18, fontWeight: 700, marginBottom: 4 }}>General Free</div>
+            <div style={{ marginBottom: 4 }}>
+              <span style={{ color: '#111827', fontSize: 32, fontWeight: 800, letterSpacing: '-1px' }}>Free</span>
+            </div>
+            <div style={{ color: '#6b7280', fontSize: 11, marginBottom: 4 }}>5 days access</div>
+            <div style={{ color: '#6b7280', fontSize: 12, marginBottom: 14, lineHeight: 1.5 }}>
+              Try general mode features for free.
+            </div>
+
+            <button
+              disabled
+              style={{
+                width: '100%', padding: '10px 0', borderRadius: 10, marginBottom: 14,
+                background: '#f3f4f6',
+                border: 'none',
+                color: '#9ca3af',
+                fontSize: 13, fontWeight: 700,
+                cursor: 'default',
+              }}
+            >
+              Included Free
+            </button>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {GENERAL_PLANS.general_free.features.map(f => (
+                <div key={f} style={{ color: '#374151', fontSize: 11, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 1 }}>
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  {f}
                 </div>
-                <div style={{ color: '#6b7280', fontSize: 12, marginTop: 4 }}>
-                  Renews: {generalSub?.end ? new Date(generalSub.end).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
-                </div>
-              </>
-            )}
-            {!isGeneralActive && (
-              <div style={{ color: '#92400e', fontSize: 13, marginTop: 8 }}>
-                Subscribe to unlock screen analysis, content rewriting, and unlimited chat in General Mode.
-              </div>
-            )}
+              ))}
+            </div>
           </div>
 
           {/* General Pro Plan Card */}
           <div style={{
             padding: 24, borderRadius: 14, position: 'relative',
-            background: '#f0fdf4',
-            border: '2px solid #16a34a',
-            boxShadow: '0 4px 16px rgba(22,163,74,0.15)',
+            background: '#f9fafb',
+            border: '2px solid #000000',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
           }}>
             <div style={{
               position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)',
-              background: 'linear-gradient(135deg, #16a34a, #059669)',
+              background: '#000000',
               color: '#fff', padding: '4px 14px', borderRadius: 12,
               fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5,
-              boxShadow: '0 4px 12px rgba(22,163,74,0.4)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
             }}>
-              General Mode
+              Best Value
             </div>
 
             <div style={{ color: '#111827', fontSize: 18, fontWeight: 700, marginBottom: 4 }}>General Pro</div>
@@ -612,9 +634,9 @@ export default function BillingPage() {
               disabled={generalUpgradeLoading}
               style={{
                 width: '100%', padding: '10px 0', borderRadius: 10, marginBottom: 14,
-                background: isGeneralActive ? '#d1fae5' : '#16a34a',
+                background: isGeneralActive ? '#e5e7eb' : '#000000',
                 border: 'none',
-                color: isGeneralActive ? '#065f46' : '#ffffff',
+                color: isGeneralActive ? '#374151' : '#ffffff',
                 fontSize: 13, fontWeight: 700,
                 cursor: isGeneralActive ? 'default' : 'pointer',
                 transition: 'all 0.2s',
@@ -627,7 +649,7 @@ export default function BillingPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {GENERAL_PLANS.general_monthly.features.map(f => (
                 <div key={f} style={{ color: '#374151', fontSize: 11, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 1 }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 1 }}>
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
                   {f}
