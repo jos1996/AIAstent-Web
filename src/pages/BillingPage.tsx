@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { PLANS, PLAN_ORDER, GENERAL_PLANS, GENERAL_PLAN_ORDER, formatMinutes } from '../lib/plans';
-import type { PlanId, GeneralPlanId } from '../lib/plans';
+import { PLANS, PLAN_ORDER, GENERAL_PLANS, formatMinutes } from '../lib/plans';
+import type { PlanId } from '../lib/plans';
 import { usePlanLimits } from '../hooks/usePlanLimits';
 
 declare global {
