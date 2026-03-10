@@ -27,7 +27,7 @@ export default function BillingPage() {
   const [loading, setLoading] = useState(true);
   const [upgradeLoading, setUpgradeLoading] = useState<PlanId | null>(null);
   const [paymentSuccess, setPaymentSuccess] = useState<PaymentSuccessInfo | null>(null);
-  const { planState, updatePlan, loaded, refreshPlan } = usePlanLimits();
+  const { planState, loaded, refreshPlan } = usePlanLimits();
 
   useEffect(() => {
     if (user) loadBilling();
