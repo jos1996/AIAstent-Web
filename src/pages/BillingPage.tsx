@@ -36,11 +36,25 @@ export default function BillingPage() {
   const loadBilling = async () => {
     const { data } = await supabase
       .from('billing')
-      .select('billing_email')
+      .select('billing_email, credits_total_minutes, credits_used_minutes, free_minutes_used')
       .eq('user_id', user!.id)
       .single();
     if (data) {
       setBillingEmail(data.billing_email || '');
+
+      // ONE-TIME FIX: Credit ₹299 payment on 2026-03-10 for beeptalkapp@gmail.com
+      // This user paid but credits weren't added due to a bug (now fixed).
+      // Safe: only runs once because it checks credits_total_minutes === 0
+      if (user?.email === 'beeptalkapp@gmail.com' && (data.credits_total_minutes || 0) === 0) {
+        console.log('Applying one-time credit fix for ₹299 payment...');
+        await supabase.from('billing').update({
+          plan: 'credit_1hr',
+          billing_cycle: 'one_time',
+          credits_total_minutes: 60,
+          updated_at: new Date().toISOString(),
+        }).eq('user_id', user!.id);
+        if (refreshPlan) await refreshPlan();
+      }
     }
     setLoading(false);
   };
