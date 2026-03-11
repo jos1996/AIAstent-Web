@@ -132,40 +132,56 @@ export default function BillingPage() {
           }
 
           // 2. Add credits to billing table — CRITICAL STEP
-          const { data: current, error: fetchErr } = await supabase
+          // First try to get existing billing row
+          const { data: current } = await supabase
             .from('billing')
             .select('credits_total_minutes')
             .eq('user_id', user!.id)
             .single();
 
-          if (fetchErr) {
-            console.error('Failed to fetch current billing:', fetchErr);
-          }
-
           const existingMinutes = current?.credits_total_minutes || 0;
           const newTotalMinutes = existingMinutes + plan.limits.totalMinutes;
 
-          // Only update columns that exist on billing table
-          const { error: updateErr } = await supabase.from('billing').update({
-            plan: planId,
-            billing_cycle: 'one_time',
-            credits_total_minutes: newTotalMinutes,
-            updated_at: now.toISOString(),
-          }).eq('user_id', user!.id);
+          let updateErr: any = null;
+
+          if (current) {
+            // Row exists — update it
+            const { error } = await supabase.from('billing').update({
+              plan: planId,
+              billing_cycle: 'one_time',
+              credits_total_minutes: newTotalMinutes,
+              updated_at: now.toISOString(),
+            }).eq('user_id', user!.id);
+            updateErr = error;
+          } else {
+            // Row doesn't exist — insert it
+            const { error } = await supabase.from('billing').insert({
+              user_id: user!.id,
+              plan: planId,
+              billing_cycle: 'one_time',
+              billing_email: user!.email || '',
+              credits_total_minutes: newTotalMinutes,
+              credits_used_minutes: 0,
+              free_minutes_used: 0,
+              trial_start_date: now,
+              updated_at: now,
+            });
+            updateErr = error;
+          }
 
           if (updateErr) {
             console.error('CRITICAL: Failed to update credits in billing:', updateErr);
             alert('Payment received but credits failed to update. Please contact support with payment ID: ' + razorpayPaymentId);
+          } else {
+            // 3. Show success ONLY if DB update succeeded
+            setPaymentSuccess({
+              planName: plan.name,
+              planId: planId,
+              amount: '₹' + (amount / 100),
+              paymentId: razorpayPaymentId || 'N/A',
+              creditsAdded: plan.limits.totalMinutes,
+            });
           }
-
-          // 3. Show success + refresh
-          setPaymentSuccess({
-            planName: plan.name,
-            planId: planId,
-            amount: '₹' + (amount / 100),
-            paymentId: razorpayPaymentId || 'N/A',
-            creditsAdded: plan.limits.totalMinutes,
-          });
 
           if (refreshPlan) await refreshPlan();
           await loadBilling();
@@ -205,6 +221,127 @@ export default function BillingPage() {
       setUpgradeLoading(null);
     });
 
+    razorpay.open();
+  };
+
+  // ── General Mode 30-Minute Purchase ──────────────────────────────────────
+  const handlePurchaseGeneral30Min = async () => {
+    setGeneralUpgradeLoading(true);
+    const plan = GENERAL_PLANS.general_30min;
+
+    const scriptLoaded = await loadRazorpayScript();
+    if (!scriptLoaded) {
+      alert('Failed to load payment gateway. Please try again.');
+      setGeneralUpgradeLoading(false);
+      return;
+    }
+
+    const options = {
+      key: RAZORPAY_KEY,
+      amount: plan.priceInPaise,
+      currency: 'INR',
+      name: 'HelplyAI',
+      description: `${plan.name} — 30 Minutes Access`,
+      image: 'https://helplyai.co/logo.png',
+      notes: {
+        user_id: user!.id,
+        plan: 'general_30min',
+        type: 'general_credits',
+        credits_minutes: 30,
+      },
+      handler: async function (response: any) {
+        const razorpayPaymentId = response.razorpay_payment_id || null;
+        const now = new Date();
+
+        try {
+          // Record payment
+          try {
+            await supabase.from('payments').insert({
+              user_id: user!.id,
+              plan: 'general_30min',
+              plan_name: plan.name,
+              amount: plan.priceInPaise,
+              currency: 'INR',
+              amount_display: plan.priceLabel,
+              razorpay_payment_id: razorpayPaymentId,
+              razorpay_order_id: response.razorpay_order_id || null,
+              razorpay_signature: response.razorpay_signature || null,
+              status: 'success',
+              period_start: now.toISOString(),
+              metadata: { ...response, type: 'general_30min' },
+            });
+          } catch (payErr) {
+            console.warn('Payment record insert failed (non-critical):', payErr);
+          }
+
+          // Add 30 minutes to interview credits (shared credit pool)
+          const { data: current } = await supabase
+            .from('billing')
+            .select('credits_total_minutes')
+            .eq('user_id', user!.id)
+            .single();
+
+          const existingMinutes = current?.credits_total_minutes || 0;
+          const newTotalMinutes = existingMinutes + 30;
+
+          let updateErr: any = null;
+
+          if (current) {
+            const { error } = await supabase.from('billing').update({
+              credits_total_minutes: newTotalMinutes,
+              updated_at: now.toISOString(),
+            }).eq('user_id', user!.id);
+            updateErr = error;
+          } else {
+            const { error } = await supabase.from('billing').insert({
+              user_id: user!.id,
+              plan: 'general_30min',
+              billing_cycle: 'one_time',
+              billing_email: user!.email || '',
+              credits_total_minutes: newTotalMinutes,
+              credits_used_minutes: 0,
+              free_minutes_used: 0,
+              trial_start_date: now.toISOString(),
+              updated_at: now.toISOString(),
+            });
+            updateErr = error;
+          }
+
+          if (updateErr) {
+            console.error('CRITICAL: Failed to update general 30min credits:', updateErr);
+            alert('Payment received but credits failed to update. Please contact support with payment ID: ' + razorpayPaymentId);
+          } else {
+            setPaymentSuccess({
+              planName: 'General 30 Min',
+              planId: 'general_30min' as PlanId,
+              amount: plan.priceLabel,
+              paymentId: razorpayPaymentId || 'N/A',
+              creditsAdded: 30,
+            });
+          }
+
+          if (refreshPlan) await refreshPlan();
+          await loadBilling();
+        } catch (err) {
+          console.error('General 30min purchase error:', err);
+          alert('Payment received but an error occurred. Please contact support with payment ID: ' + razorpayPaymentId);
+        }
+        setGeneralUpgradeLoading(false);
+      },
+      prefill: { email: user?.email || '' },
+      theme: { color: '#000000' },
+      modal: {
+        ondismiss: function() { setGeneralUpgradeLoading(false); },
+        confirm_close: true
+      }
+    };
+
+    const razorpay = new window.Razorpay(options);
+    razorpay.on('payment.failed', async function (response: any) {
+      console.error('General 30min payment failed:', response.error);
+      alert(`Payment failed: ${response.error?.description || 'Unknown error'}. Please try again.`);
+      setGeneralUpgradeLoading(false);
+    });
     razorpay.open();
   };
 
@@ -259,27 +396,54 @@ export default function BillingPage() {
             console.warn('Payment record insert failed (non-critical):', payErr);
           }
 
-          // Update billing with general subscription
-          const { error: updateErr } = await supabase.from('billing').update({
-            general_plan: 'general_monthly',
-            general_subscription_end: subscriptionEnd.toISOString(),
-            general_days_used: 0,
-            general_last_access_date: null,
-            updated_at: now.toISOString(),
-          }).eq('user_id', user!.id);
+          // Update billing with general subscription — use upsert pattern
+          const { data: existingBilling } = await supabase
+            .from('billing')
+            .select('user_id')
+            .eq('user_id', user!.id)
+            .single();
+
+          let updateErr: any = null;
+
+          if (existingBilling) {
+            const { error } = await supabase.from('billing').update({
+              general_plan: 'general_monthly',
+              general_subscription_end: subscriptionEnd.toISOString(),
+              general_days_used: 0,
+              general_last_access_date: null,
+              updated_at: now.toISOString(),
+            }).eq('user_id', user!.id);
+            updateErr = error;
+          } else {
+            const { error } = await supabase.from('billing').insert({
+              user_id: user!.id,
+              plan: 'free',
+              billing_cycle: 'one_time',
+              billing_email: user!.email || '',
+              credits_total_minutes: 0,
+              credits_used_minutes: 0,
+              free_minutes_used: 0,
+              general_plan: 'general_monthly',
+              general_subscription_end: subscriptionEnd.toISOString(),
+              general_days_used: 0,
+              trial_start_date: now.toISOString(),
+              updated_at: now.toISOString(),
+            });
+            updateErr = error;
+          }
 
           if (updateErr) {
             console.error('CRITICAL: Failed to activate general subscription:', updateErr);
             alert('Payment received but subscription failed to activate. Please contact support with payment ID: ' + razorpayPaymentId);
+          } else {
+            setPaymentSuccess({
+              planName: 'General Pro (Monthly)',
+              planId: 'general_monthly' as PlanId,
+              amount: plan.priceLabel,
+              paymentId: razorpayPaymentId || 'N/A',
+              creditsAdded: 0,
+            });
           }
-
-          setPaymentSuccess({
-            planName: 'General Pro (Monthly)',
-            planId: 'general_monthly' as PlanId,
-            amount: plan.priceLabel,
-            paymentId: razorpayPaymentId || 'N/A',
-            creditsAdded: 0,
-          });
 
           await loadBilling();
         } catch (err) {
@@ -629,7 +793,7 @@ export default function BillingPage() {
             </div>
 
             <button
-              onClick={handlePurchaseGeneralPro}
+              onClick={handlePurchaseGeneral30Min}
               disabled={generalUpgradeLoading}
               style={{
                 width: '100%', padding: '10px 0', borderRadius: 10, marginBottom: 14,
