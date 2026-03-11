@@ -804,9 +804,9 @@ export default function BillingPage() {
       {/* ── General Mode Plans ── */}
       <div style={{ marginBottom: 24 }}>
         <h2 style={{ color: '#000000', fontSize: 20, fontWeight: 700, margin: '0 0 6px', letterSpacing: '-0.01em' }}>General Mode Plans</h2>
-        <p style={{ color: '#6b7280', fontSize: 13, margin: '0 0 16px' }}>Choose between free trial, quick access, or monthly subscription for the general assistant.</p>
+        <p style={{ color: '#6b7280', fontSize: 13, margin: '0 0 16px' }}>Choose between free trial or monthly subscription for the general assistant.</p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, maxWidth: 800 }}>
           {/* General Free Plan Card */}
           <div style={{
             padding: 24, borderRadius: 14, position: 'relative',
@@ -859,8 +859,9 @@ export default function BillingPage() {
             </div>
           </div>
 
-          {/* General 30 Min Plan Card */}
+          {/* General 30 Min Plan Card - HIDDEN */}
           <div style={{
+            display: 'none', // Hidden from UI, backend functionality intact
             padding: 24, borderRadius: 14, position: 'relative',
             background: '#ffffff',
             border: '2px solid #e5e7eb',

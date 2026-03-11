@@ -147,7 +147,7 @@ export const PLANS: Record<InterviewPlanId, PlanConfig> = {
   },
 };
 
-export const PLAN_ORDER: InterviewPlanId[] = ['free', 'credit_30min', 'credit_1hr', 'credit_3hr', 'credit_10hr'];
+export const PLAN_ORDER: InterviewPlanId[] = ['free', 'credit_1hr', 'credit_3hr', 'credit_10hr'];
 
 // ── General Mode Plans (subscription-based) ─────────────────────────────────
 export const GENERAL_PLANS: Record<GeneralPlanId, GeneralPlanConfig> = {
