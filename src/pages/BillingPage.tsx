@@ -133,29 +133,38 @@ export default function BillingPage() {
 
           // 2. Add credits to billing table — CRITICAL STEP
           // First try to get existing billing row
-          const { data: current } = await supabase
+          const { data: current, error: fetchError } = await supabase
             .from('billing')
             .select('credits_total_minutes')
             .eq('user_id', user!.id)
             .single();
 
+          console.log('📊 Billing fetch result:', { current, fetchError, userId: user!.id });
+
           const existingMinutes = current?.credits_total_minutes || 0;
           const newTotalMinutes = existingMinutes + plan.limits.totalMinutes;
 
+          console.log('💰 Credit calculation:', { existingMinutes, adding: plan.limits.totalMinutes, newTotal: newTotalMinutes });
+
           let updateErr: any = null;
+          let updateResult: any = null;
 
           if (current) {
             // Row exists — update it
-            const { error } = await supabase.from('billing').update({
+            console.log('🔄 Updating existing billing row...');
+            const result = await supabase.from('billing').update({
               plan: planId,
               billing_cycle: 'one_time',
               credits_total_minutes: newTotalMinutes,
               updated_at: now.toISOString(),
-            }).eq('user_id', user!.id);
-            updateErr = error;
+            }).eq('user_id', user!.id).select();
+            updateErr = result.error;
+            updateResult = result.data;
+            console.log('✅ Update result:', { error: updateErr, data: updateResult, count: result.count });
           } else {
             // Row doesn't exist — insert it
-            const { error } = await supabase.from('billing').insert({
+            console.log('➕ Inserting new billing row...');
+            const result = await supabase.from('billing').insert({
               user_id: user!.id,
               plan: planId,
               billing_cycle: 'one_time',
@@ -165,14 +174,23 @@ export default function BillingPage() {
               free_minutes_used: 0,
               trial_start_date: now,
               updated_at: now,
-            });
-            updateErr = error;
+            }).select();
+            updateErr = result.error;
+            updateResult = result.data;
+            console.log('✅ Insert result:', { error: updateErr, data: updateResult });
           }
 
           if (updateErr) {
-            console.error('CRITICAL: Failed to update credits in billing:', updateErr);
-            alert('Payment received but credits failed to update. Please contact support with payment ID: ' + razorpayPaymentId);
+            console.error('❌ CRITICAL: Failed to update credits in billing:', {
+              error: updateErr,
+              code: updateErr?.code,
+              message: updateErr?.message,
+              details: updateErr?.details,
+              hint: updateErr?.hint,
+            });
+            alert('Payment received but credits failed to update. Please contact support with payment ID: ' + razorpayPaymentId + '\n\nError: ' + (updateErr?.message || 'Unknown error'));
           } else {
+            console.log('✅ Credits successfully added to billing table!');
             // 3. Show success ONLY if DB update succeeded
             setPaymentSuccess({
               planName: plan.name,
@@ -275,25 +293,34 @@ export default function BillingPage() {
           }
 
           // Add 30 minutes to interview credits (shared credit pool)
-          const { data: current } = await supabase
+          const { data: current, error: fetchError } = await supabase
             .from('billing')
             .select('credits_total_minutes')
             .eq('user_id', user!.id)
             .single();
 
+          console.log('📊 [General 30min] Billing fetch result:', { current, fetchError, userId: user!.id });
+
           const existingMinutes = current?.credits_total_minutes || 0;
           const newTotalMinutes = existingMinutes + 30;
 
+          console.log('💰 [General 30min] Credit calculation:', { existingMinutes, adding: 30, newTotal: newTotalMinutes });
+
           let updateErr: any = null;
+          let updateResult: any = null;
 
           if (current) {
-            const { error } = await supabase.from('billing').update({
+            console.log('🔄 [General 30min] Updating existing billing row...');
+            const result = await supabase.from('billing').update({
               credits_total_minutes: newTotalMinutes,
               updated_at: now.toISOString(),
-            }).eq('user_id', user!.id);
-            updateErr = error;
+            }).eq('user_id', user!.id).select();
+            updateErr = result.error;
+            updateResult = result.data;
+            console.log('✅ [General 30min] Update result:', { error: updateErr, data: updateResult, count: result.count });
           } else {
-            const { error } = await supabase.from('billing').insert({
+            console.log('➕ [General 30min] Inserting new billing row...');
+            const result = await supabase.from('billing').insert({
               user_id: user!.id,
               plan: 'general_30min',
               billing_cycle: 'one_time',
@@ -303,14 +330,23 @@ export default function BillingPage() {
               free_minutes_used: 0,
               trial_start_date: now.toISOString(),
               updated_at: now.toISOString(),
-            });
-            updateErr = error;
+            }).select();
+            updateErr = result.error;
+            updateResult = result.data;
+            console.log('✅ [General 30min] Insert result:', { error: updateErr, data: updateResult });
           }
 
           if (updateErr) {
-            console.error('CRITICAL: Failed to update general 30min credits:', updateErr);
-            alert('Payment received but credits failed to update. Please contact support with payment ID: ' + razorpayPaymentId);
+            console.error('❌ CRITICAL: Failed to update general 30min credits:', {
+              error: updateErr,
+              code: updateErr?.code,
+              message: updateErr?.message,
+              details: updateErr?.details,
+              hint: updateErr?.hint,
+            });
+            alert('Payment received but credits failed to update. Please contact support with payment ID: ' + razorpayPaymentId + '\n\nError: ' + (updateErr?.message || 'Unknown error'));
           } else {
+            console.log('✅ [General 30min] Credits successfully added to billing table!');
             setPaymentSuccess({
               planName: 'General 30 Min',
               planId: 'general_30min' as PlanId,
