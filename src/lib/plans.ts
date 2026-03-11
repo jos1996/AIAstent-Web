@@ -2,8 +2,8 @@
 // Interview Mode: Credit-based (1 credit = 1 hour, time-tracked in minutes)
 // General Mode: Monthly subscription (₹1,999/mo) with daily limits
 
-export type InterviewPlanId = 'free' | 'credit_1hr' | 'credit_3hr' | 'credit_10hr';
-export type GeneralPlanId = 'general_free' | 'general_monthly';
+export type InterviewPlanId = 'free' | 'credit_30min' | 'credit_1hr' | 'credit_3hr' | 'credit_10hr';
+export type GeneralPlanId = 'general_free' | 'general_30min' | 'general_monthly';
 export type PlanId = InterviewPlanId | GeneralPlanId;
 export type BillingCycle = 'one_time' | 'monthly';
 
@@ -63,6 +63,25 @@ export const PLANS: Record<InterviewPlanId, PlanConfig> = {
       'Screen analysis included',
       'Generate answers included',
       'No credit card required',
+    ],
+    highlighted: false,
+  },
+  credit_30min: {
+    id: 'credit_30min',
+    name: '30 Minutes',
+    tagline: '30 minutes of full access.',
+    priceLabel: '₹10',
+    priceSuffix: '/ 30 min',
+    savingsNote: '',
+    priceInPaise: 1000,
+    limits: { totalMinutes: 30, freeMinutes: 0 },
+    features: [
+      '30 minutes of usage',
+      'Unlimited AI responses',
+      'Unlimited interview mode',
+      'Unlimited screen analysis',
+      'Unlimited generate answers',
+      'All features unlocked',
     ],
     highlighted: false,
   },
@@ -128,7 +147,7 @@ export const PLANS: Record<InterviewPlanId, PlanConfig> = {
   },
 };
 
-export const PLAN_ORDER: InterviewPlanId[] = ['free', 'credit_1hr', 'credit_3hr', 'credit_10hr'];
+export const PLAN_ORDER: InterviewPlanId[] = ['free', 'credit_30min', 'credit_1hr', 'credit_3hr', 'credit_10hr'];
 
 // ── General Mode Plans (subscription-based) ─────────────────────────────────
 export const GENERAL_PLANS: Record<GeneralPlanId, GeneralPlanConfig> = {
@@ -149,6 +168,31 @@ export const GENERAL_PLANS: Record<GeneralPlanId, GeneralPlanConfig> = {
     },
     features: [
       '5 days of access',
+      'Up to 5 screen analyses per day',
+      'Up to 5 content rewrites per day',
+      'Unlimited reminders',
+      'Unlimited chat messages',
+      'No Listen or What to Say',
+    ],
+    highlighted: false,
+  },
+  general_30min: {
+    id: 'general_30min',
+    name: 'General 30 Min',
+    tagline: '30 minutes of general assistant access.',
+    priceLabel: '₹10',
+    priceSuffix: '/ 30 min',
+    priceInPaise: 1000,
+    priceUSD: '$0.12',
+    limits: {
+      accessDaysPerMonth: 1,
+      screenAnalysisPerDay: 5,
+      rewritesPerDay: 5,
+      remindersPerDay: -1,
+      chatMessagesPerDay: -1,
+    },
+    features: [
+      '1 day of access',
       'Up to 5 screen analyses per day',
       'Up to 5 content rewrites per day',
       'Unlimited reminders',
@@ -184,7 +228,7 @@ export const GENERAL_PLANS: Record<GeneralPlanId, GeneralPlanConfig> = {
   },
 };
 
-export const GENERAL_PLAN_ORDER: GeneralPlanId[] = ['general_free', 'general_monthly'];
+export const GENERAL_PLAN_ORDER: GeneralPlanId[] = ['general_free', 'general_30min', 'general_monthly'];
 
 // ── Usage Action Types ──────────────────────────────────────────────────────
 

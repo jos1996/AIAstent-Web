@@ -546,9 +546,9 @@ export default function BillingPage() {
       {/* ── General Mode Plans ── */}
       <div style={{ marginBottom: 24 }}>
         <h2 style={{ color: '#000000', fontSize: 20, fontWeight: 700, margin: '0 0 6px', letterSpacing: '-0.01em' }}>General Mode Plans</h2>
-        <p style={{ color: '#6b7280', fontSize: 13, margin: '0 0 16px' }}>Choose between free trial or monthly subscription for the general assistant.</p>
+        <p style={{ color: '#6b7280', fontSize: 13, margin: '0 0 16px' }}>Choose between free trial, quick access, or monthly subscription for the general assistant.</p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
           {/* General Free Plan Card */}
           <div style={{
             padding: 24, borderRadius: 14, position: 'relative',
@@ -591,6 +591,62 @@ export default function BillingPage() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {GENERAL_PLANS.general_free.features.map(f => (
+                <div key={f} style={{ color: '#374151', fontSize: 11, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 1 }}>
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  {f}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* General 30 Min Plan Card */}
+          <div style={{
+            padding: 24, borderRadius: 14, position: 'relative',
+            background: '#ffffff',
+            border: '2px solid #e5e7eb',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+          }}>
+            <div style={{
+              position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)',
+              background: '#000000',
+              color: '#fff', padding: '4px 14px', borderRadius: 12,
+              fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5,
+              boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            }}>
+              Quick Access
+            </div>
+
+            <div style={{ color: '#111827', fontSize: 18, fontWeight: 700, marginBottom: 4 }}>General 30 Min</div>
+            <div style={{ marginBottom: 4 }}>
+              <span style={{ color: '#111827', fontSize: 32, fontWeight: 800, letterSpacing: '-1px' }}>₹10</span>
+              <span style={{ color: '#6b7280', fontSize: 12, marginLeft: 4 }}>/ 30 min</span>
+            </div>
+            <div style={{ color: '#6b7280', fontSize: 11, marginBottom: 4 }}>International: $0.12</div>
+            <div style={{ color: '#6b7280', fontSize: 12, marginBottom: 14, lineHeight: 1.5 }}>
+              30 minutes of general assistant access.
+            </div>
+
+            <button
+              onClick={handlePurchaseGeneralPro}
+              disabled={generalUpgradeLoading}
+              style={{
+                width: '100%', padding: '10px 0', borderRadius: 10, marginBottom: 14,
+                background: '#000000',
+                border: 'none',
+                color: '#ffffff',
+                fontSize: 13, fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                opacity: generalUpgradeLoading ? 0.6 : 1,
+              }}
+            >
+              {generalUpgradeLoading ? 'Processing...' : 'Buy Now'}
+            </button>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {GENERAL_PLANS.general_30min.features.map(f => (
                 <div key={f} style={{ color: '#374151', fontSize: 11, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 1 }}>
                     <polyline points="20 6 9 17 4 12"/>
