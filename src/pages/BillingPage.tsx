@@ -57,7 +57,6 @@ export default function BillingPage() {
         console.log('Applying one-time credit fix for ₹299 payment...');
         await supabase.from('billing').update({
           plan: 'credit_1hr',
-          billing_cycle: 'one_time',
           credits_total_minutes: 60,
           updated_at: new Date().toISOString(),
         }).eq('user_id', user!.id);
@@ -154,7 +153,6 @@ export default function BillingPage() {
             console.log('🔄 Updating existing billing row...');
             const result = await supabase.from('billing').update({
               plan: planId,
-              billing_cycle: 'one_time',
               credits_total_minutes: newTotalMinutes,
               updated_at: now.toISOString(),
             }).eq('user_id', user!.id).select();
@@ -167,7 +165,6 @@ export default function BillingPage() {
             const result = await supabase.from('billing').insert({
               user_id: user!.id,
               plan: planId,
-              billing_cycle: 'one_time',
               billing_email: user!.email || '',
               credits_total_minutes: newTotalMinutes,
               credits_used_minutes: 0,
@@ -323,7 +320,6 @@ export default function BillingPage() {
             const result = await supabase.from('billing').insert({
               user_id: user!.id,
               plan: 'general_30min',
-              billing_cycle: 'one_time',
               billing_email: user!.email || '',
               credits_total_minutes: newTotalMinutes,
               credits_used_minutes: 0,
@@ -454,7 +450,6 @@ export default function BillingPage() {
             const { error } = await supabase.from('billing').insert({
               user_id: user!.id,
               plan: 'free',
-              billing_cycle: 'one_time',
               billing_email: user!.email || '',
               credits_total_minutes: 0,
               credits_used_minutes: 0,

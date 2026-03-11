@@ -48,7 +48,6 @@ export function usePlanLimits() {
         .insert({
           user_id: session.user.id,
           plan: 'free',
-          billing_cycle: 'one_time',
           trial_start_date: now,
           billing_email: session.user.email || '',
           credits_total_minutes: 0,
@@ -140,7 +139,6 @@ export function usePlanLimits() {
         .from('billing')
         .update({
           plan: newPlan,
-          billing_cycle: 'one_time',
           credits_total_minutes: newTotalMinutes,
           updated_at: now,
         })
