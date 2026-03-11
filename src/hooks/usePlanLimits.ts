@@ -138,7 +138,6 @@ export function usePlanLimits() {
       const { error } = await supabase
         .from('billing')
         .update({
-          plan: newPlan,
           credits_total_minutes: newTotalMinutes,
           updated_at: now,
         })

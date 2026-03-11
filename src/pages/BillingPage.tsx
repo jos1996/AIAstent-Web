@@ -56,7 +56,6 @@ export default function BillingPage() {
       if (user?.email === 'beeptalkapp@gmail.com' && (data.credits_total_minutes || 0) === 0) {
         console.log('Applying one-time credit fix for ₹299 payment...');
         await supabase.from('billing').update({
-          plan: 'credit_1hr',
           credits_total_minutes: 60,
           updated_at: new Date().toISOString(),
         }).eq('user_id', user!.id);
@@ -152,7 +151,6 @@ export default function BillingPage() {
             // Row exists — update it
             console.log('🔄 Updating existing billing row...');
             const result = await supabase.from('billing').update({
-              plan: planId,
               credits_total_minutes: newTotalMinutes,
               updated_at: now.toISOString(),
             }).eq('user_id', user!.id).select();
@@ -164,13 +162,13 @@ export default function BillingPage() {
             console.log('➕ Inserting new billing row...');
             const result = await supabase.from('billing').insert({
               user_id: user!.id,
-              plan: planId,
+              plan: 'free',
               billing_email: user!.email || '',
               credits_total_minutes: newTotalMinutes,
               credits_used_minutes: 0,
               free_minutes_used: 0,
-              trial_start_date: now,
-              updated_at: now,
+              trial_start_date: now.toISOString(),
+              updated_at: now.toISOString(),
             }).select();
             updateErr = result.error;
             updateResult = result.data;
@@ -319,7 +317,7 @@ export default function BillingPage() {
             console.log('➕ [General 30min] Inserting new billing row...');
             const result = await supabase.from('billing').insert({
               user_id: user!.id,
-              plan: 'general_30min',
+              plan: 'free',
               billing_email: user!.email || '',
               credits_total_minutes: newTotalMinutes,
               credits_used_minutes: 0,
