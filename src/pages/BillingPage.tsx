@@ -29,6 +29,7 @@ export default function BillingPage() {
   const [generalUpgradeLoading, setGeneralUpgradeLoading] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState<PaymentSuccessInfo | null>(null);
   const [generalSub, setGeneralSub] = useState<{ plan: string; end: string | null; daysUsed: number } | null>(null);
+  const [generalCredits, setGeneralCredits] = useState<{ totalMinutes: number; usedMinutes: number }>({ totalMinutes: 0, usedMinutes: 0 });
   const [pricingMode, setPricingMode] = useState<'interview' | 'general'>('interview');
   const { planState, loaded, refreshPlan } = usePlanLimits();
 
@@ -39,7 +40,7 @@ export default function BillingPage() {
   const loadBilling = async () => {
     const { data } = await supabase
       .from('billing')
-      .select('billing_email, credits_total_minutes, credits_used_minutes, free_minutes_used, general_plan, general_subscription_end, general_days_used')
+      .select('billing_email, credits_total_minutes, credits_used_minutes, free_minutes_used, general_plan, general_subscription_end, general_days_used, general_total_minutes, general_used_minutes')
       .eq('user_id', user!.id)
       .single();
     if (data) {
@@ -48,6 +49,10 @@ export default function BillingPage() {
         plan: data.general_plan || 'general_free',
         end: data.general_subscription_end || null,
         daysUsed: data.general_days_used || 0,
+      });
+      setGeneralCredits({
+        totalMinutes: data.general_total_minutes || 0,
+        usedMinutes: data.general_used_minutes || 0,
       });
 
       // ONE-TIME FIX: Credit ₹299 payment on 2026-03-10 for beeptalkapp@gmail.com
@@ -287,16 +292,16 @@ export default function BillingPage() {
             console.warn('Payment record insert failed (non-critical):', payErr);
           }
 
-          // Add 30 minutes to interview credits (shared credit pool)
+          // Add 30 minutes to GENERAL credits (separate from interview credits)
           const { data: current, error: fetchError } = await supabase
             .from('billing')
-            .select('credits_total_minutes')
+            .select('general_total_minutes')
             .eq('user_id', user!.id)
             .single();
 
           console.log('📊 [General 30min] Billing fetch result:', { current, fetchError, userId: user!.id });
 
-          const existingMinutes = current?.credits_total_minutes || 0;
+          const existingMinutes = current?.general_total_minutes || 0;
           const newTotalMinutes = existingMinutes + 30;
 
           console.log('💰 [General 30min] Credit calculation:', { existingMinutes, adding: 30, newTotal: newTotalMinutes });
@@ -307,7 +312,7 @@ export default function BillingPage() {
           if (current) {
             console.log('🔄 [General 30min] Updating existing billing row...');
             const result = await supabase.from('billing').update({
-              credits_total_minutes: newTotalMinutes,
+              general_total_minutes: newTotalMinutes,
               updated_at: now.toISOString(),
             }).eq('user_id', user!.id).select();
             updateErr = result.error;
@@ -319,7 +324,9 @@ export default function BillingPage() {
               user_id: user!.id,
               plan: 'free',
               billing_email: user!.email || '',
-              credits_total_minutes: newTotalMinutes,
+              general_total_minutes: newTotalMinutes,
+              general_used_minutes: 0,
+              credits_total_minutes: 0,
               credits_used_minutes: 0,
               free_minutes_used: 0,
               trial_start_date: now.toISOString(),
@@ -734,8 +741,66 @@ export default function BillingPage() {
       )}
 
       {/* ── General Mode Section ── */}
-      {pricingMode === 'general' && (
+      {pricingMode === 'general' && (() => {
+        const genTotal = generalCredits.totalMinutes + 15; // purchased + 5-day free (15 min equivalent)
+        const genUsed = generalCredits.usedMinutes;
+        const genRemaining = Math.max(0, generalCredits.totalMinutes - generalCredits.usedMinutes);
+        const genFreeRemaining = Math.max(0, 15 - genUsed); // free trial minutes
+        const genTotalRemaining = genRemaining + (generalCredits.totalMinutes === 0 ? genFreeRemaining : 0);
+        const genUsagePct = genTotal > 0 ? Math.round((genUsed / genTotal) * 100) : 0;
+        const genIsExpired = genTotalRemaining <= 0;
+        const genIsFreeUser = generalCredits.totalMinutes === 0;
+
+        return (
         <>
+      {/* ── General Credit Balance Card ── */}
+      <div style={{
+        marginBottom: 24, padding: 28, borderRadius: 16,
+        background: genIsExpired
+          ? 'linear-gradient(135deg, #fef2f2, #fecaca)'
+          : 'linear-gradient(135deg, #f5f5f5, #e5e5e5)',
+        border: genIsExpired ? '1px solid #fca5a5' : '1px solid #d4d4d4',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+          <div>
+            <div style={{ color: '#374151', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>General Mode — Remaining Time</div>
+            <div style={{ color: genIsExpired ? '#dc2626' : '#111827', fontSize: 36, fontWeight: 800, marginTop: 4, letterSpacing: '-1px' }}>
+              {formatMinutes(genTotalRemaining)}
+            </div>
+            {genIsExpired && (
+              <div style={{ color: '#dc2626', fontSize: 13, fontWeight: 600, marginTop: 4 }}>
+                {genIsFreeUser ? 'Free trial used — purchase credits to continue' : 'No credits remaining — purchase more to continue'}
+              </div>
+            )}
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ color: '#374151', fontSize: 12, fontWeight: 500 }}>Total Purchased</div>
+            <div style={{ color: '#111827', fontSize: 18, fontWeight: 700, marginTop: 2 }}>
+              {formatMinutes(generalCredits.totalMinutes)}
+            </div>
+            <div style={{ color: '#6b7280', fontSize: 11, marginTop: 4 }}>
+              Used: {formatMinutes(genUsed)}
+            </div>
+          </div>
+        </div>
+
+        {/* Usage Progress Bar */}
+        <div style={{ marginBottom: 8 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+            <span style={{ color: '#374151', fontSize: 11, fontWeight: 500 }}>Usage</span>
+            <span style={{ color: '#374151', fontSize: 11, fontWeight: 600 }}>{genUsagePct}%</span>
+          </div>
+          <div style={{ height: 8, borderRadius: 4, background: 'rgba(255,255,255,0.6)' }}>
+            <div style={{
+              height: '100%', borderRadius: 4, transition: 'width 0.5s ease',
+              width: `${Math.min(genUsagePct, 100)}%`,
+              background: genUsagePct >= 90 ? '#ef4444' : genUsagePct >= 60 ? '#f59e0b' : '#111827',
+            }} />
+          </div>
+        </div>
+      </div>
+
       {/* ── General Mode Plans ── */}
       <div style={{ marginBottom: 24 }}>
         <h2 style={{ color: '#000000', fontSize: 20, fontWeight: 700, margin: '0 0 6px', letterSpacing: '-0.01em' }}>General Mode Plans</h2>
@@ -939,7 +1004,8 @@ export default function BillingPage() {
         </div>
       </div>
         </>
-      )}
+        );
+      })()}
 
       {/* ── Payment Details ── */}
       <div style={{
