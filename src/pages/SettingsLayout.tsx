@@ -254,24 +254,7 @@ export default function SettingsLayout() {
                 {showPrefs && <PreferencesPanel onClose={() => setShowPrefs(false)} />}
               </div>
             </>
-          ) : (
-            <button
-              className="no-drag"
-              onClick={() => { navigate('/settings/dashboard'); }}
-              style={{
-                background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
-                border: 'none', color: '#fff', cursor: 'pointer',
-                fontSize: 13, fontWeight: 600, padding: '8px 18px',
-                borderRadius: 10, transition: 'all 0.2s',
-                display: 'flex', alignItems: 'center', gap: 8,
-              }}
-              onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              Login / Sign Up
-            </button>
-          )}
+          ) : null}
 
         </div>
       </div>
