@@ -978,26 +978,26 @@ export default function HomePage() {
               borderBottom: '1px solid rgba(255,255,255,0.05)',
               background: 'rgba(255,255,255,0.02)',
             }}>
-              <div style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>💰 Monthly Price</div>
+              <div style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>💰 Pricing</div>
               <div style={{ textAlign: 'center' }}>
                 <span style={{ color: '#22c55e', fontSize: 18, fontWeight: 800 }}>₹399</span>
                 <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, display: 'block' }}>per hour</span>
               </div>
               <div style={{ textAlign: 'center' }}>
                 <span style={{ color: '#ef4444', fontSize: 16, fontWeight: 700 }}>₹6,730</span>
-                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, display: 'block' }}>/month</span>
+                <span style={{ color: '#22c55e', fontSize: 11, display: 'block', fontWeight: 600 }}>Save 94%</span>
               </div>
               <div style={{ textAlign: 'center' }}>
                 <span style={{ color: '#ef4444', fontSize: 16, fontWeight: 700 }}>$25-90</span>
-                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, display: 'block' }}>/month</span>
+                <span style={{ color: '#22c55e', fontSize: 11, display: 'block', fontWeight: 600 }}>Save 80%</span>
               </div>
               <div style={{ textAlign: 'center' }}>
                 <span style={{ color: '#ef4444', fontSize: 16, fontWeight: 700 }}>₹4,880</span>
-                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, display: 'block' }}>/month</span>
+                <span style={{ color: '#22c55e', fontSize: 11, display: 'block', fontWeight: 600 }}>Save 92%</span>
               </div>
               <div style={{ textAlign: 'center' }}>
                 <span style={{ color: '#ef4444', fontSize: 16, fontWeight: 700 }}>$20</span>
-                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, display: 'block' }}>/month</span>
+                <span style={{ color: '#22c55e', fontSize: 11, display: 'block', fontWeight: 600 }}>Save 76%</span>
               </div>
             </div>
 
