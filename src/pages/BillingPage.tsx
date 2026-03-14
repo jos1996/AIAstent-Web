@@ -366,7 +366,7 @@ export default function BillingPage() {
         setGeneralUpgradeLoading(false);
       },
       prefill: { email: user?.email || '' },
-      theme: { color: '#000000' },
+      theme: { color: '#000' },
       modal: {
         ondismiss: function() { setGeneralUpgradeLoading(false); },
         confirm_close: true
@@ -508,7 +508,7 @@ export default function BillingPage() {
   // Derived general subscription state
   const isGeneralActive = generalSub?.plan === 'general_monthly' && generalSub?.end && new Date(generalSub.end) > new Date();
 
-  if (loading || !loaded) return <div style={{ color: '#000000', padding: 40 }}>Loading...</div>;
+  if (loading || !loaded) return <div style={{ color: '#000', padding: 40 }}>Loading...</div>;
 
   // Calculate credit usage percentage
   const usagePct = planState.totalMinutes > 0
@@ -517,7 +517,7 @@ export default function BillingPage() {
 
   return (
     <div style={{ maxWidth: '100%' }}>
-      <h1 style={{ color: '#000000', fontSize: 24, fontWeight: 700, margin: '0 0 8px', letterSpacing: '-0.02em' }}>Billing & Plans</h1>
+      <h1 style={{ color: '#000', fontSize: 24, fontWeight: 700, margin: '0 0 8px', letterSpacing: '-0.02em' }}>Billing & Plans</h1>
       <p style={{ color: '#6b7280', fontSize: 14, margin: '0 0 16px' }}>Choose between Interview Mode (credit-based) or General Mode (monthly subscription).</p>
 
       {/* ── Mode Toggle ── */}
@@ -552,7 +552,7 @@ export default function BillingPage() {
             padding: '8px 20px',
             borderRadius: 8,
             border: 'none',
-            background: pricingMode === 'general' ? '#000000' : 'transparent',
+            background: pricingMode === 'general' ? '#000' : 'transparent',
             color: pricingMode === 'general' ? '#ffffff' : '#6b7280',
             fontSize: 14,
             fontWeight: 600,
@@ -803,7 +803,7 @@ export default function BillingPage() {
 
       {/* ── General Mode Plans ── */}
       <div style={{ marginBottom: 24 }}>
-        <h2 style={{ color: '#000000', fontSize: 20, fontWeight: 700, margin: '0 0 6px', letterSpacing: '-0.01em' }}>General Mode Plans</h2>
+        <h2 style={{ color: '#000', fontSize: 20, fontWeight: 700, margin: '0 0 6px', letterSpacing: '-0.01em' }}>General Mode Plans</h2>
         <p style={{ color: '#6b7280', fontSize: 13, margin: '0 0 16px' }}>Choose between free trial or monthly subscription for the general assistant.</p>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, maxWidth: 800 }}>
@@ -816,7 +816,7 @@ export default function BillingPage() {
           }}>
             <div style={{
               position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)',
-              background: '#000000',
+              background: '#000',
               color: '#fff', padding: '4px 14px', borderRadius: 12,
               fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5,
               boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
@@ -850,7 +850,7 @@ export default function BillingPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {GENERAL_PLANS.general_free.features.map(f => (
                 <div key={f} style={{ color: '#6b7280', fontSize: 11, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 1 }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 1 }}>
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
                   {f}
@@ -869,7 +869,7 @@ export default function BillingPage() {
           }}>
             <div style={{
               position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)',
-              background: '#000000',
+              background: '#000',
               color: '#fff', padding: '4px 14px', borderRadius: 12,
               fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5,
               boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
@@ -892,7 +892,7 @@ export default function BillingPage() {
               disabled={generalUpgradeLoading}
               style={{
                 width: '100%', padding: '10px 0', borderRadius: 10, marginBottom: 14,
-                background: '#000000',
+                background: '#000',
                 border: 'none',
                 color: '#ffffff',
                 fontSize: 13, fontWeight: 700,
@@ -907,7 +907,7 @@ export default function BillingPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {GENERAL_PLANS.general_30min.features.map(f => (
                 <div key={f} style={{ color: '#6b7280', fontSize: 11, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 1 }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 1 }}>
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
                   {f}
@@ -920,12 +920,12 @@ export default function BillingPage() {
           <div style={{
             padding: 24, borderRadius: 14, position: 'relative',
             background: '#f9fafb',
-            border: '2px solid #000000',
+            border: '2px solid #000',
             boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
           }}>
             <div style={{
               position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)',
-              background: '#000000',
+              background: '#000',
               color: '#fff', padding: '4px 14px', borderRadius: 12,
               fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5,
               boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
@@ -948,7 +948,7 @@ export default function BillingPage() {
               disabled={generalUpgradeLoading}
               style={{
                 width: '100%', padding: '10px 0', borderRadius: 10, marginBottom: 14,
-                background: isGeneralActive ? '#e5e7eb' : '#000000',
+                background: isGeneralActive ? '#e5e7eb' : '#000',
                 border: 'none',
                 color: isGeneralActive ? '#6b7280' : '#ffffff',
                 fontSize: 13, fontWeight: 700,
@@ -963,7 +963,7 @@ export default function BillingPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {GENERAL_PLANS.general_monthly.features.map(f => (
                 <div key={f} style={{ color: '#6b7280', fontSize: 11, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 1 }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 1 }}>
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
                   {f}
