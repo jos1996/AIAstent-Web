@@ -571,25 +571,25 @@ export default function BillingPage() {
       <div style={{
         marginBottom: 24, padding: 28, borderRadius: 16,
         background: planState.isExpired
-          ? 'linear-gradient(135deg, #fee2e2, #fecaca)'
-          : 'linear-gradient(135deg, #ffffff, #f3f4f6)',
-        border: planState.isExpired ? '1px solid #fca5a5' : '1px solid #e5e7eb',
+          ? '#ffffff'
+          : '#ffffff',
+        border: planState.isExpired ? '1px solid #e5e7eb' : '1px solid #e5e7eb',
         boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
           <div>
-            <div style={{ color: '#374151', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>Remaining Time</div>
-            <div style={{ color: planState.isExpired ? '#dc2626' : '#000', fontSize: 36, fontWeight: 800, marginTop: 4, letterSpacing: '-1px' }}>
+            <div style={{ color: '#6b7280', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>Remaining Time</div>
+            <div style={{ color: planState.isExpired ? '#000' : '#000', fontSize: 36, fontWeight: 800, marginTop: 4, letterSpacing: '-1px' }}>
               {formatMinutes(planState.remainingMinutes)}
             </div>
             {planState.isExpired && (
-              <div style={{ color: '#dc2626', fontSize: 13, fontWeight: 600, marginTop: 4 }}>
+              <div style={{ color: '#000', fontSize: 13, fontWeight: 600, marginTop: 4 }}>
                 {planState.isFreeUser ? 'Free trial used — purchase credits to continue' : 'No credits remaining — purchase more to continue'}
               </div>
             )}
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ color: '#374151', fontSize: 12, fontWeight: 500 }}>Total Purchased</div>
+            <div style={{ color: '#6b7280', fontSize: 12, fontWeight: 500 }}>Total Purchased</div>
             <div style={{ color: '#000', fontSize: 18, fontWeight: 700, marginTop: 2 }}>
               {formatMinutes(planState.totalMinutes)}
             </div>
@@ -602,14 +602,14 @@ export default function BillingPage() {
         {/* Usage Progress Bar */}
         <div style={{ marginBottom: 8 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-            <span style={{ color: '#374151', fontSize: 11, fontWeight: 500 }}>Usage</span>
-            <span style={{ color: '#374151', fontSize: 11, fontWeight: 600 }}>{usagePct}%</span>
+            <span style={{ color: '#6b7280', fontSize: 11, fontWeight: 500 }}>Usage</span>
+            <span style={{ color: '#6b7280', fontSize: 11, fontWeight: 600 }}>{usagePct}%</span>
           </div>
           <div style={{ height: 8, borderRadius: 4, background: 'rgba(255,255,255,0.6)' }}>
             <div style={{
               height: '100%', borderRadius: 4, transition: 'width 0.5s ease',
               width: `${Math.min(usagePct, 100)}%`,
-              background: usagePct >= 90 ? '#ef4444' : usagePct >= 60 ? '#f59e0b' : '#000',
+              background: usagePct >= 90 ? '#000' : usagePct >= 60 ? '#000' : '#000',
             }} />
           </div>
         </div>
@@ -633,7 +633,7 @@ export default function BillingPage() {
               {plan.highlighted && (
                 <div style={{
                   position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)',
-                  background: 'linear-gradient(135deg, #000, #000)',
+                  background: '#000',
                   color: '#fff', padding: '4px 14px', borderRadius: 12,
                   fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5,
                   boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
@@ -643,11 +643,11 @@ export default function BillingPage() {
               )}
 
               {/* Plan Name */}
-              <div style={{ color: '#111827', fontSize: 16, fontWeight: 700, marginBottom: 4 }}>{plan.name}</div>
+              <div style={{ color: '#000', fontSize: 16, fontWeight: 700, marginBottom: 4 }}>{plan.name}</div>
 
               {/* Price */}
               <div style={{ marginBottom: 4 }}>
-                <span style={{ color: '#111827', fontSize: 28, fontWeight: 800, letterSpacing: '-1px' }}>{plan.priceLabel}</span>
+                <span style={{ color: '#000', fontSize: 28, fontWeight: 800, letterSpacing: '-1px' }}>{plan.priceLabel}</span>
                 {!isFree && (
                   <span style={{ color: '#6b7280', fontSize: 12, marginLeft: 4 }}>{plan.priceSuffix}</span>
                 )}
@@ -677,7 +677,7 @@ export default function BillingPage() {
                   width: '100%', padding: '10px 0', borderRadius: 10, marginBottom: 14,
                   background: isFree ? '#f3f4f6'
                     : plan.highlighted ? '#000'
-                    : '#111827',
+                    : '#000',
                   border: 'none',
                   color: isFree ? '#9ca3af' : '#ffffff',
                   fontSize: 13, fontWeight: 700,
@@ -694,7 +694,7 @@ export default function BillingPage() {
               {/* Features */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {plan.features.map(f => (
-                  <div key={f} style={{ color: '#374151', fontSize: 11, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                  <div key={f} style={{ color: '#6b7280', fontSize: 11, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={plan.highlighted ? '#000' : '#22c55e'} strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 1 }}>
                       <polyline points="20 6 9 17 4 12"/>
                     </svg>
@@ -712,25 +712,25 @@ export default function BillingPage() {
         marginBottom: 24, padding: 24, borderRadius: 14,
         background: '#f9fafb', border: '1px solid #e5e7eb',
       }}>
-        <h3 style={{ color: '#111827', fontSize: 16, fontWeight: 700, margin: '0 0 14px' }}>How Credits Work</h3>
+        <h3 style={{ color: '#000', fontSize: 16, fontWeight: 700, margin: '0 0 14px' }}>How Credits Work</h3>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
           <div>
             <div style={{ fontSize: 24, marginBottom: 6 }}>⏱</div>
-            <div style={{ color: '#111827', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Time-Based Billing</div>
+            <div style={{ color: '#000', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Time-Based Billing</div>
             <div style={{ color: '#6b7280', fontSize: 12, lineHeight: 1.5 }}>
               Credits are deducted based on actual usage time. Use 10 minutes? Only 10 minutes deducted.
             </div>
           </div>
           <div>
             <div style={{ fontSize: 24, marginBottom: 6 }}>💡</div>
-            <div style={{ color: '#111827', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>All Features Included</div>
+            <div style={{ color: '#000', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>All Features Included</div>
             <div style={{ color: '#6b7280', fontSize: 12, lineHeight: 1.5 }}>
               Every credit gives full access: AI chat, interview mode, screen analysis, and more.
             </div>
           </div>
           <div>
             <div style={{ fontSize: 24, marginBottom: 6 }}>💰</div>
-            <div style={{ color: '#111827', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>No Expiry</div>
+            <div style={{ color: '#000', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>No Expiry</div>
             <div style={{ color: '#6b7280', fontSize: 12, lineHeight: 1.5 }}>
               Purchased credits never expire. Use them whenever you need — no time pressure.
             </div>
@@ -757,26 +757,26 @@ export default function BillingPage() {
       <div style={{
         marginBottom: 24, padding: 28, borderRadius: 16,
         background: genIsExpired
-          ? 'linear-gradient(135deg, #fef2f2, #fecaca)'
-          : 'linear-gradient(135deg, #f5f5f5, #e5e5e5)',
-        border: genIsExpired ? '1px solid #fca5a5' : '1px solid #d4d4d4',
+          ? '#ffffff'
+          : '#ffffff',
+        border: genIsExpired ? '1px solid #e5e7eb' : '1px solid #d4d4d4',
         boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
           <div>
-            <div style={{ color: '#374151', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>General Mode — Remaining Time</div>
-            <div style={{ color: genIsExpired ? '#dc2626' : '#111827', fontSize: 36, fontWeight: 800, marginTop: 4, letterSpacing: '-1px' }}>
+            <div style={{ color: '#6b7280', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>General Mode — Remaining Time</div>
+            <div style={{ color: genIsExpired ? '#000' : '#000', fontSize: 36, fontWeight: 800, marginTop: 4, letterSpacing: '-1px' }}>
               {formatMinutes(genTotalRemaining)}
             </div>
             {genIsExpired && (
-              <div style={{ color: '#dc2626', fontSize: 13, fontWeight: 600, marginTop: 4 }}>
+              <div style={{ color: '#000', fontSize: 13, fontWeight: 600, marginTop: 4 }}>
                 {genIsFreeUser ? 'Free trial used — purchase credits to continue' : 'No credits remaining — purchase more to continue'}
               </div>
             )}
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ color: '#374151', fontSize: 12, fontWeight: 500 }}>Total Purchased</div>
-            <div style={{ color: '#111827', fontSize: 18, fontWeight: 700, marginTop: 2 }}>
+            <div style={{ color: '#6b7280', fontSize: 12, fontWeight: 500 }}>Total Purchased</div>
+            <div style={{ color: '#000', fontSize: 18, fontWeight: 700, marginTop: 2 }}>
               {formatMinutes(generalCredits.totalMinutes)}
             </div>
             <div style={{ color: '#6b7280', fontSize: 11, marginTop: 4 }}>
@@ -788,14 +788,14 @@ export default function BillingPage() {
         {/* Usage Progress Bar */}
         <div style={{ marginBottom: 8 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-            <span style={{ color: '#374151', fontSize: 11, fontWeight: 500 }}>Usage</span>
-            <span style={{ color: '#374151', fontSize: 11, fontWeight: 600 }}>{genUsagePct}%</span>
+            <span style={{ color: '#6b7280', fontSize: 11, fontWeight: 500 }}>Usage</span>
+            <span style={{ color: '#6b7280', fontSize: 11, fontWeight: 600 }}>{genUsagePct}%</span>
           </div>
           <div style={{ height: 8, borderRadius: 4, background: 'rgba(255,255,255,0.6)' }}>
             <div style={{
               height: '100%', borderRadius: 4, transition: 'width 0.5s ease',
               width: `${Math.min(genUsagePct, 100)}%`,
-              background: genUsagePct >= 90 ? '#ef4444' : genUsagePct >= 60 ? '#f59e0b' : '#111827',
+              background: genUsagePct >= 90 ? '#000' : genUsagePct >= 60 ? '#000' : '#000',
             }} />
           </div>
         </div>
@@ -824,9 +824,9 @@ export default function BillingPage() {
               Free Trial
             </div>
 
-            <div style={{ color: '#111827', fontSize: 18, fontWeight: 700, marginBottom: 4 }}>General Free</div>
+            <div style={{ color: '#000', fontSize: 18, fontWeight: 700, marginBottom: 4 }}>General Free</div>
             <div style={{ marginBottom: 4 }}>
-              <span style={{ color: '#111827', fontSize: 32, fontWeight: 800, letterSpacing: '-1px' }}>Free</span>
+              <span style={{ color: '#000', fontSize: 32, fontWeight: 800, letterSpacing: '-1px' }}>Free</span>
             </div>
             <div style={{ color: '#6b7280', fontSize: 11, marginBottom: 4 }}>5 days access</div>
             <div style={{ color: '#6b7280', fontSize: 12, marginBottom: 14, lineHeight: 1.5 }}>
@@ -849,7 +849,7 @@ export default function BillingPage() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {GENERAL_PLANS.general_free.features.map(f => (
-                <div key={f} style={{ color: '#374151', fontSize: 11, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                <div key={f} style={{ color: '#6b7280', fontSize: 11, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 1 }}>
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
@@ -877,9 +877,9 @@ export default function BillingPage() {
               Quick Access
             </div>
 
-            <div style={{ color: '#111827', fontSize: 18, fontWeight: 700, marginBottom: 4 }}>General 30 Min</div>
+            <div style={{ color: '#000', fontSize: 18, fontWeight: 700, marginBottom: 4 }}>General 30 Min</div>
             <div style={{ marginBottom: 4 }}>
-              <span style={{ color: '#111827', fontSize: 32, fontWeight: 800, letterSpacing: '-1px' }}>₹10</span>
+              <span style={{ color: '#000', fontSize: 32, fontWeight: 800, letterSpacing: '-1px' }}>₹10</span>
               <span style={{ color: '#6b7280', fontSize: 12, marginLeft: 4 }}>/ 30 min</span>
             </div>
             <div style={{ color: '#6b7280', fontSize: 11, marginBottom: 4 }}>International: $0.12</div>
@@ -906,7 +906,7 @@ export default function BillingPage() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {GENERAL_PLANS.general_30min.features.map(f => (
-                <div key={f} style={{ color: '#374151', fontSize: 11, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                <div key={f} style={{ color: '#6b7280', fontSize: 11, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 1 }}>
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
@@ -933,9 +933,9 @@ export default function BillingPage() {
               Best Value
             </div>
 
-            <div style={{ color: '#111827', fontSize: 18, fontWeight: 700, marginBottom: 4 }}>General Pro</div>
+            <div style={{ color: '#000', fontSize: 18, fontWeight: 700, marginBottom: 4 }}>General Pro</div>
             <div style={{ marginBottom: 4 }}>
-              <span style={{ color: '#111827', fontSize: 32, fontWeight: 800, letterSpacing: '-1px' }}>₹1,999</span>
+              <span style={{ color: '#000', fontSize: 32, fontWeight: 800, letterSpacing: '-1px' }}>₹1,999</span>
               <span style={{ color: '#6b7280', fontSize: 12, marginLeft: 4 }}>/ month</span>
             </div>
             <div style={{ color: '#6b7280', fontSize: 11, marginBottom: 4 }}>International: $20/month</div>
@@ -950,7 +950,7 @@ export default function BillingPage() {
                 width: '100%', padding: '10px 0', borderRadius: 10, marginBottom: 14,
                 background: isGeneralActive ? '#e5e7eb' : '#000000',
                 border: 'none',
-                color: isGeneralActive ? '#374151' : '#ffffff',
+                color: isGeneralActive ? '#6b7280' : '#ffffff',
                 fontSize: 13, fontWeight: 700,
                 cursor: isGeneralActive ? 'default' : 'pointer',
                 transition: 'all 0.2s',
@@ -962,7 +962,7 @@ export default function BillingPage() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {GENERAL_PLANS.general_monthly.features.map(f => (
-                <div key={f} style={{ color: '#374151', fontSize: 11, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                <div key={f} style={{ color: '#6b7280', fontSize: 11, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 1 }}>
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
@@ -979,25 +979,25 @@ export default function BillingPage() {
         marginBottom: 24, padding: 24, borderRadius: 14,
         background: '#f9fafb', border: '1px solid #e5e7eb',
       }}>
-        <h3 style={{ color: '#111827', fontSize: 16, fontWeight: 700, margin: '0 0 14px' }}>How General Mode Works</h3>
+        <h3 style={{ color: '#000', fontSize: 16, fontWeight: 700, margin: '0 0 14px' }}>How General Mode Works</h3>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
           <div>
             <div style={{ fontSize: 24, marginBottom: 6 }}>📅</div>
-            <div style={{ color: '#111827', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>2 Days Access/Month</div>
+            <div style={{ color: '#000', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>2 Days Access/Month</div>
             <div style={{ color: '#6b7280', fontSize: 12, lineHeight: 1.5 }}>
               Use the app on any 2 days within your subscription month. Perfect for occasional use.
             </div>
           </div>
           <div>
             <div style={{ fontSize: 24, marginBottom: 6 }}>📊</div>
-            <div style={{ color: '#111827', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Daily Limits</div>
+            <div style={{ color: '#000', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Daily Limits</div>
             <div style={{ color: '#6b7280', fontSize: 12, lineHeight: 1.5 }}>
               5 screen analyses, 5 rewrites per day. Unlimited chat and reminders.
             </div>
           </div>
           <div>
             <div style={{ fontSize: 24, marginBottom: 6 }}>🔄</div>
-            <div style={{ color: '#111827', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Monthly Renewal</div>
+            <div style={{ color: '#000', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Monthly Renewal</div>
             <div style={{ color: '#6b7280', fontSize: 12, lineHeight: 1.5 }}>
               Subscription auto-renews monthly. Cancel anytime from your account settings.
             </div>
@@ -1014,10 +1014,10 @@ export default function BillingPage() {
         background: '#ffffff', border: '1px solid #e5e7eb',
         boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
       }}>
-        <h3 style={{ color: '#111827', fontSize: 16, fontWeight: 700, margin: '0 0 14px' }}>Payment Details</h3>
+        <h3 style={{ color: '#000', fontSize: 16, fontWeight: 700, margin: '0 0 14px' }}>Payment Details</h3>
         <div style={{ color: '#6b7280', fontSize: 14 }}>
           {billingEmail ? (
-            <div>Billing email: <span style={{ color: '#111827', fontWeight: 500 }}>{billingEmail}</span></div>
+            <div>Billing email: <span style={{ color: '#000', fontWeight: 500 }}>{billingEmail}</span></div>
           ) : (
             'No payment on file yet.'
           )}
@@ -1043,7 +1043,7 @@ export default function BillingPage() {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               margin: '0 auto 16px', fontSize: 32, color: '#16a34a',
             }}>&#10003;</div>
-            <h2 style={{ color: '#111827', fontSize: 22, fontWeight: 700, margin: '0 0 8px' }}>Credits Added!</h2>
+            <h2 style={{ color: '#000', fontSize: 22, fontWeight: 700, margin: '0 0 8px' }}>Credits Added!</h2>
             <p style={{ color: '#6b7280', fontSize: 14, margin: '0 0 24px' }}>
               <strong>{formatMinutes(paymentSuccess.creditsAdded)}</strong> has been added to your account.
             </p>
@@ -1054,11 +1054,11 @@ export default function BillingPage() {
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                 <span style={{ color: '#6b7280', fontSize: 13 }}>Plan</span>
-                <span style={{ color: '#111827', fontSize: 13, fontWeight: 600 }}>{paymentSuccess.planName}</span>
+                <span style={{ color: '#000', fontSize: 13, fontWeight: 600 }}>{paymentSuccess.planName}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                 <span style={{ color: '#6b7280', fontSize: 13 }}>Amount Paid</span>
-                <span style={{ color: '#111827', fontSize: 13, fontWeight: 600 }}>{paymentSuccess.amount}</span>
+                <span style={{ color: '#000', fontSize: 13, fontWeight: 600 }}>{paymentSuccess.amount}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                 <span style={{ color: '#6b7280', fontSize: 13 }}>Credits Added</span>
@@ -1066,7 +1066,7 @@ export default function BillingPage() {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: '#6b7280', fontSize: 13 }}>Payment ID</span>
-                <span style={{ color: '#111827', fontSize: 11, fontWeight: 500, fontFamily: 'monospace' }}>{paymentSuccess.paymentId}</span>
+                <span style={{ color: '#000', fontSize: 11, fontWeight: 500, fontFamily: 'monospace' }}>{paymentSuccess.paymentId}</span>
               </div>
             </div>
 
@@ -1137,7 +1137,7 @@ export default function BillingPage() {
                   width: 44,
                   height: 44,
                   borderRadius: 12,
-                  background: 'linear-gradient(135deg, #000 0%, #000 100%)',
+                  background: '#000',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -1191,7 +1191,7 @@ export default function BillingPage() {
                   width: 44,
                   height: 44,
                   borderRadius: 12,
-                  background: 'linear-gradient(135deg, #111827 0%, #374151 100%)',
+                  background: '#000',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -1203,7 +1203,7 @@ export default function BillingPage() {
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                     <span style={{
-                      background: '#374151',
+                      background: '#6b7280',
                       color: '#fff',
                       padding: '2px 8px',
                       borderRadius: 6,
