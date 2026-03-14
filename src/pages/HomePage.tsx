@@ -746,6 +746,170 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* How Interview Mode Works - Roadmap */}
+      <section style={{
+        padding: '80px 24px',
+        background: 'linear-gradient(180deg, #f8fafc 0%, #fff 100%)',
+      }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 60 }}>
+            <span style={{
+              display: 'inline-block',
+              padding: '8px 16px',
+              background: '#000',
+              color: '#fff',
+              borderRadius: 100,
+              fontSize: 13,
+              fontWeight: 700,
+              marginBottom: 16,
+            }}>
+              🎯 INTERVIEW MODE
+            </span>
+            <h2 style={{
+              fontSize: 'clamp(28px, 4.5vw, 44px)',
+              fontWeight: 900,
+              letterSpacing: '-1px',
+              marginBottom: 16,
+              color: '#000',
+            }}>
+              How It Works
+            </h2>
+            <p style={{ color: '#666', fontSize: 17, maxWidth: 600, margin: '0 auto' }}>
+              Get real-time AI assistance during your interviews in just 4 simple steps
+            </p>
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gap: 24,
+            position: 'relative',
+          }}>
+            {[
+              {
+                step: '01',
+                icon: '📥',
+                title: 'Download & Install',
+                desc: 'Download HelplyAI for Mac or Windows. Quick 2-minute setup with no complex configuration.',
+                color: '#3b82f6',
+              },
+              {
+                step: '02',
+                icon: '🎙️',
+                title: 'Switch to Interview Mode',
+                desc: 'Open the app and toggle Interview Mode. Grant microphone & screen permissions when prompted.',
+                color: '#8b5cf6',
+              },
+              {
+                step: '03',
+                icon: '📋',
+                title: 'Join Your Interview',
+                desc: 'Start your Zoom, Meet, or Teams call. HelplyAI runs invisibly in the background - undetectable on screen share.',
+                color: '#ec4899',
+              },
+              {
+                step: '04',
+                icon: '✨',
+                title: 'Get Real-Time Answers',
+                desc: 'Click "Analyze Screen" or use voice. AI listens to questions and provides instant, contextual answers.',
+                color: '#10b981',
+              },
+            ].map((item, i) => (
+              <div key={i} style={{
+                background: '#fff',
+                borderRadius: 20,
+                padding: 32,
+                position: 'relative',
+                border: '1px solid #e5e7eb',
+                transition: 'all 0.3s',
+                cursor: 'default',
+              }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.transform = 'translateY(-8px)';
+                  e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,0,0,0.1)';
+                  e.currentTarget.style.borderColor = item.color;
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.borderColor = '#e5e7eb';
+                }}
+              >
+                <div style={{
+                  position: 'absolute',
+                  top: -12,
+                  left: 24,
+                  background: item.color,
+                  color: '#fff',
+                  padding: '6px 14px',
+                  borderRadius: 100,
+                  fontSize: 13,
+                  fontWeight: 800,
+                }}>
+                  STEP {item.step}
+                </div>
+                <div style={{
+                  fontSize: 48,
+                  marginBottom: 16,
+                  marginTop: 8,
+                }}>
+                  {item.icon}
+                </div>
+                <h3 style={{
+                  fontSize: 20,
+                  fontWeight: 800,
+                  marginBottom: 12,
+                  color: '#000',
+                }}>
+                  {item.title}
+                </h3>
+                <p style={{
+                  fontSize: 14,
+                  color: '#666',
+                  lineHeight: 1.6,
+                  margin: 0,
+                }}>
+                  {item.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div style={{
+            textAlign: 'center',
+            marginTop: 50,
+            padding: '30px',
+            background: 'linear-gradient(135deg, #000 0%, #1a1a1a 100%)',
+            borderRadius: 16,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 16,
+          }}>
+            <p style={{ color: '#fff', fontSize: 18, fontWeight: 600, margin: 0 }}>
+              💡 Pro Tip: Interview Mode captures both your voice AND the interviewer's audio for perfect context!
+            </p>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <span style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '8px 16px', borderRadius: 100, fontSize: 13, fontWeight: 600 }}>
+                ✓ Works on Zoom
+              </span>
+              <span style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '8px 16px', borderRadius: 100, fontSize: 13, fontWeight: 600 }}>
+                ✓ Google Meet
+              </span>
+              <span style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '8px 16px', borderRadius: 100, fontSize: 13, fontWeight: 600 }}>
+                ✓ Microsoft Teams
+              </span>
+              <span style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '8px 16px', borderRadius: 100, fontSize: 13, fontWeight: 600 }}>
+                ✓ HackerRank
+              </span>
+              <span style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '8px 16px', borderRadius: 100, fontSize: 13, fontWeight: 600 }}>
+                ✓ LeetCode
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Land Your Job Section */}
       <section style={{
         padding: '50px 24px',
