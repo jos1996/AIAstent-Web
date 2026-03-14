@@ -38,9 +38,10 @@ export default function DashboardPage() {
   const [selectedPlatform, setSelectedPlatform] = useState<'ios' | 'windows' | null>(null);
 
   const downloadLinks = {
-    macOS: 'https://giftsandcoins.s3.eu-north-1.amazonaws.com/Helply+AI_0.1.0_aarch64+(1).dmg',
-    windowsMSI: 'https://giftsandcoins.s3.eu-north-1.amazonaws.com/windows-msi-installer+(1).zip',
-    windowsNSIS: 'https://giftsandcoins.s3.eu-north-1.amazonaws.com/windows-nsis-installer+(1).zip',
+    macAppleSilicon: 'https://beeptalk.s3.eu-north-1.amazonaws.com/HelplyAI-Notarized-aarch64+(2).dmg',
+    macIntel: 'https://beeptalk.s3.eu-north-1.amazonaws.com/HelplyAI-Notarized-x64.dmg',
+    windowsMSI: 'https://beeptalk.s3.eu-north-1.amazonaws.com/windows-msi+(7)+(1).zip',
+    windowsNSIS: 'https://beeptalk.s3.eu-north-1.amazonaws.com/windows-nsis+(3)+(1).zip',
   };
 
   const handleDirectDownload = (url: string) => {
@@ -385,28 +386,54 @@ export default function DashboardPage() {
             </h3>
             <p style={{ color: '#666', fontSize: 14, marginBottom: 24 }}>
               {selectedPlatform === 'ios' 
-                ? 'Download the DMG installer for macOS (Apple Silicon)' 
+                ? 'Choose your Mac processor type' 
                 : 'Choose the installer type that best suits your needs'}
             </p>
 
             {selectedPlatform === 'ios' ? (
-              <button onClick={() => handleDirectDownload(downloadLinks.macOS)} style={{
-                width: '100%', padding: '16px 24px', borderRadius: 12,
-                background: '#000', color: '#fff', border: 'none',
-                fontSize: 15, fontWeight: 600, cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
-                transition: 'all 0.3s',
-              }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#1a1a1a'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#000'; e.currentTarget.style.transform = 'translateY(0)' }}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                  <polyline points="7 10 12 15 17 10"/>
-                  <line x1="12" y1="15" x2="12" y2="3"/>
-                </svg>
-                Download DMG (Apple Silicon)
-              </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <button onClick={() => handleDirectDownload(downloadLinks.macAppleSilicon)} style={{
+                  width: '100%', padding: '16px 24px', borderRadius: 12,
+                  background: '#000', color: '#fff', border: 'none',
+                  fontSize: 15, fontWeight: 600, cursor: 'pointer',
+                  display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
+                  transition: 'all 0.3s',
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#1a1a1a'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#000'; e.currentTarget.style.transform = 'translateY(0)' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    <span>Apple Silicon (M1/M2/M3/M4)</span>
+                  </div>
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', fontWeight: 400 }}>For Macs with Apple M-series chips (2020 and newer)</span>
+                </button>
+
+                <button onClick={() => handleDirectDownload(downloadLinks.macIntel)} style={{
+                  width: '100%', padding: '16px 24px', borderRadius: 12,
+                  background: '#fff', color: '#000', border: '2px solid #000',
+                  fontSize: 15, fontWeight: 600, cursor: 'pointer',
+                  display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
+                  transition: 'all 0.3s',
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#f5f5f5'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.transform = 'translateY(0)' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    <span>Intel Processor</span>
+                  </div>
+                  <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.6)', fontWeight: 400 }}>For Macs with Intel processors (2019 and older)</span>
+                </button>
+              </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <button onClick={() => handleDirectDownload(downloadLinks.windowsMSI)} style={{
