@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import WhatsAppTestimonials from '../components/WhatsAppTestimonials'
 
 const Icon = ({ name, size = 24 }: { name: string; size?: number }) => {
   const icons: Record<string, React.ReactElement> = {
@@ -1415,8 +1414,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      <WhatsAppTestimonials />
 
       {/* About Us Section */}
       <section id="about" style={{
