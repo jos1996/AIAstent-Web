@@ -89,10 +89,10 @@ export const PLANS: Record<InterviewPlanId, PlanConfig> = {
     id: 'credit_1hr',
     name: '1 Credit',
     tagline: '1 hour of full access.',
-    priceLabel: '₹299',
+    priceLabel: '₹399',
     priceSuffix: '/ hour',
     savingsNote: '',
-    priceInPaise: 29900,
+    priceInPaise: 39900,
     limits: { totalMinutes: 60, freeMinutes: 0 },
     features: [
       '1 hour of usage',
