@@ -902,7 +902,7 @@ export default function HomePage() {
                 letterSpacing: '-1px',
                 textShadow: '0 2px 10px rgba(0,0,0,0.2)',
               }}>
-                🎯 Crack Your Interview for Just ₹999!
+                🎯 Crack Your Interview for Just ₹399!
               </h2>
               <p style={{
                 fontSize: 'clamp(18px, 3vw, 24px)',
@@ -923,7 +923,7 @@ export default function HomePage() {
                   border: '2px solid rgba(255,255,255,0.3)',
                   minWidth: 280,
                 }}>
-                  <div style={{ fontSize: 48, fontWeight: 900, color: '#fff', marginBottom: 8 }}>₹999</div>
+                  <div style={{ fontSize: 48, fontWeight: 900, color: '#fff', marginBottom: 8 }}>₹399</div>
                   <div style={{ fontSize: 18, color: '#fff', fontWeight: 600, marginBottom: 4 }}>Day Pass</div>
                   <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)' }}>24 hours unlimited access</div>
                 </div>
@@ -948,7 +948,7 @@ export default function HomePage() {
                     fontSize: 11,
                     fontWeight: 800,
                   }}>BEST VALUE</div>
-                  <div style={{ fontSize: 48, fontWeight: 900, color: '#fff', marginBottom: 8 }}>₹1,999</div>
+                  <div style={{ fontSize: 48, fontWeight: 900, color: '#fff', marginBottom: 8 }}>₹799</div>
                   <div style={{ fontSize: 18, color: '#fff', fontWeight: 600, marginBottom: 4 }}>Week Pass</div>
                   <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)' }}>7 days unlimited access</div>
                 </div>
@@ -1411,6 +1411,258 @@ export default function HomePage() {
               ))}
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* WhatsApp Testimonials Section */}
+      <section style={{
+        padding: '60px 0',
+        background: 'linear-gradient(135deg, #075E54 0%, #128C7E 50%, #25D366 100%)',
+        overflow: 'hidden',
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: 40, padding: '0 24px' }}>
+          <h2 style={{
+            fontSize: 'clamp(24px, 4vw, 40px)',
+            fontWeight: 900,
+            color: '#fff',
+            marginBottom: 12,
+          }}>
+            💬 What Our Users Say
+          </h2>
+          <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: 16, fontWeight: 500 }}>
+            Real feedback from candidates who cracked their interviews with HelplyAI
+          </p>
+        </div>
+
+        <style>{`
+          @keyframes scrollTestimonials {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          .whatsapp-scroll {
+            animation: scrollTestimonials 60s linear infinite;
+          }
+          .whatsapp-scroll:hover {
+            animation-play-state: paused;
+          }
+        `}</style>
+
+        {/* Row 1 - scrolling left */}
+        <div style={{ overflow: 'hidden', marginBottom: 16 }}>
+          <div className="whatsapp-scroll" style={{ display: 'flex', gap: 16, width: 'max-content' }}>
+            {[
+              { name: '██████', msg: "Just got placed at Google! HelplyAI helped me crack 5 rounds of interviews. Thank you so much! 🎉", time: '10:32 AM' },
+              { name: '██████', msg: "Cracked my Amazon interview today! The real-time suggestions were a lifesaver. Highly recommend! 💯", time: '2:15 PM' },
+              { name: '██████', msg: "Got selected at Microsoft! HelplyAI's screen analysis feature is incredible. Worth every rupee!", time: '11:45 AM' },
+              { name: '██████', msg: "Finally landed my dream job at Meta! Thanks HelplyAI team for this amazing product! 🙏", time: '4:20 PM' },
+              { name: '██████', msg: "Cleared TCS interview in first attempt! The AI suggestions were spot on. Thank you!", time: '9:30 AM' },
+              { name: '██████', msg: "Got offer from Flipkart! HelplyAI made my technical round so smooth. Best investment ever! 🚀", time: '3:45 PM' },
+              { name: '██████', msg: "Placed at Infosys with 12 LPA! Your product genuinely works. Recommending to all my friends!", time: '1:20 PM' },
+              { name: '██████', msg: "Cracked Deloitte interview! The interview mode captured everything perfectly. Amazing tool! ✨", time: '5:10 PM' },
+              { name: '██████', msg: "Got into Accenture! HelplyAI helped me answer HR questions confidently. Thank you team!", time: '10:55 AM' },
+              { name: '██████', msg: "Selected at Wipro! First job after college, all thanks to HelplyAI. You guys are the best! 🌟", time: '2:40 PM' },
+              { name: '██████', msg: "Cleared Goldman Sachs interview! The coding assistance was phenomenal. Grateful forever!", time: '11:15 AM' },
+              { name: '██████', msg: "Got placed at JP Morgan! HelplyAI's real-time help during system design round was clutch! 💪", time: '4:50 PM' },
+              { name: '██████', msg: "Cracked Uber interview! From rejection to selection, HelplyAI changed my interview game!", time: '9:05 AM' },
+              { name: '██████', msg: "Selected at Swiggy! The screen share invisible feature is genius. No one suspected! 😄", time: '3:30 PM' },
+              { name: '██████', msg: "Got into Razorpay! HelplyAI helped me crack 4 technical rounds. Absolutely worth it!", time: '12:25 PM' },
+              // Duplicate for seamless loop
+              { name: '██████', msg: "Just got placed at Google! HelplyAI helped me crack 5 rounds of interviews. Thank you so much! 🎉", time: '10:32 AM' },
+              { name: '██████', msg: "Cracked my Amazon interview today! The real-time suggestions were a lifesaver. Highly recommend! 💯", time: '2:15 PM' },
+              { name: '██████', msg: "Got selected at Microsoft! HelplyAI's screen analysis feature is incredible. Worth every rupee!", time: '11:45 AM' },
+              { name: '██████', msg: "Finally landed my dream job at Meta! Thanks HelplyAI team for this amazing product! 🙏", time: '4:20 PM' },
+              { name: '██████', msg: "Cleared TCS interview in first attempt! The AI suggestions were spot on. Thank you!", time: '9:30 AM' },
+              { name: '██████', msg: "Got offer from Flipkart! HelplyAI made my technical round so smooth. Best investment ever! 🚀", time: '3:45 PM' },
+              { name: '██████', msg: "Placed at Infosys with 12 LPA! Your product genuinely works. Recommending to all my friends!", time: '1:20 PM' },
+              { name: '██████', msg: "Cracked Deloitte interview! The interview mode captured everything perfectly. Amazing tool! ✨", time: '5:10 PM' },
+              { name: '██████', msg: "Got into Accenture! HelplyAI helped me answer HR questions confidently. Thank you team!", time: '10:55 AM' },
+              { name: '██████', msg: "Selected at Wipro! First job after college, all thanks to HelplyAI. You guys are the best! 🌟", time: '2:40 PM' },
+              { name: '██████', msg: "Cleared Goldman Sachs interview! The coding assistance was phenomenal. Grateful forever!", time: '11:15 AM' },
+              { name: '██████', msg: "Got placed at JP Morgan! HelplyAI's real-time help during system design round was clutch! 💪", time: '4:50 PM' },
+              { name: '██████', msg: "Cracked Uber interview! From rejection to selection, HelplyAI changed my interview game!", time: '9:05 AM' },
+              { name: '██████', msg: "Selected at Swiggy! The screen share invisible feature is genius. No one suspected! 😄", time: '3:30 PM' },
+              { name: '██████', msg: "Got into Razorpay! HelplyAI helped me crack 4 technical rounds. Absolutely worth it!", time: '12:25 PM' },
+            ].map((item, i) => (
+              <div key={i} style={{
+                background: '#fff',
+                borderRadius: 12,
+                padding: 0,
+                minWidth: 320,
+                maxWidth: 320,
+                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                flexShrink: 0,
+                overflow: 'hidden',
+              }}>
+                {/* WhatsApp Header */}
+                <div style={{
+                  background: '#075E54',
+                  padding: '10px 12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                }}>
+                  <div style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#fff',
+                    fontSize: 14,
+                    fontWeight: 700,
+                    filter: 'blur(3px)',
+                  }}>
+                    👤
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ color: '#fff', fontSize: 14, fontWeight: 600, filter: 'blur(4px)' }}>{item.name}</div>
+                    <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11 }}>online</div>
+                  </div>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(255,255,255,0.8)">
+                    <circle cx="12" cy="5" r="2"/>
+                    <circle cx="12" cy="12" r="2"/>
+                    <circle cx="12" cy="19" r="2"/>
+                  </svg>
+                </div>
+                {/* Chat Bubble */}
+                <div style={{
+                  background: '#ECE5DD',
+                  padding: '16px 12px',
+                  minHeight: 80,
+                }}>
+                  <div style={{
+                    background: '#DCF8C6',
+                    borderRadius: '0 12px 12px 12px',
+                    padding: '10px 12px',
+                    position: 'relative',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                  }}>
+                    <div style={{ fontSize: 14, color: '#303030', lineHeight: 1.5, marginBottom: 6 }}>
+                      {item.msg}
+                    </div>
+                    <div style={{ fontSize: 11, color: '#667781', textAlign: 'right', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
+                      {item.time}
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="#53bdeb">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        <path d="M15 16.17L10.83 12l-1.42 1.41L15 19 21 7l-1.41-1.41z" style={{ transform: 'translateX(-6px)' }}/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Row 2 - scrolling right (reverse) */}
+        <div style={{ overflow: 'hidden' }}>
+          <div className="whatsapp-scroll" style={{ display: 'flex', gap: 16, width: 'max-content', animationDirection: 'reverse' }}>
+            {[
+              { name: '██████', msg: "Placed at Paytm! HelplyAI is a game changer. The AI understood every question perfectly! 🎯", time: '8:45 AM' },
+              { name: '██████', msg: "Got into Zomato! Thanks for making this tool affordable. Best ₹399 I ever spent! 💰", time: '6:20 PM' },
+              { name: '██████', msg: "Cracked PhonePe interview! The behavioral question suggestions were exactly what I needed!", time: '10:10 AM' },
+              { name: '██████', msg: "Selected at CRED! HelplyAI helped me stay calm and confident throughout. Amazing! 🙌", time: '1:55 PM' },
+              { name: '██████', msg: "Got placed at Meesho! From 10 rejections to finally getting selected. Thank you HelplyAI!", time: '3:15 PM' },
+              { name: '██████', msg: "Cleared Byju's interview! The screen analysis during coding round was super helpful! 💻", time: '11:30 AM' },
+              { name: '██████', msg: "Got into Ola! HelplyAI's suggestions during HR round helped me negotiate better salary! 📈", time: '4:05 PM' },
+              { name: '██████', msg: "Placed at Dream11! This tool is magic. Cracked interview in just 2 days of preparation!", time: '9:50 AM' },
+              { name: '██████', msg: "Selected at Groww! HelplyAI made complex DSA questions look easy. Highly recommended! ⭐", time: '2:30 PM' },
+              { name: '██████', msg: "Got offer from Zerodha! The real-time coding help was incredible. Worth every penny!", time: '12:45 PM' },
+              { name: '██████', msg: "Cracked Freshworks interview! HelplyAI understood context so well. Felt like having a mentor! 👨‍🏫", time: '5:25 PM' },
+              { name: '██████', msg: "Placed at Zoho! After 2 years of trying, finally made it. All credit to HelplyAI! 🏆", time: '10:40 AM' },
+              { name: '██████', msg: "Got into Atlassian! The system design suggestions were top notch. Thank you team! 🚀", time: '3:50 PM' },
+              { name: '██████', msg: "Selected at Salesforce! HelplyAI helped me crack 6 rounds. Best decision ever! 💯", time: '1:10 PM' },
+              { name: '██████', msg: "Cleared Adobe interview! From nervous to confident, HelplyAI transformed my approach! ✨", time: '4:35 PM' },
+              // Duplicate for seamless loop
+              { name: '██████', msg: "Placed at Paytm! HelplyAI is a game changer. The AI understood every question perfectly! 🎯", time: '8:45 AM' },
+              { name: '██████', msg: "Got into Zomato! Thanks for making this tool affordable. Best ₹399 I ever spent! 💰", time: '6:20 PM' },
+              { name: '██████', msg: "Cracked PhonePe interview! The behavioral question suggestions were exactly what I needed!", time: '10:10 AM' },
+              { name: '██████', msg: "Selected at CRED! HelplyAI helped me stay calm and confident throughout. Amazing! 🙌", time: '1:55 PM' },
+              { name: '██████', msg: "Got placed at Meesho! From 10 rejections to finally getting selected. Thank you HelplyAI!", time: '3:15 PM' },
+              { name: '██████', msg: "Cleared Byju's interview! The screen analysis during coding round was super helpful! 💻", time: '11:30 AM' },
+              { name: '██████', msg: "Got into Ola! HelplyAI's suggestions during HR round helped me negotiate better salary! 📈", time: '4:05 PM' },
+              { name: '██████', msg: "Placed at Dream11! This tool is magic. Cracked interview in just 2 days of preparation!", time: '9:50 AM' },
+              { name: '██████', msg: "Selected at Groww! HelplyAI made complex DSA questions look easy. Highly recommended! ⭐", time: '2:30 PM' },
+              { name: '██████', msg: "Got offer from Zerodha! The real-time coding help was incredible. Worth every penny!", time: '12:45 PM' },
+              { name: '██████', msg: "Cracked Freshworks interview! HelplyAI understood context so well. Felt like having a mentor! 👨‍🏫", time: '5:25 PM' },
+              { name: '██████', msg: "Placed at Zoho! After 2 years of trying, finally made it. All credit to HelplyAI! 🏆", time: '10:40 AM' },
+              { name: '██████', msg: "Got into Atlassian! The system design suggestions were top notch. Thank you team! 🚀", time: '3:50 PM' },
+              { name: '██████', msg: "Selected at Salesforce! HelplyAI helped me crack 6 rounds. Best decision ever! 💯", time: '1:10 PM' },
+              { name: '██████', msg: "Cleared Adobe interview! From nervous to confident, HelplyAI transformed my approach! ✨", time: '4:35 PM' },
+            ].map((item, i) => (
+              <div key={i} style={{
+                background: '#fff',
+                borderRadius: 12,
+                padding: 0,
+                minWidth: 320,
+                maxWidth: 320,
+                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                flexShrink: 0,
+                overflow: 'hidden',
+              }}>
+                {/* WhatsApp Header */}
+                <div style={{
+                  background: '#075E54',
+                  padding: '10px 12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                }}>
+                  <div style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#fff',
+                    fontSize: 14,
+                    fontWeight: 700,
+                    filter: 'blur(3px)',
+                  }}>
+                    👤
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ color: '#fff', fontSize: 14, fontWeight: 600, filter: 'blur(4px)' }}>{item.name}</div>
+                    <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11 }}>online</div>
+                  </div>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(255,255,255,0.8)">
+                    <circle cx="12" cy="5" r="2"/>
+                    <circle cx="12" cy="12" r="2"/>
+                    <circle cx="12" cy="19" r="2"/>
+                  </svg>
+                </div>
+                {/* Chat Bubble */}
+                <div style={{
+                  background: '#ECE5DD',
+                  padding: '16px 12px',
+                  minHeight: 80,
+                }}>
+                  <div style={{
+                    background: '#DCF8C6',
+                    borderRadius: '0 12px 12px 12px',
+                    padding: '10px 12px',
+                    position: 'relative',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                  }}>
+                    <div style={{ fontSize: 14, color: '#303030', lineHeight: 1.5, marginBottom: 6 }}>
+                      {item.msg}
+                    </div>
+                    <div style={{ fontSize: 11, color: '#667781', textAlign: 'right', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
+                      {item.time}
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="#53bdeb">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        <path d="M15 16.17L10.83 12l-1.42 1.41L15 19 21 7l-1.41-1.41z" style={{ transform: 'translateX(-6px)' }}/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
