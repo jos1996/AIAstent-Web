@@ -564,6 +564,160 @@ export default function BillingPage() {
         </button>
       </div>
 
+      {/* ── Instructions Section ── */}
+      <div style={{
+        marginBottom: 24,
+        padding: 28,
+        borderRadius: 16,
+        background: pricingMode === 'interview' 
+          ? 'linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%)'
+          : 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+        border: '1px solid rgba(255,255,255,0.1)',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+          <span style={{ fontSize: 28 }}>{pricingMode === 'interview' ? '🎯' : '💬'}</span>
+          <div>
+            <h3 style={{ color: '#fff', fontSize: 20, fontWeight: 700, margin: 0 }}>
+              {pricingMode === 'interview' ? 'Interview Mode Instructions' : 'General Mode Instructions'}
+            </h3>
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, margin: '4px 0 0' }}>
+              {pricingMode === 'interview' 
+                ? 'Follow these steps to ace your interviews with real-time AI assistance'
+                : 'Follow these steps to use the general AI assistant'}
+            </p>
+          </div>
+        </div>
+
+        {pricingMode === 'interview' ? (
+          <div style={{ display: 'grid', gap: 16 }}>
+            {[
+              { step: '1', icon: '💳', title: 'Purchase Credits', desc: 'Buy credits first to unlock Interview Mode. Choose a plan that fits your needs - credits never expire!' },
+              { step: '2', icon: '📥', title: 'Download & Install App', desc: 'Download HelplyAI desktop app for Mac or Windows from the homepage. Quick 2-minute setup.' },
+              { step: '3', icon: '🎙️', title: 'Switch to Interview Mode', desc: 'Open the app and toggle "Interview Mode" ON. Grant microphone and screen permissions when prompted.' },
+              { step: '4', icon: '📋', title: 'Paste JD & Resume', desc: 'Extract the Job Description and paste it along with your Resume in the chatbot. AI will tailor answers to your profile.' },
+              { step: '5', icon: '🖥️', title: 'Use Single Screen', desc: 'Keep everything on one screen for best experience. The app overlay is invisible on screen share.' },
+              { step: '6', icon: '📞', title: 'Join Your Interview', desc: 'Start your Zoom, Meet, or Teams call. HelplyAI runs invisibly in the background - completely undetectable.' },
+              { step: '7', icon: '✨', title: 'Click "Get Answer"', desc: 'After the interviewer asks a question, click "Get Answer" or "Analyze Screen". AI provides instant, contextual answers.' },
+              { step: '8', icon: '👁️', title: 'Hide/Show Chatbot', desc: 'Press the Start button to show the chatbot, or click "Hide" to minimize it. Toggle visibility as needed during the interview.' },
+            ].map((item, i) => (
+              <div key={i} style={{
+                display: 'flex',
+                gap: 16,
+                padding: 16,
+                background: 'rgba(255,255,255,0.05)',
+                borderRadius: 12,
+                border: '1px solid rgba(255,255,255,0.08)',
+              }}>
+                <div style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 12,
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 20,
+                  flexShrink: 0,
+                }}>
+                  {item.icon}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                    <span style={{
+                      background: '#3b82f6',
+                      color: '#fff',
+                      padding: '2px 8px',
+                      borderRadius: 6,
+                      fontSize: 11,
+                      fontWeight: 700,
+                    }}>
+                      STEP {item.step}
+                    </span>
+                    <span style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>{item.title}</span>
+                  </div>
+                  <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12, margin: 0, lineHeight: 1.5 }}>
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gap: 16 }}>
+            {[
+              { step: '1', icon: '💳', title: 'Purchase Credits or Subscribe', desc: 'Buy credits or subscribe to General Pro plan to unlock all features. Free trial gives you 15 minutes to try.' },
+              { step: '2', icon: '📥', title: 'Download & Install App', desc: 'Download HelplyAI desktop app for Mac or Windows from the homepage. Quick 2-minute setup.' },
+              { step: '3', icon: '💬', title: 'Use General Mode (Default)', desc: 'General Mode is the default when you open the app. No need to toggle anything - just start chatting!' },
+              { step: '4', icon: '🖥️', title: 'Analyze Screen', desc: 'Click "Analyze Screen" to capture your screen. AI will read and understand any content visible on your display.' },
+              { step: '5', icon: '✍️', title: 'Generate Answers', desc: 'Ask questions in the chat. AI provides detailed answers based on your screen content and conversation context.' },
+              { step: '6', icon: '🔄', title: 'Rewrite Text', desc: 'Select any text and use the rewrite feature to improve, summarize, or rephrase content instantly.' },
+              { step: '7', icon: '⏰', title: 'Set Reminders', desc: 'Use the reminders feature to set alerts and notifications. AI will remind you at the scheduled time.' },
+              { step: '8', icon: '👁️', title: 'Hide/Show Chatbot', desc: 'Press the Start button to show the chatbot, or click "Hide" to minimize it. Toggle visibility as needed.' },
+            ].map((item, i) => (
+              <div key={i} style={{
+                display: 'flex',
+                gap: 16,
+                padding: 16,
+                background: 'rgba(255,255,255,0.05)',
+                borderRadius: 12,
+                border: '1px solid rgba(255,255,255,0.08)',
+              }}>
+                <div style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 12,
+                  background: 'linear-gradient(135deg, #111827 0%, #374151 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 20,
+                  flexShrink: 0,
+                }}>
+                  {item.icon}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                    <span style={{
+                      background: '#374151',
+                      color: '#fff',
+                      padding: '2px 8px',
+                      borderRadius: 6,
+                      fontSize: 11,
+                      fontWeight: 700,
+                    }}>
+                      STEP {item.step}
+                    </span>
+                    <span style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>{item.title}</span>
+                  </div>
+                  <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12, margin: 0, lineHeight: 1.5 }}>
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div style={{
+          marginTop: 20,
+          padding: 16,
+          background: 'rgba(59, 130, 246, 0.15)',
+          borderRadius: 12,
+          border: '1px solid rgba(59, 130, 246, 0.3)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+        }}>
+          <span style={{ fontSize: 24 }}>💡</span>
+          <p style={{ color: '#93c5fd', fontSize: 13, margin: 0, lineHeight: 1.5 }}>
+            {pricingMode === 'interview' 
+              ? 'Pro Tip: Interview Mode captures both your voice AND the interviewer\'s audio for perfect context. The AI understands the full conversation!'
+              : 'Pro Tip: General Mode is perfect for daily tasks like writing emails, analyzing documents, coding help, and more!'}
+          </p>
+        </div>
+      </div>
+
       {/* ── Interview Mode Section ── */}
       {pricingMode === 'interview' && (
         <>
