@@ -28,6 +28,7 @@ export default function HomePage() {
   const [scrolled, setScrolled] = useState(false)
   const [showDownloadModal, setShowDownloadModal] = useState(false)
   const [selectedPlatform, setSelectedPlatform] = useState<'ios' | 'windows' | null>(null)
+  const [openFaq, setOpenFaq] = useState<number | null>(null)
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -1944,65 +1945,208 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Footer */}
-      <footer style={{
-        padding: '60px 40px 40px',
-        borderTop: '1px solid rgba(0,0,0,0.08)',
-        background: '#fafafa',
+      {/* FAQ Section */}
+      <section style={{
+        padding: '80px 24px',
+        background: '#fff',
       }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 40 }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-              <div style={{
-                width: 32, height: 32, borderRadius: 8,
-                background: 'linear-gradient(135deg, #000, #1a1a1a)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontWeight: 900, fontSize: 16, color: '#fff',
-              }}>🌟</div>
-              <span style={{ fontSize: 18, fontWeight: 800, color: '#000' }}>HelplyAI</span>
-            </div>
-            <p style={{ color: '#666', fontSize: 14, maxWidth: 300, lineHeight: 1.6 }}>
-              Your AI-powered interview assistant. Real-time support for coding and behavioral interviews.
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 50 }}>
+            <span style={{
+              display: 'inline-block',
+              padding: '8px 16px',
+              background: '#000',
+              color: '#fff',
+              borderRadius: 100,
+              fontSize: 13,
+              fontWeight: 700,
+              marginBottom: 16,
+            }}>
+              ❓ FAQ
+            </span>
+            <h2 style={{
+              fontSize: 'clamp(28px, 4.5vw, 44px)',
+              fontWeight: 900,
+              letterSpacing: '-1px',
+              marginBottom: 16,
+              color: '#000',
+            }}>
+              Frequently Asked Questions
+            </h2>
+            <p style={{ color: '#666', fontSize: 17, maxWidth: 600, margin: '0 auto' }}>
+              Everything you need to know about HelplyAI
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: 60 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {[
+              { q: 'What is HelplyAI?', a: 'HelplyAI is an AI-powered interview assistant that provides real-time support during coding and behavioral interviews. It listens to interview questions and provides instant, contextual answers to help you succeed.' },
+              { q: 'Is HelplyAI detectable during screen sharing?', a: 'No! HelplyAI is 100% invisible on screen share. The app uses advanced overlay technology that is completely undetectable on Zoom, Google Meet, Microsoft Teams, and other video platforms.' },
+              { q: 'How does the pricing work?', a: 'HelplyAI uses a pay-per-use credit system. You only pay for what you use - no monthly subscriptions required. Credits never expire, so you can use them whenever you need. Starting at just ₹399 per hour.' },
+              { q: 'What platforms does HelplyAI support?', a: 'HelplyAI works on both Mac (Apple Silicon & Intel) and Windows. It supports all major interview platforms including Zoom, Google Meet, Microsoft Teams, HackerRank, LeetCode, and more.' },
+              { q: 'How do I get started?', a: 'Simply download the app, create an account, purchase credits, and you\'re ready to go! The setup takes less than 2 minutes. We also offer a free trial so you can test the features before purchasing.' },
+              { q: 'What is Interview Mode vs General Mode?', a: 'Interview Mode is specifically designed for job interviews - it captures both your voice and the interviewer\'s audio for perfect context. General Mode is for everyday tasks like writing emails, analyzing documents, and coding help.' },
+              { q: 'Can I use HelplyAI for coding interviews?', a: 'Absolutely! HelplyAI excels at coding interviews. It can analyze screen content, understand coding problems, and provide solutions in real-time. It works with HackerRank, LeetCode, CoderPad, and other coding platforms.' },
+              { q: 'How does the voice recognition work?', a: 'HelplyAI uses advanced speech-to-text technology to capture and transcribe interview questions in real-time. It captures both your microphone and system audio (interviewer\'s voice) for complete context.' },
+              { q: 'Is my data secure?', a: 'Yes, we take security seriously. All data is encrypted in transit and at rest. We do not store your interview conversations permanently. Your privacy is our top priority.' },
+              { q: 'What if I have technical issues?', a: 'Our support team is available to help you. You can reach us through the Help Center in the app or contact us via email. We typically respond within 24 hours.' },
+              { q: 'Can I get a refund?', a: 'Yes, we offer refunds for unused credits. Please refer to our Refund Policy for detailed terms and conditions. Customer satisfaction is important to us.' },
+              { q: 'How do I paste my JD and Resume?', a: 'In Interview Mode, simply copy your Job Description and Resume, then paste them into the chatbot. The AI will analyze them and tailor its answers to match your profile and the job requirements.' },
+              { q: 'Does HelplyAI work with behavioral interviews?', a: 'Yes! HelplyAI is excellent for behavioral interviews. It can help you structure STAR responses, provide relevant examples, and answer common behavioral questions effectively.' },
+              { q: 'How many credits do I need for an interview?', a: 'A typical 1-hour interview uses about 1 hour of credits (₹399). We recommend purchasing 3 credits (₹599 for 3 hours) if you have multiple interviews lined up.' },
+              { q: 'Can I use HelplyAI on multiple devices?', a: 'Yes, you can use your account on multiple devices. However, you can only have one active session at a time. Your credits are linked to your account, not the device.' },
+            ].map((faq, i) => (
+              <div key={i} style={{
+                border: '1px solid #e5e7eb',
+                borderRadius: 12,
+                overflow: 'hidden',
+                background: openFaq === i ? '#f9fafb' : '#fff',
+              }}>
+                <button
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  style={{
+                    width: '100%',
+                    padding: '20px 24px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                  }}
+                >
+                  <span style={{ fontSize: 16, fontWeight: 600, color: '#000' }}>{faq.q}</span>
+                  <span style={{
+                    fontSize: 24,
+                    color: '#666',
+                    transform: openFaq === i ? 'rotate(45deg)' : 'rotate(0deg)',
+                    transition: 'transform 0.3s',
+                  }}>+</span>
+                </button>
+                {openFaq === i && (
+                  <div style={{
+                    padding: '0 24px 20px',
+                    color: '#666',
+                    fontSize: 15,
+                    lineHeight: 1.7,
+                  }}>
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer style={{
+        padding: '60px 40px 40px',
+        background: '#000',
+      }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 40 }}>
+          <div style={{ maxWidth: 350 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+              <img 
+                src="/helply-logo.png" 
+                alt="HelplyAI Logo" 
+                style={{ width: 40, height: 40, borderRadius: 10 }}
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                  if (fallback) fallback.style.display = 'flex';
+                }}
+              />
+              <div style={{
+                width: 40, height: 40, borderRadius: 10,
+                background: '#fff',
+                display: 'none', alignItems: 'center', justifyContent: 'center',
+                fontWeight: 900, fontSize: 20, color: '#000',
+              }}>⚡</div>
+              <span style={{ fontSize: 20, fontWeight: 800, color: '#fff' }}>HelplyAI</span>
+            </div>
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, lineHeight: 1.7, marginBottom: 20 }}>
+              Your AI-powered interview assistant. Real-time support for coding and behavioral interviews. Trusted by 1.5M+ users worldwide.
+            </p>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <a href="mailto:support@helplyai.co" style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                color: 'rgba(255,255,255,0.7)', fontSize: 13, textDecoration: 'none',
+                transition: 'color 0.2s',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >
+                📧 support@helplyai.co
+              </a>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: 60, flexWrap: 'wrap' }}>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#000', marginBottom: 16 }}>Product</div>
-              <a href="#features" style={{ display: 'block', color: '#666', fontSize: 14, marginBottom: 10, transition: 'color 0.2s' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#000')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#666')}
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 16, textTransform: 'uppercase', letterSpacing: 1 }}>Product</div>
+              <a href="#features" style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: 14, marginBottom: 12, textDecoration: 'none', transition: 'color 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
               >Features</a>
-              <a href="/settings/dashboard" style={{ display: 'block', color: '#666', fontSize: 14, marginBottom: 10, transition: 'color 0.2s' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#000')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#666')}
+              <a href="/settings/dashboard" style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: 14, marginBottom: 12, textDecoration: 'none', transition: 'color 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
               >Dashboard</a>
+              <a href="/settings/billing" style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: 14, marginBottom: 12, textDecoration: 'none', transition: 'color 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >Pricing</a>
+              <a href="#" onClick={() => handleDownloadClick('ios')} style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: 14, marginBottom: 12, textDecoration: 'none', transition: 'color 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >Download</a>
             </div>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#000', marginBottom: 16 }}>Company</div>
-              <a href="#about" style={{ display: 'block', color: '#666', fontSize: 14, marginBottom: 10, transition: 'color 0.2s' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#000')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#666')}
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 16, textTransform: 'uppercase', letterSpacing: 1 }}>Company</div>
+              <a href="#about" style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: 14, marginBottom: 12, textDecoration: 'none', transition: 'color 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
               >About Us</a>
-              <a href="/privacy" style={{ display: 'block', color: '#666', fontSize: 14, marginBottom: 10, transition: 'color 0.2s' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#000')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#666')}
+              <a href="/privacy" style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: 14, marginBottom: 12, textDecoration: 'none', transition: 'color 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
               >Privacy Policy</a>
-              <a href="/refund" style={{ display: 'block', color: '#666', fontSize: 14, marginBottom: 10, transition: 'color 0.2s' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#000')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#666')}
+              <a href="/refund" style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: 14, marginBottom: 12, textDecoration: 'none', transition: 'color 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
               >Refund Policy</a>
+              <a href="/terms" style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: 14, marginBottom: 12, textDecoration: 'none', transition: 'color 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >Terms of Service</a>
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 16, textTransform: 'uppercase', letterSpacing: 1 }}>Support</div>
+              <a href="/settings/help" style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: 14, marginBottom: 12, textDecoration: 'none', transition: 'color 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >Help Center</a>
+              <a href="mailto:support@helplyai.co" style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: 14, marginBottom: 12, textDecoration: 'none', transition: 'color 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >Contact Us</a>
+              <a href="#faq" style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: 14, marginBottom: 12, textDecoration: 'none', transition: 'color 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >FAQ</a>
             </div>
           </div>
         </div>
 
         <div style={{
           maxWidth: 1100, margin: '40px auto 0', paddingTop: 24,
-          borderTop: '1px solid rgba(0,0,0,0.08)',
+          borderTop: '1px solid rgba(255,255,255,0.1)',
           display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
         }}>
-          <span style={{ color: '#999', fontSize: 13 }}>© 2026 HelplyAI. All rights reserved.</span>
-          <span style={{ color: '#999', fontSize: 12 }}>Powered by Levelon Technologies Private Limited</span>
+          <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>© 2026 HelplyAI. All rights reserved.</span>
+          <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>Powered by Levelon Technologies Private Limited</span>
         </div>
       </footer>
 
