@@ -910,6 +910,170 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Competitor Comparison Section */}
+      <section style={{
+        padding: '80px 24px',
+        background: '#000',
+      }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 50 }}>
+            <span style={{
+              display: 'inline-block',
+              padding: '8px 16px',
+              background: '#fff',
+              color: '#000',
+              borderRadius: 100,
+              fontSize: 13,
+              fontWeight: 700,
+              marginBottom: 16,
+            }}>
+              💰 SAVE UP TO 95%
+            </span>
+            <h2 style={{
+              fontSize: 'clamp(28px, 4.5vw, 44px)',
+              fontWeight: 900,
+              letterSpacing: '-1px',
+              marginBottom: 16,
+              color: '#fff',
+            }}>
+              Why Pay More? Compare & Save
+            </h2>
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 17, maxWidth: 700, margin: '0 auto' }}>
+              HelplyAI offers the same powerful features at a fraction of the cost. No expensive subscriptions required.
+            </p>
+          </div>
+
+          {/* Comparison Table */}
+          <div style={{
+            background: '#111',
+            borderRadius: 20,
+            overflow: 'hidden',
+            border: '1px solid rgba(255,255,255,0.1)',
+          }}>
+            {/* Table Header */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 1fr',
+              gap: 1,
+              background: 'rgba(255,255,255,0.05)',
+              padding: '20px 24px',
+              borderBottom: '1px solid rgba(255,255,255,0.1)',
+            }}>
+              <div style={{ color: '#fff', fontSize: 14, fontWeight: 700 }}>Feature</div>
+              <div style={{ color: '#fff', fontSize: 14, fontWeight: 700, textAlign: 'center' }}>
+                <span style={{ background: '#fff', color: '#000', padding: '4px 12px', borderRadius: 100, fontSize: 12 }}>HelplyAI</span>
+              </div>
+              <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 600, textAlign: 'center' }}>ParakeetAI</div>
+              <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 600, textAlign: 'center' }}>Final Round AI</div>
+              <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 600, textAlign: 'center' }}>LockedIn AI</div>
+              <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 600, textAlign: 'center' }}>Interview Sidekick</div>
+            </div>
+
+            {/* Pricing Row */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 1fr',
+              gap: 1,
+              padding: '20px 24px',
+              borderBottom: '1px solid rgba(255,255,255,0.05)',
+              background: 'rgba(255,255,255,0.02)',
+            }}>
+              <div style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>💰 Monthly Price</div>
+              <div style={{ textAlign: 'center' }}>
+                <span style={{ color: '#22c55e', fontSize: 18, fontWeight: 800 }}>₹399</span>
+                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, display: 'block' }}>per hour</span>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <span style={{ color: '#ef4444', fontSize: 16, fontWeight: 700 }}>₹6,730</span>
+                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, display: 'block' }}>/month</span>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <span style={{ color: '#ef4444', fontSize: 16, fontWeight: 700 }}>$25-90</span>
+                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, display: 'block' }}>/month</span>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <span style={{ color: '#ef4444', fontSize: 16, fontWeight: 700 }}>₹4,880</span>
+                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, display: 'block' }}>/month</span>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <span style={{ color: '#ef4444', fontSize: 16, fontWeight: 700 }}>$20</span>
+                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, display: 'block' }}>/month</span>
+              </div>
+            </div>
+
+            {/* Feature Rows */}
+            {[
+              { feature: '🎯 Real-time Interview Assistance', helply: true, parakeet: true, finalround: true, lockedin: true, sidekick: true },
+              { feature: '🖥️ Screen Analysis', helply: true, parakeet: true, finalround: true, lockedin: true, sidekick: false },
+              { feature: '👻 Invisible on Screen Share', helply: true, parakeet: true, finalround: true, lockedin: true, sidekick: true },
+              { feature: '🎙️ Voice Recognition', helply: true, parakeet: true, finalround: true, lockedin: true, sidekick: true },
+              { feature: '📋 JD & Resume Analysis', helply: true, parakeet: false, finalround: true, lockedin: true, sidekick: false },
+              { feature: '💳 Pay-Per-Use (No Subscription)', helply: true, parakeet: false, finalround: false, lockedin: false, sidekick: false },
+              { feature: '⏰ Credits Never Expire', helply: true, parakeet: false, finalround: false, lockedin: false, sidekick: false },
+              { feature: '🆓 Free Trial Included', helply: true, parakeet: false, finalround: true, lockedin: false, sidekick: true },
+              { feature: '💻 Mac & Windows Support', helply: true, parakeet: true, finalround: true, lockedin: true, sidekick: true },
+            ].map((row, i) => (
+              <div key={i} style={{
+                display: 'grid',
+                gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 1fr',
+                gap: 1,
+                padding: '16px 24px',
+                borderBottom: '1px solid rgba(255,255,255,0.05)',
+              }}>
+                <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: 14 }}>{row.feature}</div>
+                <div style={{ textAlign: 'center', fontSize: 18 }}>{row.helply ? '✅' : '❌'}</div>
+                <div style={{ textAlign: 'center', fontSize: 18 }}>{row.parakeet ? '✅' : '❌'}</div>
+                <div style={{ textAlign: 'center', fontSize: 18 }}>{row.finalround ? '✅' : '❌'}</div>
+                <div style={{ textAlign: 'center', fontSize: 18 }}>{row.lockedin ? '✅' : '❌'}</div>
+                <div style={{ textAlign: 'center', fontSize: 18 }}>{row.sidekick ? '✅' : '❌'}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Bottom CTA */}
+          <div style={{
+            textAlign: 'center',
+            marginTop: 40,
+            padding: '30px',
+            background: 'rgba(255,255,255,0.05)',
+            borderRadius: 16,
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 40, flexWrap: 'wrap', marginBottom: 24 }}>
+              <div>
+                <div style={{ color: '#22c55e', fontSize: 36, fontWeight: 900 }}>95%</div>
+                <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>Cheaper than competitors</div>
+              </div>
+              <div>
+                <div style={{ color: '#fff', fontSize: 36, fontWeight: 900 }}>₹399</div>
+                <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>Starting price per hour</div>
+              </div>
+              <div>
+                <div style={{ color: '#fff', fontSize: 36, fontWeight: 900 }}>0</div>
+                <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>Monthly commitment</div>
+              </div>
+            </div>
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 15, marginBottom: 20 }}>
+              Why pay ₹5,000-7,000/month when you can pay only for what you use?
+            </p>
+            <button 
+              onClick={() => window.location.href = '/settings/billing'}
+              style={{
+                padding: '14px 32px',
+                borderRadius: 100,
+                background: '#fff',
+                color: '#000',
+                fontSize: 15,
+                fontWeight: 700,
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              Start Free Trial →
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* Land Your Job Section */}
       <section style={{
         padding: '50px 24px',
