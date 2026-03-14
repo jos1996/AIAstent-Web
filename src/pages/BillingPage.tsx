@@ -1085,9 +1085,7 @@ export default function BillingPage() {
           </div>
         </div>
       )}
-    </div>
-  );
-}
+
       {/* ── Instructions Section ── */}
       <div style={{
         marginBottom: 24,
@@ -1242,3 +1240,6 @@ export default function BillingPage() {
         </div>
       </div>
 
+    </div>
+  );
+}
