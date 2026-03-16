@@ -36,6 +36,15 @@ export default function DashboardPage() {
   const [filterType, setFilterType] = useState<string>('all');
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState<'ios' | 'windows' | null>(null);
+  
+  // Initial Setup - JD/Resume
+  const [showSetup, setShowSetup] = useState(false);
+  const [jobDescription, setJobDescription] = useState('');
+  const [resume, setResume] = useState('');
+  const [targetRole, setTargetRole] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [savingSetup, setSavingSetup] = useState(false);
+  const [setupSaved, setSetupSaved] = useState(false);
 
   const downloadLinks = {
     macAppleSilicon: 'https://beeptalk.s3.eu-north-1.amazonaws.com/HelplyAI-Notarized-aarch64+(2).dmg',
@@ -58,8 +67,52 @@ export default function DashboardPage() {
     if (user) {
       loadProfile();
       loadDashboard();
+      loadInterviewContext();
     }
   }, [user, filterType]);
+
+  const loadInterviewContext = async () => {
+    const { data } = await supabase
+      .from('interview_context')
+      .select('*')
+      .eq('user_id', user!.id)
+      .single();
+    if (data) {
+      setJobDescription(data.job_description || '');
+      setResume(data.resume || '');
+      setTargetRole(data.target_role || '');
+      setCompanyName(data.company_name || '');
+      setSetupSaved(true);
+    }
+  };
+
+  const saveInterviewContext = async () => {
+    if (!jobDescription.trim() && !resume.trim()) {
+      alert('Please enter at least a Job Description or Resume');
+      return;
+    }
+    setSavingSetup(true);
+    try {
+      const { error } = await supabase
+        .from('interview_context')
+        .upsert({
+          user_id: user!.id,
+          job_description: jobDescription.trim(),
+          resume: resume.trim(),
+          target_role: targetRole.trim(),
+          company_name: companyName.trim(),
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id' });
+      if (error) throw error;
+      setSetupSaved(true);
+      setShowSetup(false);
+      alert('Interview context saved! The chatbot will now use this information for personalized answers.');
+    } catch (err: any) {
+      console.error('Save error:', err);
+      alert('Failed to save: ' + (err.message || 'Unknown error'));
+    }
+    setSavingSetup(false);
+  };
 
   const loadProfile = async () => {
     // Read from central users table
@@ -273,6 +326,158 @@ export default function DashboardPage() {
           </div>
           {profile?.bio && <div style={{ color: '#9ca3af', fontSize: 13, marginTop: 6, lineHeight: 1.5 }}>{profile.bio}</div>}
         </div>
+      </div>
+
+      {/* Initial Setup - JD/Resume Card */}
+      <div style={{
+        marginBottom: 28, padding: 24, borderRadius: 12,
+        background: setupSaved ? '#f0fdf4' : 'linear-gradient(135deg, #eff6ff, #f5f3ff)',
+        border: setupSaved ? '1px solid #86efac' : '1px solid #c7d2fe',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: showSetup ? 20 : 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{
+              width: 40, height: 40, borderRadius: 10,
+              background: setupSaved ? '#22c55e' : 'linear-gradient(135deg, #2563eb, #7c3aed)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              {setupSaved ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                  <polyline points="10 9 9 9 8 9"/>
+                </svg>
+              )}
+            </div>
+            <div>
+              <div style={{ color: '#000', fontSize: 16, fontWeight: 600 }}>
+                {setupSaved ? 'Interview Context Configured' : 'Initial Setup'}
+              </div>
+              <div style={{ color: '#6b7280', fontSize: 13 }}>
+                {setupSaved 
+                  ? 'Your JD and Resume are saved. The chatbot will provide personalized answers.'
+                  : 'Upload your Job Description and Resume for personalized interview answers'}
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowSetup(!showSetup)}
+            style={{
+              padding: '10px 20px', borderRadius: 8, fontSize: 14, fontWeight: 600,
+              background: showSetup ? '#f3f4f6' : (setupSaved ? '#22c55e' : '#2563eb'),
+              border: 'none',
+              color: showSetup ? '#374151' : '#fff',
+              cursor: 'pointer', transition: 'all 0.2s',
+            }}
+          >
+            {showSetup ? 'Close' : (setupSaved ? 'Edit Setup' : 'Configure Now')}
+          </button>
+        </div>
+
+        {showSetup && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div>
+                <label style={{ display: 'block', color: '#374151', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                  Target Role
+                </label>
+                <input
+                  type="text"
+                  value={targetRole}
+                  onChange={(e) => setTargetRole(e.target.value)}
+                  placeholder="e.g., Senior Software Engineer"
+                  style={{
+                    width: '100%', padding: '10px 14px', borderRadius: 8,
+                    border: '1px solid #d1d5db', fontSize: 14,
+                    outline: 'none', boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', color: '#374151', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                  Company Name
+                </label>
+                <input
+                  type="text"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  placeholder="e.g., Google, Microsoft"
+                  style={{
+                    width: '100%', padding: '10px 14px', borderRadius: 8,
+                    border: '1px solid #d1d5db', fontSize: 14,
+                    outline: 'none', boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', color: '#374151', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                Job Description (paste or type)
+              </label>
+              <textarea
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
+                placeholder="Paste the job description here..."
+                style={{
+                  width: '100%', minHeight: 120, padding: '12px 14px', borderRadius: 8,
+                  border: '1px solid #d1d5db', fontSize: 14, lineHeight: 1.5,
+                  outline: 'none', resize: 'vertical', boxSizing: 'border-box',
+                  fontFamily: 'inherit',
+                }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', color: '#374151', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                Resume (paste or type)
+              </label>
+              <textarea
+                value={resume}
+                onChange={(e) => setResume(e.target.value)}
+                placeholder="Paste your resume content here..."
+                style={{
+                  width: '100%', minHeight: 120, padding: '12px 14px', borderRadius: 8,
+                  border: '1px solid #d1d5db', fontSize: 14, lineHeight: 1.5,
+                  outline: 'none', resize: 'vertical', boxSizing: 'border-box',
+                  fontFamily: 'inherit',
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setShowSetup(false)}
+                style={{
+                  padding: '10px 20px', borderRadius: 8, fontSize: 14, fontWeight: 500,
+                  background: '#f3f4f6', border: 'none', color: '#374151',
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveInterviewContext}
+                disabled={savingSetup}
+                style={{
+                  padding: '10px 24px', borderRadius: 8, fontSize: 14, fontWeight: 600,
+                  background: savingSetup ? '#9ca3af' : '#2563eb',
+                  border: 'none', color: '#fff',
+                  cursor: savingSetup ? 'not-allowed' : 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 8,
+                }}
+              >
+                {savingSetup ? 'Saving...' : 'Save Context'}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Stats Grid */}
