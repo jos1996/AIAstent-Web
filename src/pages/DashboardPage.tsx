@@ -1,6 +1,30 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import * as pdfjsLib from 'pdfjs-dist';
+
+// Set PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+
+interface ExtractedResume {
+  name: string;
+  email: string;
+  phone: string;
+  experience: string[];
+  skills: string[];
+  education: string[];
+  certifications: string[];
+  projects: string[];
+  companies: string[];
+}
+
+interface ExtractedJD {
+  title: string;
+  company: string;
+  requirements: string[];
+  responsibilities: string[];
+  skills: string[];
+}
 
 interface ProfileData {
   full_name: string;
@@ -45,6 +69,10 @@ export default function DashboardPage() {
   const [companyName, setCompanyName] = useState('');
   const [savingSetup, setSavingSetup] = useState(false);
   const [setupSaved, setSetupSaved] = useState(false);
+  const [extractedResume, setExtractedResume] = useState<ExtractedResume | null>(null);
+  const [extractedJD, setExtractedJD] = useState<ExtractedJD | null>(null);
+  const [parsingResume, setParsingResume] = useState(false);
+  const [parsingJD, setParsingJD] = useState(false);
 
   const downloadLinks = {
     macAppleSilicon: 'https://beeptalk.s3.eu-north-1.amazonaws.com/HelplyAI-Notarized-aarch64+(2).dmg',
@@ -112,6 +140,178 @@ export default function DashboardPage() {
       alert('Failed to save: ' + (err.message || 'Unknown error'));
     }
     setSavingSetup(false);
+  };
+
+  // Extract text from PDF file
+  const extractTextFromPDF = async (file: File): Promise<string> => {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    let fullText = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const textContent = await page.getTextContent();
+      const pageText = textContent.items.map((item: any) => item.str).join(' ');
+      fullText += pageText + '\n';
+    }
+    return fullText.trim();
+  };
+
+  // Parse resume text to extract structured data
+  const parseResumeText = (text: string): ExtractedResume => {
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+    const extracted: ExtractedResume = {
+      name: '', email: '', phone: '',
+      experience: [], skills: [], education: [],
+      certifications: [], projects: [], companies: []
+    };
+
+    // Extract email
+    const emailMatch = text.match(/[\w.-]+@[\w.-]+\.\w+/);
+    if (emailMatch) extracted.email = emailMatch[0];
+
+    // Extract phone
+    const phoneMatch = text.match(/(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
+    if (phoneMatch) extracted.phone = phoneMatch[0];
+
+    // Extract name (usually first line or before email)
+    const firstLine = lines[0];
+    if (firstLine && !firstLine.includes('@') && firstLine.length < 50) {
+      extracted.name = firstLine;
+    }
+
+    // Extract sections
+    let currentSection = '';
+    const sectionKeywords: Record<string, keyof ExtractedResume> = {
+      'experience': 'experience', 'work experience': 'experience', 'employment': 'experience', 'work history': 'experience',
+      'skills': 'skills', 'technical skills': 'skills', 'core competencies': 'skills', 'technologies': 'skills',
+      'education': 'education', 'academic': 'education', 'qualification': 'education',
+      'certification': 'certifications', 'certifications': 'certifications', 'licenses': 'certifications',
+      'project': 'projects', 'projects': 'projects', 'key projects': 'projects'
+    };
+
+    for (const line of lines) {
+      const lowerLine = line.toLowerCase();
+      // Check if this is a section header
+      for (const [keyword, section] of Object.entries(sectionKeywords)) {
+        if (lowerLine.includes(keyword) && line.length < 40) {
+          currentSection = section;
+          break;
+        }
+      }
+      // Add content to current section
+      if (currentSection && line.length > 10 && !Object.keys(sectionKeywords).some(k => lowerLine.includes(k))) {
+        const arr = extracted[currentSection as keyof ExtractedResume];
+        if (Array.isArray(arr) && arr.length < 10) {
+          (arr as string[]).push(line);
+        }
+      }
+      // Extract company names (common patterns)
+      const companyPatterns = [/at\s+([A-Z][A-Za-z\s&]+)/g, /([A-Z][A-Za-z\s&]+)\s*[-–]\s*\d{4}/g];
+      for (const pattern of companyPatterns) {
+        const matches = line.matchAll(pattern);
+        for (const match of matches) {
+          if (match[1] && !extracted.companies.includes(match[1].trim())) {
+            extracted.companies.push(match[1].trim());
+          }
+        }
+      }
+    }
+
+    // Extract skills from comma-separated lists
+    const skillsMatch = text.match(/skills?[:\s]+([^.]+)/i);
+    if (skillsMatch && extracted.skills.length === 0) {
+      extracted.skills = skillsMatch[1].split(/[,;]/).map(s => s.trim()).filter(s => s.length > 1 && s.length < 30).slice(0, 15);
+    }
+
+    return extracted;
+  };
+
+  // Parse JD text to extract structured data
+  const parseJDText = (text: string): ExtractedJD => {
+    const extracted: ExtractedJD = {
+      title: '', company: '',
+      requirements: [], responsibilities: [], skills: []
+    };
+
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+
+    // Extract job title (usually first line or after "Position:")
+    const titleMatch = text.match(/(?:position|title|role)[:\s]+([^\n]+)/i) || 
+                       text.match(/^([A-Za-z\s]+(?:Engineer|Developer|Manager|Designer|Analyst|Lead|Director|Specialist))/im);
+    if (titleMatch) extracted.title = titleMatch[1].trim();
+    else if (lines[0] && lines[0].length < 60) extracted.title = lines[0];
+
+    // Extract company
+    const companyMatch = text.match(/(?:company|organization|employer)[:\s]+([^\n]+)/i) ||
+                         text.match(/(?:at|with)\s+([A-Z][A-Za-z\s&]+)/);
+    if (companyMatch) extracted.company = companyMatch[1].trim();
+
+    // Extract sections
+    let currentSection = '';
+    for (const line of lines) {
+      const lowerLine = line.toLowerCase();
+      if (lowerLine.includes('requirement') || lowerLine.includes('qualification')) {
+        currentSection = 'requirements';
+      } else if (lowerLine.includes('responsibilit') || lowerLine.includes('duties')) {
+        currentSection = 'responsibilities';
+      } else if (lowerLine.includes('skill') || lowerLine.includes('technolog')) {
+        currentSection = 'skills';
+      } else if (currentSection && line.length > 10) {
+        const arr = extracted[currentSection as keyof typeof extracted];
+        if (Array.isArray(arr) && arr.length < 10) {
+          arr.push(line.replace(/^[-•*]\s*/, ''));
+        }
+      }
+    }
+
+    return extracted;
+  };
+
+  // Handle file upload for Resume
+  const handleResumeUpload = async (file: File) => {
+    setParsingResume(true);
+    try {
+      let text = '';
+      if (file.type === 'application/pdf') {
+        text = await extractTextFromPDF(file);
+      } else {
+        text = await file.text();
+      }
+      setResume(text);
+      const parsed = parseResumeText(text);
+      setExtractedResume(parsed);
+      // Auto-fill name if found
+      if (parsed.name && !targetRole) {
+        // Don't auto-fill targetRole with name
+      }
+    } catch (err) {
+      console.error('Error parsing resume:', err);
+      alert('Error parsing file. Please try pasting the content instead.');
+    }
+    setParsingResume(false);
+  };
+
+  // Handle file upload for JD
+  const handleJDUpload = async (file: File) => {
+    setParsingJD(true);
+    try {
+      let text = '';
+      if (file.type === 'application/pdf') {
+        text = await extractTextFromPDF(file);
+      } else {
+        text = await file.text();
+      }
+      setJobDescription(text);
+      const parsed = parseJDText(text);
+      setExtractedJD(parsed);
+      // Auto-fill target role and company if found
+      if (parsed.title && !targetRole) setTargetRole(parsed.title);
+      if (parsed.company && !companyName) setCompanyName(parsed.company);
+    } catch (err) {
+      console.error('Error parsing JD:', err);
+      alert('Error parsing file. Please try pasting the content instead.');
+    }
+    setParsingJD(false);
   };
 
   const loadProfile = async () => {
@@ -427,6 +627,7 @@ export default function DashboardPage() {
                     <polyline points="14 2 14 8 20 8"/>
                   </svg>
                   Job Description
+                  {parsingJD && <span style={{ fontSize: 11, color: '#2563eb', marginLeft: 8 }}>Parsing...</span>}
                 </label>
                 <label style={{
                   padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 500,
@@ -438,27 +639,32 @@ export default function DashboardPage() {
                     <polyline points="17 8 12 3 7 8"/>
                     <line x1="12" y1="3" x2="12" y2="15"/>
                   </svg>
-                  Upload File
+                  Upload PDF
                   <input
                     type="file"
-                    accept=".txt,.pdf,.doc,.docx"
+                    accept=".txt,.pdf"
                     style={{ display: 'none' }}
-                    onChange={async (e) => {
+                    onChange={(e) => {
                       const file = e.target.files?.[0];
-                      if (file) {
-                        const text = await file.text();
-                        setJobDescription(text);
-                      }
+                      if (file) handleJDUpload(file);
                     }}
                   />
                 </label>
               </div>
               <textarea
                 value={jobDescription}
-                onChange={(e) => setJobDescription(e.target.value)}
-                placeholder="Paste the job description here or upload a file...\n\nExample:\n- Job Title: Senior Software Engineer\n- Requirements: 5+ years experience in React, Node.js\n- Responsibilities: Lead development team, architect solutions..."
+                onChange={(e) => {
+                  setJobDescription(e.target.value);
+                  if (e.target.value.length > 100) {
+                    const parsed = parseJDText(e.target.value);
+                    setExtractedJD(parsed);
+                    if (parsed.title && !targetRole) setTargetRole(parsed.title);
+                    if (parsed.company && !companyName) setCompanyName(parsed.company);
+                  }
+                }}
+                placeholder="Paste the job description here or upload a PDF..."
                 style={{
-                  width: '100%', minHeight: 180, padding: '14px 16px', borderRadius: 10,
+                  width: '100%', minHeight: 120, padding: '14px 16px', borderRadius: 10,
                   border: '1px solid #e5e7eb', fontSize: 14, lineHeight: 1.6,
                   outline: 'none', resize: 'vertical', boxSizing: 'border-box',
                   fontFamily: 'inherit', background: '#fafafa',
@@ -467,6 +673,36 @@ export default function DashboardPage() {
               {jobDescription && (
                 <div style={{ marginTop: 8, fontSize: 12, color: '#6b7280' }}>
                   ✓ {jobDescription.split(/\s+/).length} words captured
+                </div>
+              )}
+              {/* Extracted JD Summary */}
+              {extractedJD && (extractedJD.requirements.length > 0 || extractedJD.skills.length > 0) && (
+                <div style={{ marginTop: 16, maxHeight: 180, overflowY: 'auto', padding: 12, background: '#eff6ff', borderRadius: 8, border: '1px solid #bfdbfe' }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#1e40af', marginBottom: 8 }}>📋 Extracted Summary</div>
+                  {extractedJD.requirements.length > 0 && (
+                    <div style={{ marginBottom: 8 }}>
+                      <div style={{ fontSize: 10, fontWeight: 600, color: '#6b7280', marginBottom: 4 }}>REQUIREMENTS</div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                        {extractedJD.requirements.slice(0, 4).map((r, i) => (
+                          <span key={i} style={{ padding: '3px 8px', background: '#dbeafe', color: '#1e40af', borderRadius: 4, fontSize: 11 }}>
+                            {r.length > 40 ? r.slice(0, 40) + '...' : r}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {extractedJD.skills.length > 0 && (
+                    <div>
+                      <div style={{ fontSize: 10, fontWeight: 600, color: '#6b7280', marginBottom: 4 }}>SKILLS</div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                        {extractedJD.skills.slice(0, 6).map((s, i) => (
+                          <span key={i} style={{ padding: '3px 8px', background: '#c7d2fe', color: '#3730a3', borderRadius: 4, fontSize: 11 }}>
+                            {s.length > 25 ? s.slice(0, 25) + '...' : s}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -480,6 +716,7 @@ export default function DashboardPage() {
                     <circle cx="12" cy="7" r="4"/>
                   </svg>
                   Resume / CV
+                  {parsingResume && <span style={{ fontSize: 11, color: '#7c3aed', marginLeft: 8 }}>Parsing...</span>}
                 </label>
                 <label style={{
                   padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 500,
@@ -491,27 +728,30 @@ export default function DashboardPage() {
                     <polyline points="17 8 12 3 7 8"/>
                     <line x1="12" y1="3" x2="12" y2="15"/>
                   </svg>
-                  Upload File
+                  Upload PDF
                   <input
                     type="file"
-                    accept=".txt,.pdf,.doc,.docx"
+                    accept=".txt,.pdf"
                     style={{ display: 'none' }}
-                    onChange={async (e) => {
+                    onChange={(e) => {
                       const file = e.target.files?.[0];
-                      if (file) {
-                        const text = await file.text();
-                        setResume(text);
-                      }
+                      if (file) handleResumeUpload(file);
                     }}
                   />
                 </label>
               </div>
               <textarea
                 value={resume}
-                onChange={(e) => setResume(e.target.value)}
-                placeholder="Paste your resume content here or upload a file...\n\nExample:\n- Name: John Doe\n- Experience: 5 years at Google, 3 years at Amazon\n- Skills: React, TypeScript, Node.js, AWS\n- Education: BS Computer Science, Stanford"
+                onChange={(e) => {
+                  setResume(e.target.value);
+                  if (e.target.value.length > 100) {
+                    const parsed = parseResumeText(e.target.value);
+                    setExtractedResume(parsed);
+                  }
+                }}
+                placeholder="Paste your resume content here or upload a PDF..."
                 style={{
-                  width: '100%', minHeight: 180, padding: '14px 16px', borderRadius: 10,
+                  width: '100%', minHeight: 100, padding: '14px 16px', borderRadius: 10,
                   border: '1px solid #e5e7eb', fontSize: 14, lineHeight: 1.6,
                   outline: 'none', resize: 'vertical', boxSizing: 'border-box',
                   fontFamily: 'inherit', background: '#fafafa',
@@ -520,6 +760,110 @@ export default function DashboardPage() {
               {resume && (
                 <div style={{ marginTop: 8, fontSize: 12, color: '#6b7280' }}>
                   ✓ {resume.split(/\s+/).length} words captured
+                </div>
+              )}
+              {/* Extracted Resume Fields */}
+              {extractedResume && (extractedResume.name || extractedResume.skills.length > 0 || extractedResume.experience.length > 0) && (
+                <div style={{ marginTop: 16, maxHeight: 280, overflowY: 'auto', padding: 16, background: '#faf5ff', borderRadius: 10, border: '1px solid #e9d5ff' }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#7c3aed', marginBottom: 12 }}>📄 Extracted Profile</div>
+                  
+                  {/* Basic Info Grid */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 12 }}>
+                    {extractedResume.name && (
+                      <div style={{ background: '#fff', padding: 10, borderRadius: 8, border: '1px solid #e9d5ff' }}>
+                        <div style={{ fontSize: 9, fontWeight: 600, color: '#6b7280', marginBottom: 2 }}>NAME</div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: '#1f2937' }}>{extractedResume.name}</div>
+                      </div>
+                    )}
+                    {extractedResume.email && (
+                      <div style={{ background: '#fff', padding: 10, borderRadius: 8, border: '1px solid #e9d5ff' }}>
+                        <div style={{ fontSize: 9, fontWeight: 600, color: '#6b7280', marginBottom: 2 }}>EMAIL</div>
+                        <div style={{ fontSize: 12, color: '#1f2937' }}>{extractedResume.email}</div>
+                      </div>
+                    )}
+                    {extractedResume.phone && (
+                      <div style={{ background: '#fff', padding: 10, borderRadius: 8, border: '1px solid #e9d5ff' }}>
+                        <div style={{ fontSize: 9, fontWeight: 600, color: '#6b7280', marginBottom: 2 }}>PHONE</div>
+                        <div style={{ fontSize: 12, color: '#1f2937' }}>{extractedResume.phone}</div>
+                      </div>
+                    )}
+                    {extractedResume.companies.length > 0 && (
+                      <div style={{ background: '#fff', padding: 10, borderRadius: 8, border: '1px solid #e9d5ff' }}>
+                        <div style={{ fontSize: 9, fontWeight: 600, color: '#6b7280', marginBottom: 2 }}>COMPANIES</div>
+                        <div style={{ fontSize: 12, color: '#1f2937' }}>{extractedResume.companies.slice(0, 3).join(', ')}</div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Skills */}
+                  {extractedResume.skills.length > 0 && (
+                    <div style={{ marginBottom: 10 }}>
+                      <div style={{ fontSize: 10, fontWeight: 600, color: '#6b7280', marginBottom: 6 }}>💡 SKILLS</div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                        {extractedResume.skills.slice(0, 10).map((skill, i) => (
+                          <span key={i} style={{ padding: '4px 8px', background: '#e9d5ff', color: '#6b21a8', borderRadius: 5, fontSize: 11, fontWeight: 500 }}>
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Experience */}
+                  {extractedResume.experience.length > 0 && (
+                    <div style={{ marginBottom: 10 }}>
+                      <div style={{ fontSize: 10, fontWeight: 600, color: '#6b7280', marginBottom: 6 }}>💼 EXPERIENCE</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        {extractedResume.experience.slice(0, 3).map((exp, i) => (
+                          <div key={i} style={{ padding: '6px 10px', background: '#fff', borderRadius: 6, fontSize: 11, color: '#374151', border: '1px solid #e9d5ff' }}>
+                            {exp.length > 80 ? exp.slice(0, 80) + '...' : exp}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Education */}
+                  {extractedResume.education.length > 0 && (
+                    <div style={{ marginBottom: 10 }}>
+                      <div style={{ fontSize: 10, fontWeight: 600, color: '#6b7280', marginBottom: 6 }}>🎓 EDUCATION</div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                        {extractedResume.education.slice(0, 2).map((edu, i) => (
+                          <span key={i} style={{ padding: '4px 8px', background: '#fef3c7', color: '#92400e', borderRadius: 5, fontSize: 11 }}>
+                            {edu.length > 50 ? edu.slice(0, 50) + '...' : edu}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Certifications */}
+                  {extractedResume.certifications.length > 0 && (
+                    <div style={{ marginBottom: 10 }}>
+                      <div style={{ fontSize: 10, fontWeight: 600, color: '#6b7280', marginBottom: 6 }}>🏆 CERTIFICATIONS</div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                        {extractedResume.certifications.slice(0, 3).map((cert, i) => (
+                          <span key={i} style={{ padding: '4px 8px', background: '#d1fae5', color: '#065f46', borderRadius: 5, fontSize: 11 }}>
+                            {cert.length > 40 ? cert.slice(0, 40) + '...' : cert}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Projects */}
+                  {extractedResume.projects.length > 0 && (
+                    <div>
+                      <div style={{ fontSize: 10, fontWeight: 600, color: '#6b7280', marginBottom: 6 }}>🚀 PROJECTS</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        {extractedResume.projects.slice(0, 2).map((proj, i) => (
+                          <div key={i} style={{ padding: '6px 10px', background: '#fff', borderRadius: 6, fontSize: 11, color: '#374151', border: '1px solid #e9d5ff' }}>
+                            {proj.length > 70 ? proj.slice(0, 70) + '...' : proj}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
