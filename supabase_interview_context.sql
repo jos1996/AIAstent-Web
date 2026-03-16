@@ -11,10 +11,16 @@ CREATE TABLE IF NOT EXISTS interview_context (
   extracted_experience TEXT,
   target_role TEXT,
   company_name TEXT,
+  use_jd BOOLEAN DEFAULT true,
+  use_resume BOOLEAN DEFAULT true,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id)
 );
+
+-- If table already exists, add the new columns
+ALTER TABLE interview_context ADD COLUMN IF NOT EXISTS use_jd BOOLEAN DEFAULT true;
+ALTER TABLE interview_context ADD COLUMN IF NOT EXISTS use_resume BOOLEAN DEFAULT true;
 
 -- Enable RLS
 ALTER TABLE interview_context ENABLE ROW LEVEL SECURITY;

@@ -73,6 +73,9 @@ export default function DashboardPage() {
   const [extractedJD, setExtractedJD] = useState<ExtractedJD | null>(null);
   const [parsingResume, setParsingResume] = useState(false);
   const [parsingJD, setParsingJD] = useState(false);
+  // Toggle preferences for answer generation
+  const [useJD, setUseJD] = useState(true);
+  const [useResume, setUseResume] = useState(true);
 
   const downloadLinks = {
     macAppleSilicon: 'https://beeptalk.s3.eu-north-1.amazonaws.com/HelplyAI-Notarized-aarch64+(2).dmg',
@@ -110,6 +113,8 @@ export default function DashboardPage() {
       setResume(data.resume || '');
       setTargetRole(data.target_role || '');
       setCompanyName(data.company_name || '');
+      setUseJD(data.use_jd !== false);
+      setUseResume(data.use_resume !== false);
       setSetupSaved(true);
     }
   };
@@ -129,6 +134,8 @@ export default function DashboardPage() {
           resume: resume.trim(),
           target_role: targetRole.trim(),
           company_name: companyName.trim(),
+          use_jd: useJD,
+          use_resume: useResume,
           updated_at: new Date().toISOString(),
         }, { onConflict: 'user_id' });
       if (error) throw error;
@@ -619,37 +626,27 @@ export default function DashboardPage() {
             </div>
 
             {/* Job Description Section */}
-            <div style={{ background: '#fff', padding: 20, borderRadius: 12, border: '1px solid #e5e7eb' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <div style={{ background: '#fff', padding: 20, borderRadius: 12, border: useJD ? '2px solid #2563eb' : '1px solid #e5e7eb' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#374151', fontSize: 14, fontWeight: 600 }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2">
                     <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
                     <polyline points="14 2 14 8 20 8"/>
                   </svg>
                   Job Description
-                  {parsingJD && <span style={{ fontSize: 11, color: '#2563eb', marginLeft: 8 }}>Parsing...</span>}
                 </label>
-                <label style={{
-                  padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-                  background: '#eff6ff', color: '#2563eb', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 6,
-                }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                    <polyline points="17 8 12 3 7 8"/>
-                    <line x1="12" y1="3" x2="12" y2="15"/>
-                  </svg>
-                  Upload PDF
+                <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 12, color: useJD ? '#2563eb' : '#9ca3af' }}>
                   <input
-                    type="file"
-                    accept=".txt,.pdf"
-                    style={{ display: 'none' }}
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleJDUpload(file);
-                    }}
+                    type="checkbox"
+                    checked={useJD}
+                    onChange={(e) => setUseJD(e.target.checked)}
+                    style={{ width: 16, height: 16, accentColor: '#2563eb' }}
                   />
+                  Use in answers
                 </label>
+              </div>
+              <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 10, background: '#f0f9ff', padding: '8px 10px', borderRadius: 6 }}>
+                💡 <strong>Tip:</strong> Copy the JD from LinkedIn/job site, paste into ChatGPT and ask: "Extract key requirements, skills, and responsibilities as bullet points" - then paste here.
               </div>
               <textarea
                 value={jobDescription}
@@ -662,83 +659,49 @@ export default function DashboardPage() {
                     if (parsed.company && !companyName) setCompanyName(parsed.company);
                   }
                 }}
-                placeholder="Paste the job description here or upload a PDF..."
+                placeholder="Paste the job description text here...
+
+Example format:
+- Job Title: Senior Software Engineer
+- Requirements: 5+ years experience in React, Node.js
+- Responsibilities: Lead development team, architect solutions
+- Skills: JavaScript, TypeScript, AWS, Docker"
                 style={{
-                  width: '100%', minHeight: 120, padding: '14px 16px', borderRadius: 10,
+                  width: '100%', minHeight: 140, padding: '14px 16px', borderRadius: 10,
                   border: '1px solid #e5e7eb', fontSize: 14, lineHeight: 1.6,
                   outline: 'none', resize: 'vertical', boxSizing: 'border-box',
                   fontFamily: 'inherit', background: '#fafafa',
                 }}
               />
               {jobDescription && (
-                <div style={{ marginTop: 8, fontSize: 12, color: '#6b7280' }}>
-                  ✓ {jobDescription.split(/\s+/).length} words captured
-                </div>
-              )}
-              {/* Extracted JD Summary */}
-              {extractedJD && (extractedJD.requirements.length > 0 || extractedJD.skills.length > 0) && (
-                <div style={{ marginTop: 16, maxHeight: 180, overflowY: 'auto', padding: 12, background: '#eff6ff', borderRadius: 8, border: '1px solid #bfdbfe' }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#1e40af', marginBottom: 8 }}>📋 Extracted Summary</div>
-                  {extractedJD.requirements.length > 0 && (
-                    <div style={{ marginBottom: 8 }}>
-                      <div style={{ fontSize: 10, fontWeight: 600, color: '#6b7280', marginBottom: 4 }}>REQUIREMENTS</div>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                        {extractedJD.requirements.slice(0, 4).map((r, i) => (
-                          <span key={i} style={{ padding: '3px 8px', background: '#dbeafe', color: '#1e40af', borderRadius: 4, fontSize: 11 }}>
-                            {r.length > 40 ? r.slice(0, 40) + '...' : r}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {extractedJD.skills.length > 0 && (
-                    <div>
-                      <div style={{ fontSize: 10, fontWeight: 600, color: '#6b7280', marginBottom: 4 }}>SKILLS</div>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                        {extractedJD.skills.slice(0, 6).map((s, i) => (
-                          <span key={i} style={{ padding: '3px 8px', background: '#c7d2fe', color: '#3730a3', borderRadius: 4, fontSize: 11 }}>
-                            {s.length > 25 ? s.slice(0, 25) + '...' : s}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                <div style={{ marginTop: 8, fontSize: 12, color: '#22c55e', fontWeight: 500 }}>
+                  ✓ {jobDescription.split(/\s+/).length} words saved
                 </div>
               )}
             </div>
 
             {/* Resume Section */}
-            <div style={{ background: '#fff', padding: 20, borderRadius: 12, border: '1px solid #e5e7eb' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <div style={{ background: '#fff', padding: 20, borderRadius: 12, border: useResume ? '2px solid #7c3aed' : '1px solid #e5e7eb' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#374151', fontSize: 14, fontWeight: 600 }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2">
                     <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
                     <circle cx="12" cy="7" r="4"/>
                   </svg>
                   Resume / CV
-                  {parsingResume && <span style={{ fontSize: 11, color: '#7c3aed', marginLeft: 8 }}>Parsing...</span>}
                 </label>
-                <label style={{
-                  padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-                  background: '#f5f3ff', color: '#7c3aed', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 6,
-                }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                    <polyline points="17 8 12 3 7 8"/>
-                    <line x1="12" y1="3" x2="12" y2="15"/>
-                  </svg>
-                  Upload PDF
+                <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 12, color: useResume ? '#7c3aed' : '#9ca3af' }}>
                   <input
-                    type="file"
-                    accept=".txt,.pdf"
-                    style={{ display: 'none' }}
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleResumeUpload(file);
-                    }}
+                    type="checkbox"
+                    checked={useResume}
+                    onChange={(e) => setUseResume(e.target.checked)}
+                    style={{ width: 16, height: 16, accentColor: '#7c3aed' }}
                   />
+                  Use in answers
                 </label>
+              </div>
+              <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 10, background: '#faf5ff', padding: '8px 10px', borderRadius: 6 }}>
+                💡 <strong>Tip:</strong> Upload your resume to ChatGPT and ask: "Extract my name, skills, experience, education, and projects as bullet points" - then paste here.
               </div>
               <textarea
                 value={resume}
@@ -749,7 +712,15 @@ export default function DashboardPage() {
                     setExtractedResume(parsed);
                   }
                 }}
-                placeholder="Paste your resume content here or upload a PDF..."
+                placeholder="Paste your resume details here...
+
+Example format:
+- Name: John Doe
+- Email: john@example.com
+- Experience: 5 years at Google as Senior Engineer, 3 years at Amazon
+- Skills: React, TypeScript, Node.js, AWS, Python
+- Education: BS Computer Science, Stanford University
+- Projects: Built e-commerce platform serving 1M users"
                 style={{
                   width: '100%', minHeight: 100, padding: '14px 16px', borderRadius: 10,
                   border: '1px solid #e5e7eb', fontSize: 14, lineHeight: 1.6,
