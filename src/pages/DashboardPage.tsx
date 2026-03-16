@@ -328,55 +328,56 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Initial Setup - JD/Resume Card */}
+      {/* Upload Resume & Job Description Card */}
       <div style={{
-        marginBottom: 28, padding: 24, borderRadius: 12,
+        marginBottom: 28, padding: 28, borderRadius: 16,
         background: setupSaved ? '#f0fdf4' : 'linear-gradient(135deg, #eff6ff, #f5f3ff)',
-        border: setupSaved ? '1px solid #86efac' : '1px solid #c7d2fe',
+        border: setupSaved ? '2px solid #86efac' : '2px solid #c7d2fe',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: showSetup ? 20 : 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: showSetup ? 24 : 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <div style={{
-              width: 40, height: 40, borderRadius: 10,
+              width: 52, height: 52, borderRadius: 14,
               background: setupSaved ? '#22c55e' : 'linear-gradient(135deg, #2563eb, #7c3aed)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)',
             }}>
               {setupSaved ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
               ) : (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
-                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                  <polyline points="14 2 14 8 20 8"/>
-                  <line x1="16" y1="13" x2="8" y2="13"/>
-                  <line x1="16" y1="17" x2="8" y2="17"/>
-                  <polyline points="10 9 9 9 8 9"/>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
                 </svg>
               )}
             </div>
             <div>
-              <div style={{ color: '#000', fontSize: 16, fontWeight: 600 }}>
-                {setupSaved ? 'Interview Context Configured' : 'Initial Setup'}
+              <div style={{ color: '#000', fontSize: 18, fontWeight: 700 }}>
+                {setupSaved ? '✅ Resume & JD Uploaded' : '📄 Upload Resume & Job Description'}
               </div>
-              <div style={{ color: '#6b7280', fontSize: 13 }}>
+              <div style={{ color: '#6b7280', fontSize: 14, marginTop: 2 }}>
                 {setupSaved 
-                  ? 'Your JD and Resume are saved. The chatbot will provide personalized answers.'
-                  : 'Upload your Job Description and Resume for personalized interview answers'}
+                  ? 'Your documents are saved. The chatbot will provide personalized answers based on your profile.'
+                  : 'Upload or paste your Resume and Job Description to get tailored interview answers'}
               </div>
             </div>
           </div>
           <button
             onClick={() => setShowSetup(!showSetup)}
             style={{
-              padding: '10px 20px', borderRadius: 8, fontSize: 14, fontWeight: 600,
-              background: showSetup ? '#f3f4f6' : (setupSaved ? '#22c55e' : '#2563eb'),
+              padding: '12px 24px', borderRadius: 10, fontSize: 15, fontWeight: 600,
+              background: showSetup ? '#f3f4f6' : (setupSaved ? '#22c55e' : 'linear-gradient(135deg, #2563eb, #7c3aed)'),
               border: 'none',
               color: showSetup ? '#374151' : '#fff',
               cursor: 'pointer', transition: 'all 0.2s',
+              boxShadow: showSetup ? 'none' : '0 4px 12px rgba(37, 99, 235, 0.3)',
             }}
           >
-            {showSetup ? 'Close' : (setupSaved ? 'Edit Setup' : 'Configure Now')}
+            {showSetup ? 'Close' : (setupSaved ? 'Edit Documents' : 'Upload Now')}
           </button>
         </div>
 
@@ -417,45 +418,117 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div>
-              <label style={{ display: 'block', color: '#374151', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
-                Job Description (paste or type)
-              </label>
+            {/* Job Description Section */}
+            <div style={{ background: '#fff', padding: 20, borderRadius: 12, border: '1px solid #e5e7eb' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#374151', fontSize: 14, fontWeight: 600 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                  Job Description
+                </label>
+                <label style={{
+                  padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 500,
+                  background: '#eff6ff', color: '#2563eb', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 6,
+                }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                  Upload File
+                  <input
+                    type="file"
+                    accept=".txt,.pdf,.doc,.docx"
+                    style={{ display: 'none' }}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const text = await file.text();
+                        setJobDescription(text);
+                      }
+                    }}
+                  />
+                </label>
+              </div>
               <textarea
                 value={jobDescription}
                 onChange={(e) => setJobDescription(e.target.value)}
-                placeholder="Paste the job description here..."
+                placeholder="Paste the job description here or upload a file...\n\nExample:\n- Job Title: Senior Software Engineer\n- Requirements: 5+ years experience in React, Node.js\n- Responsibilities: Lead development team, architect solutions..."
                 style={{
-                  width: '100%', minHeight: 120, padding: '12px 14px', borderRadius: 8,
-                  border: '1px solid #d1d5db', fontSize: 14, lineHeight: 1.5,
+                  width: '100%', minHeight: 180, padding: '14px 16px', borderRadius: 10,
+                  border: '1px solid #e5e7eb', fontSize: 14, lineHeight: 1.6,
                   outline: 'none', resize: 'vertical', boxSizing: 'border-box',
-                  fontFamily: 'inherit',
+                  fontFamily: 'inherit', background: '#fafafa',
                 }}
               />
+              {jobDescription && (
+                <div style={{ marginTop: 8, fontSize: 12, color: '#6b7280' }}>
+                  ✓ {jobDescription.split(/\s+/).length} words captured
+                </div>
+              )}
             </div>
 
-            <div>
-              <label style={{ display: 'block', color: '#374151', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
-                Resume (paste or type)
-              </label>
+            {/* Resume Section */}
+            <div style={{ background: '#fff', padding: 20, borderRadius: 12, border: '1px solid #e5e7eb' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#374151', fontSize: 14, fontWeight: 600 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                  Resume / CV
+                </label>
+                <label style={{
+                  padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 500,
+                  background: '#f5f3ff', color: '#7c3aed', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 6,
+                }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                  Upload File
+                  <input
+                    type="file"
+                    accept=".txt,.pdf,.doc,.docx"
+                    style={{ display: 'none' }}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const text = await file.text();
+                        setResume(text);
+                      }
+                    }}
+                  />
+                </label>
+              </div>
               <textarea
                 value={resume}
                 onChange={(e) => setResume(e.target.value)}
-                placeholder="Paste your resume content here..."
+                placeholder="Paste your resume content here or upload a file...\n\nExample:\n- Name: John Doe\n- Experience: 5 years at Google, 3 years at Amazon\n- Skills: React, TypeScript, Node.js, AWS\n- Education: BS Computer Science, Stanford"
                 style={{
-                  width: '100%', minHeight: 120, padding: '12px 14px', borderRadius: 8,
-                  border: '1px solid #d1d5db', fontSize: 14, lineHeight: 1.5,
+                  width: '100%', minHeight: 180, padding: '14px 16px', borderRadius: 10,
+                  border: '1px solid #e5e7eb', fontSize: 14, lineHeight: 1.6,
                   outline: 'none', resize: 'vertical', boxSizing: 'border-box',
-                  fontFamily: 'inherit',
+                  fontFamily: 'inherit', background: '#fafafa',
                 }}
               />
+              {resume && (
+                <div style={{ marginTop: 8, fontSize: 12, color: '#6b7280' }}>
+                  ✓ {resume.split(/\s+/).length} words captured
+                </div>
+              )}
             </div>
 
-            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 8 }}>
               <button
                 onClick={() => setShowSetup(false)}
                 style={{
-                  padding: '10px 20px', borderRadius: 8, fontSize: 14, fontWeight: 500,
+                  padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 500,
                   background: '#f3f4f6', border: 'none', color: '#374151',
                   cursor: 'pointer',
                 }}
@@ -466,14 +539,15 @@ export default function DashboardPage() {
                 onClick={saveInterviewContext}
                 disabled={savingSetup}
                 style={{
-                  padding: '10px 24px', borderRadius: 8, fontSize: 14, fontWeight: 600,
-                  background: savingSetup ? '#9ca3af' : '#2563eb',
+                  padding: '12px 28px', borderRadius: 10, fontSize: 15, fontWeight: 600,
+                  background: savingSetup ? '#9ca3af' : 'linear-gradient(135deg, #2563eb, #7c3aed)',
                   border: 'none', color: '#fff',
                   cursor: savingSetup ? 'not-allowed' : 'pointer',
                   display: 'flex', alignItems: 'center', gap: 8,
+                  boxShadow: savingSetup ? 'none' : '0 4px 12px rgba(37, 99, 235, 0.3)',
                 }}
               >
-                {savingSetup ? 'Saving...' : 'Save Context'}
+                {savingSetup ? 'Saving...' : '💾 Save Documents'}
               </button>
             </div>
           </div>
