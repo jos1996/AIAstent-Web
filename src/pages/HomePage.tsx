@@ -36,6 +36,17 @@ export default function HomePage() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Capture referral code from URL and store in localStorage
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const refCode = params.get('ref')
+    if (refCode) {
+      localStorage.setItem('referral_code', refCode.toUpperCase())
+      // Clean URL
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+  }, [])
+
   const handleDownloadClick = (platform: 'ios' | 'windows') => {
     setSelectedPlatform(platform)
     setShowDownloadModal(true)

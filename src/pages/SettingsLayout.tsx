@@ -198,23 +198,15 @@ export default function SettingsLayout() {
             <span style={{ color: '#000000', fontSize: 16, fontWeight: 700, letterSpacing: '-0.02em' }}>Helply AI</span>
           </a>
           {isAuthenticated && (
-            <button
-              onClick={() => navigate('/')}
-              style={{
-                padding: '8px 16px', borderRadius: 8,
-                background: '#f3f4f6', border: '1px solid #e5e7eb',
-                color: '#6b7280', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: 6, transition: 'all 0.2s',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#e5e7eb'; e.currentTarget.style.color = '#000000'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#f3f4f6'; e.currentTarget.style.color = '#6b7280'; }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-                <polyline points="9 22 9 12 15 12 15 22"/>
-              </svg>
-              Home
-            </button>
+            <>
+              <button onClick={() => navigate('/')} style={{ padding: '8px 16px', borderRadius: 8, background: '#f3f4f6', border: '1px solid #e5e7eb', color: '#6b7280', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                Home
+              </button>
+              <button onClick={() => navigate('/settings/referral')} style={{ padding: '8px 16px', borderRadius: 8, background: 'linear-gradient(135deg, #2563eb, #7c3aed)', border: 'none', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                🎁 Refer & Get 15 min Free
+              </button>
+            </>
           )}
         </div>
 

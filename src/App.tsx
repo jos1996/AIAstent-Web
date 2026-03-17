@@ -14,6 +14,7 @@ import BillingPage from './pages/BillingPage';
 import HelpCenterPage from './pages/HelpCenterPage';
 import LatestUpdatesPage from './pages/LatestUpdatesPage';
 import TutorialsPage from './pages/TutorialsPage';
+import ReferralPage from './pages/ReferralPage';
 import AuthCallbackPage from './pages/AuthCallbackPage';
 import AIInterviewHelperPage from './pages/AIInterviewHelperPage';
 import ComparisonPage from './pages/ComparisonPage';
@@ -42,6 +43,7 @@ export default function App() {
             <Route path="language" element={<LanguagePage />} />
             <Route path="billing" element={<BillingPage />} />
             <Route path="help" element={<HelpCenterPage />} />
+            <Route path="referral" element={<ReferralPage />} />
           </Route>
           <Route path="/auth/callback" element={<AuthCallbackPage />} />
           {/* SEO Pages */}

@@ -16,6 +16,81 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Process referral code when a new user signs up
+const processReferralOnSignup = async (userId: string) => {
+  try {
+    // Check URL params first, then localStorage
+    const params = new URLSearchParams(window.location.search);
+    let refCode = params.get('ref') || localStorage.getItem('referral_code');
+    if (!refCode) return;
+
+    // Clear stored referral code
+    localStorage.removeItem('referral_code');
+
+    // Check if user was already referred (prevent duplicate credits)
+    const { data: existingReferral } = await supabase
+      .from('referrals')
+      .select('id')
+      .eq('referred_id', userId)
+      .single();
+    if (existingReferral) return; // Already processed
+
+    // Look up the referral code to find the referrer
+    const { data: codeData } = await supabase
+      .from('referral_codes')
+      .select('user_id')
+      .eq('code', refCode.toUpperCase())
+      .single();
+    if (!codeData || codeData.user_id === userId) return; // Invalid code or self-referral
+
+    const referrerId = codeData.user_id;
+    const REFERRAL_BONUS_MINUTES = 15;
+
+    // Create referral record
+    await supabase.from('referrals').insert({
+      referrer_id: referrerId,
+      referred_id: userId,
+      referral_code: refCode.toUpperCase(),
+      status: 'completed',
+      credits_awarded: true,
+      credits_minutes: REFERRAL_BONUS_MINUTES,
+      completed_at: new Date().toISOString(),
+    });
+
+    // Credit the referrer with bonus minutes
+    const { data: referrerBilling } = await supabase
+      .from('billing')
+      .select('credits_total_minutes')
+      .eq('user_id', referrerId)
+      .single();
+    
+    const currentMinutes = referrerBilling?.credits_total_minutes || 0;
+    await supabase.from('billing').upsert({
+      user_id: referrerId,
+      credits_total_minutes: currentMinutes + REFERRAL_BONUS_MINUTES,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id' });
+
+    // Credit the new user (referred) with bonus minutes
+    const { data: newUserBilling } = await supabase
+      .from('billing')
+      .select('credits_total_minutes')
+      .eq('user_id', userId)
+      .single();
+    
+    const newUserMinutes = newUserBilling?.credits_total_minutes || 0;
+    await supabase.from('billing').upsert({
+      user_id: userId,
+      credits_total_minutes: newUserMinutes + REFERRAL_BONUS_MINUTES,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id' });
+
+    console.log(`Referral processed: ${REFERRAL_BONUS_MINUTES} minutes credited to both users`);
+  } catch (err) {
+    console.error('Error processing referral:', err);
+  }
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -106,6 +181,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // On sign-in, ensure user exists in public.users table
       if (_event === 'SIGNED_IN' && session?.user) {
         void supabase.rpc('sync_user_login', { user_platform: 'web', user_app_version: '1.0.0' }).then(() => {});
+        // Process referral code if present in URL or localStorage
+        void processReferralOnSignup(session.user.id);
       }
       if (_event === 'SIGNED_OUT') {
         // Clean up session_bridge on sign out
