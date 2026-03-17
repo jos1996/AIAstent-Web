@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { DOWNLOAD_LINKS } from '../config/releases'
 
 const Icon = ({ name, size = 24 }: { name: string; size?: number }) => {
   const icons: Record<string, React.ReactElement> = {
@@ -52,12 +53,8 @@ export default function HomePage() {
     setShowDownloadModal(true)
   }
 
-  const downloadLinks = {
-    macAppleSilicon: 'https://beeptalk.s3.eu-north-1.amazonaws.com/HelplyAI-Notarized-aarch64+(2).dmg',
-    macIntel: 'https://beeptalk.s3.eu-north-1.amazonaws.com/HelplyAI-Notarized-x64.dmg',
-    windowsMSI: 'https://beeptalk.s3.eu-north-1.amazonaws.com/windows-msi+(7)+(1).zip',
-    windowsNSIS: 'https://beeptalk.s3.eu-north-1.amazonaws.com/windows-nsis+(3)+(1).zip',
-  }
+  // Use centralized download links from config/releases.ts
+  const downloadLinks = DOWNLOAD_LINKS;
 
   const handleDirectDownload = (url: string) => {
     window.open(url, '_blank')
