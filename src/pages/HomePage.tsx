@@ -317,7 +317,7 @@ export default function HomePage() {
             <span style={{ marginLeft: 14, color: '#fff', fontSize: 13, fontWeight: 600 }}>HelplyAI demo</span>
           </div>
           <div style={{ 
-            padding: 50, 
+            padding: 0, 
             minHeight: 500, 
             background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)',
             display: 'flex', 
@@ -325,36 +325,21 @@ export default function HomePage() {
             justifyContent: 'center',
             position: 'relative',
           }}>
-            <div style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: 90,
-              height: 90,
-              borderRadius: '50%',
-              background: 'rgba(255,255,255,0.12)',
-              backdropFilter: 'blur(10px)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.3s',
-              border: '3px solid rgba(255,255,255,0.25)',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.18)'; e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1.1)' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1)' }}
+            <video 
+              autoPlay 
+              loop 
+              muted 
+              playsInline
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                minHeight: 500,
+              }}
             >
-              <Icon name="Play" size={36} />
-            </div>
-            <div style={{
-              textAlign: 'center',
-              color: '#fff',
-              zIndex: 1,
-            }}>
-              <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>Watch HelplyAI in Action</div>
-              <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>See how it works in real interviews</div>
-            </div>
+              <source src="/promo-video.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
           </div>
         </div>
         </div>
@@ -751,6 +736,40 @@ export default function HomePage() {
             >
               Get Started Now →
             </button>
+          </div>
+
+          {/* Promotional Images */}
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+            gap: 24, 
+            marginTop: 60,
+            padding: '0 20px',
+          }}>
+            <div style={{
+              borderRadius: 20,
+              overflow: 'hidden',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+              transition: 'all 0.3s',
+              border: '1px solid rgba(0,0,0,0.08)',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.18)' }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.12)' }}
+            >
+              <img src="/promo-1.png" alt="HelplyAI Interview Assistant" style={{ width: '100%', height: 'auto', display: 'block' }} />
+            </div>
+            <div style={{
+              borderRadius: 20,
+              overflow: 'hidden',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+              transition: 'all 0.3s',
+              border: '1px solid rgba(0,0,0,0.08)',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.18)' }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.12)' }}
+            >
+              <img src="/promo-2.png" alt="HelplyAI Real-Time Assistance" style={{ width: '100%', height: 'auto', display: 'block' }} />
+            </div>
           </div>
         </div>
       </section>
