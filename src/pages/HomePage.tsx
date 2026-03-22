@@ -557,6 +557,45 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Promotional Images Section */}
+      <section style={{
+        padding: '60px 24px',
+        background: '#fff',
+      }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', 
+            gap: 32,
+          }}>
+            <div style={{
+              borderRadius: 20,
+              overflow: 'hidden',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+              transition: 'all 0.3s',
+              border: '1px solid rgba(0,0,0,0.06)',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.15)' }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.1)' }}
+            >
+              <img src="/promo-1.png" alt="HelplyAI Interview Assistant" style={{ width: '100%', height: 'auto', display: 'block' }} />
+            </div>
+            <div style={{
+              borderRadius: 20,
+              overflow: 'hidden',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+              transition: 'all 0.3s',
+              border: '1px solid rgba(0,0,0,0.06)',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.15)' }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.1)' }}
+            >
+              <img src="/promo-2.png" alt="HelplyAI Real-Time Assistance" style={{ width: '100%', height: 'auto', display: 'block' }} />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* How It Works Section */}
       <section style={{
         padding: '50px 24px',
