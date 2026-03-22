@@ -319,27 +319,22 @@ export default function HomePage() {
           <div style={{ 
             padding: 0, 
             minHeight: 500, 
-            background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)',
+            background: '#000',
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
             position: 'relative',
           }}>
-            <video 
-              autoPlay 
-              loop 
-              muted 
-              playsInline
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                minHeight: 500,
-              }}
-            >
-              <source src="/promo-video.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+            <iframe
+              width="100%"
+              height="500"
+              src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
+              title="HelplyAI Demo"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ border: 'none' }}
+            />
           </div>
         </div>
         </div>
@@ -736,40 +731,6 @@ export default function HomePage() {
             >
               Get Started Now →
             </button>
-          </div>
-
-          {/* Promotional Images */}
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-            gap: 24, 
-            marginTop: 60,
-            padding: '0 20px',
-          }}>
-            <div style={{
-              borderRadius: 20,
-              overflow: 'hidden',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
-              transition: 'all 0.3s',
-              border: '1px solid rgba(0,0,0,0.08)',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.18)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.12)' }}
-            >
-              <img src="/promo-1.png" alt="HelplyAI Interview Assistant" style={{ width: '100%', height: 'auto', display: 'block' }} />
-            </div>
-            <div style={{
-              borderRadius: 20,
-              overflow: 'hidden',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
-              transition: 'all 0.3s',
-              border: '1px solid rgba(0,0,0,0.08)',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.18)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.12)' }}
-            >
-              <img src="/promo-2.png" alt="HelplyAI Real-Time Assistance" style={{ width: '100%', height: 'auto', display: 'block' }} />
-            </div>
           </div>
         </div>
       </section>
@@ -2063,6 +2024,48 @@ export default function HomePage() {
                 )}
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Promo Video Section */}
+      <section style={{
+        padding: '80px 24px',
+        background: 'linear-gradient(180deg, #f0f0f0 0%, #e8e8e8 100%)',
+      }}>
+        <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{
+            fontSize: 'clamp(24px, 4vw, 36px)',
+            fontWeight: 900,
+            letterSpacing: '-1px',
+            marginBottom: 16,
+            color: '#000',
+          }}>
+            See HelplyAI in Action
+          </h2>
+          <p style={{ color: '#666', fontSize: 16, marginBottom: 40 }}>
+            Watch how HelplyAI helps you ace your interviews
+          </p>
+          <div style={{
+            borderRadius: 20,
+            overflow: 'hidden',
+            boxShadow: '0 16px 48px rgba(0,0,0,0.15)',
+            border: '1px solid rgba(0,0,0,0.1)',
+          }}>
+            <video 
+              autoPlay 
+              loop 
+              muted 
+              playsInline
+              style={{
+                width: '100%',
+                height: 'auto',
+                display: 'block',
+              }}
+            >
+              <source src="/promo-video.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
           </div>
         </div>
       </section>
