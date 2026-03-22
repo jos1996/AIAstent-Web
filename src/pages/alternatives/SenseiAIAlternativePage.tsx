@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Check, X, ArrowRight, Star, Zap, Shield, DollarSign } from 'lucide-react';
+import { Check, X, Star, Zap, Shield, DollarSign } from 'lucide-react';
 
 export default function SenseiAIAlternativePage() {
   return (
