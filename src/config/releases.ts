@@ -11,12 +11,14 @@ export const RELEASE_VERSION = 'v0.1.0';
 
 export const DOWNLOAD_LINKS = {
   // macOS Downloads (from GitHub Releases)
-  macAppleSilicon: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply.AI_0.1.0_aarch64.dmg`,
-  macIntel: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply.AI_0.1.0_x64.dmg`,
+  // File names have spaces: "Helply AI_0.1.0_aarch64.dmg" - URL encoded as %20
+  macAppleSilicon: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply%20AI_0.1.0_aarch64.dmg`,
+  macIntel: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply%20AI_0.1.0_x64.dmg`,
   
   // Windows Downloads (from GitHub Releases)
-  windowsNSIS: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply.AI_0.1.0_x64-setup.exe`,
-  windowsMSI: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply.AI_0.1.0_x64_en-US.msi`,
+  // Built via GitHub Actions workflow - product name "Helply AI" has space
+  windowsNSIS: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply%20AI_0.1.0_x64-setup.exe`,
+  windowsMSI: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply%20AI_0.1.0_x64_en-US.msi`,
 };
 
 /**
