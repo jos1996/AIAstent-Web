@@ -11,12 +11,12 @@ export const RELEASE_VERSION = 'v0.1.0';
 
 export const DOWNLOAD_LINKS = {
   // macOS Downloads (from GitHub Releases)
-  // File names have spaces: "Helply AI_0.1.0_aarch64.dmg" - URL encoded as %20
-  macAppleSilicon: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply%20AI_0.1.0_aarch64.dmg`,
-  macIntel: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply%20AI_0.1.0_x64.dmg`,
+  // File names use hyphen: "Helply-AI_0.1.0_aarch64.dmg"
+  macAppleSilicon: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply-AI_0.1.0_aarch64.dmg`,
+  macIntel: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply-AI_0.1.0_x64.dmg`,
   
   // Windows Downloads (from GitHub Releases)
-  // Built via GitHub Actions workflow - product name "Helply AI" has space
+  // Built via GitHub Actions workflow - file names have space: "Helply AI_0.1.0_x64-setup.exe"
   windowsNSIS: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply%20AI_0.1.0_x64-setup.exe`,
   windowsMSI: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply%20AI_0.1.0_x64_en-US.msi`,
 };
