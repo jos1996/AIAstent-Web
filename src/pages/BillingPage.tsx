@@ -647,6 +647,19 @@ export default function BillingPage() {
 
               {/* Price */}
               <div style={{ marginBottom: 4 }}>
+                {plan.originalPrice && (
+                  <div style={{ marginBottom: 2 }}>
+                    <span style={{ 
+                      color: '#9ca3af', 
+                      fontSize: 16, 
+                      fontWeight: 600, 
+                      textDecoration: 'line-through',
+                      letterSpacing: '-0.5px'
+                    }}>
+                      {plan.originalPrice}
+                    </span>
+                  </div>
+                )}
                 <span style={{ color: '#000', fontSize: 28, fontWeight: 800, letterSpacing: '-1px' }}>{plan.priceLabel}</span>
                 {!isFree && (
                   <span style={{ color: '#6b7280', fontSize: 12, marginLeft: 4 }}>{plan.priceSuffix}</span>

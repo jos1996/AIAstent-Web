@@ -25,6 +25,7 @@ export interface PlanConfig {
   name: string;
   tagline: string;
   priceLabel: string;
+  originalPrice?: string;
   priceSuffix: string;
   savingsNote: string;
   priceInPaise: number;
@@ -38,6 +39,7 @@ export interface GeneralPlanConfig {
   name: string;
   tagline: string;
   priceLabel: string;
+  originalPrice?: string;
   priceSuffix: string;
   priceInPaise: number;
   priceUSD: string;
@@ -90,6 +92,7 @@ export const PLANS: Record<InterviewPlanId, PlanConfig> = {
     name: '1 Credit',
     tagline: '1 hour of full access.',
     priceLabel: '₹399',
+    originalPrice: '₹999',
     priceSuffix: '/ hour',
     savingsNote: '',
     priceInPaise: 39900,
@@ -109,6 +112,7 @@ export const PLANS: Record<InterviewPlanId, PlanConfig> = {
     name: '3 Credits',
     tagline: '3 hours — best for interview prep.',
     priceLabel: '₹599',
+    originalPrice: '₹1,599',
     priceSuffix: '/ 3 hours',
     savingsNote: '₹200/hr — Save 33%',
     priceInPaise: 59900,
@@ -129,6 +133,7 @@ export const PLANS: Record<InterviewPlanId, PlanConfig> = {
     name: '10 Credits',
     tagline: '10 hours — maximum value.',
     priceLabel: '₹1,999',
+    originalPrice: '₹4,999',
     priceSuffix: '/ 10 hours',
     savingsNote: '₹200/hr — Save 33%',
     priceInPaise: 199900,
