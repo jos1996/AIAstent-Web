@@ -11,14 +11,14 @@ export const RELEASE_VERSION = 'v0.1.0';
 
 export const DOWNLOAD_LINKS = {
   // macOS Downloads (from GitHub Releases)
-  // File names use hyphen: "Helply-AI_0.1.0_aarch64.dmg"
-  macAppleSilicon: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply-AI_0.1.0_aarch64.dmg`,
-  macIntel: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply-AI_0.1.0_x64.dmg`,
+  // File names: "Helply AI_0.1.0_aarch64.dmg" (with space)
+  macAppleSilicon: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply%20AI_0.1.0_aarch64.dmg`,
+  macIntel: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply%20AI_0.1.0_x64.dmg`,
   
   // Windows Downloads (from GitHub Releases)
-  // Built via GitHub Actions workflow - file names use dot: "Helply.AI_0.1.0_x64-setup.exe"
-  windowsNSIS: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply.AI_0.1.0_x64-setup.exe`,
-  windowsMSI: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply.AI_0.1.0_x64_en-US.msi`,
+  // Built via GitHub Actions workflow
+  windowsNSIS: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply-AI_0.1.0_x64-setup.exe`,
+  windowsMSI: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply-AI_0.1.0_x64_en-US.msi`,
 };
 
 /**
