@@ -12,6 +12,7 @@ const menuItems = [
   { id: 'updates', label: 'Latest Updates', icon: 'sparkle', path: '/settings/updates' },
   { id: 'tutorials', label: 'Tutorials', icon: 'play', path: '/settings/tutorials' },
   { id: 'profile', label: 'Profile', icon: 'user', path: '/settings/profile' },
+  { id: 'job-search', label: 'Job Search', icon: 'briefcase', path: '/settings/job-search' },
 ];
 
 const supportItems = [
@@ -33,6 +34,7 @@ function SidebarIcon({ type }: { type: string }) {
     case 'test': return <svg {...s}><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>;
     case 'sparkle': return <svg {...s}><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>;
     case 'play': return <svg {...s}><polygon points="5 3 19 12 5 21 5 3"/></svg>;
+    case 'briefcase': return <svg {...s}><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>;
     default: return null;
   }
 }

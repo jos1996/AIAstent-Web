@@ -17,6 +17,7 @@ import TutorialsPage from './pages/TutorialsPage';
 import ReferralPage from './pages/ReferralPage';
 import AuthCallbackPage from './pages/AuthCallbackPage';
 import AIInterviewHelperPage from './pages/AIInterviewHelperPage';
+import JobSearchPage from './pages/JobSearchPage';
 import ComparisonPage from './pages/ComparisonPage';
 import { competitors } from './data/competitors';
 import HowToCrackInterviewPage from './pages/blog/HowToCrackInterviewPage';
@@ -63,6 +64,7 @@ export default function App() {
             <Route path="language" element={<LanguagePage />} />
             <Route path="billing" element={<BillingPage />} />
             <Route path="help" element={<HelpCenterPage />} />
+            <Route path="job-search" element={<JobSearchPage />} />
             <Route path="referral" element={<ReferralPage />} />
           </Route>
           <Route path="/auth/callback" element={<AuthCallbackPage />} />
