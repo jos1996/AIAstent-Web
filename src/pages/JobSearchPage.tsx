@@ -62,21 +62,24 @@ const PLATFORM_COLORS: Record<string, string> = {
   'Google': '#4285f4',
 };
 
-function detectPlatform(publisher: string, applyLink: string): string {
+function detectPlatform(publisher: string, applyLink: string, applyOptions?: { publisher: string; apply_link: string; is_direct: boolean; }[]): string {
   const pub = (publisher || '').toLowerCase();
   const link = (applyLink || '').toLowerCase();
-  if (pub.includes('linkedin') || link.includes('linkedin.com')) return 'LinkedIn';
-  if (pub.includes('indeed') || link.includes('indeed.com')) return 'Indeed';
-  if (pub.includes('glassdoor') || link.includes('glassdoor.com')) return 'Glassdoor';
-  if (pub.includes('naukri') || link.includes('naukri.com')) return 'Naukri';
-  if (pub.includes('ziprecruiter') || link.includes('ziprecruiter.com')) return 'ZipRecruiter';
-  if (pub.includes('monster') || link.includes('monster.com')) return 'Monster';
-  if (pub.includes('dice') || link.includes('dice.com')) return 'Dice';
-  if (pub.includes('careerbuilder') || link.includes('careerbuilder.com')) return 'CareerBuilder';
-  if (pub.includes('simplyhired') || link.includes('simplyhired.com')) return 'SimplyHired';
-  if (pub.includes('remotive') || link.includes('remotive.com')) return 'Remotive';
-  if (pub.includes('arbeitnow') || link.includes('arbeitnow.com')) return 'Arbeitnow';
-  if (link.includes('google.com')) return 'Google';
+  const allLinks = [link, ...(applyOptions || []).map(o => (o.apply_link || '').toLowerCase())];
+  const allPubs = [pub, ...(applyOptions || []).map(o => (o.publisher || '').toLowerCase())];
+  const check = (keyword: string) => allPubs.some(p => p.includes(keyword)) || allLinks.some(l => l.includes(keyword));
+  if (check('linkedin')) return 'LinkedIn';
+  if (check('indeed')) return 'Indeed';
+  if (check('glassdoor')) return 'Glassdoor';
+  if (check('naukri')) return 'Naukri';
+  if (check('ziprecruiter')) return 'ZipRecruiter';
+  if (check('monster')) return 'Monster';
+  if (check('dice')) return 'Dice';
+  if (check('careerbuilder')) return 'CareerBuilder';
+  if (check('simplyhired')) return 'SimplyHired';
+  if (check('remotive')) return 'Remotive';
+  if (check('arbeitnow')) return 'Arbeitnow';
+  if (check('google')) return 'Google';
   return publisher || 'Job Board';
 }
 
@@ -135,7 +138,8 @@ function buildDirectLinks(query: string, location: string) {
 
 async function fetchJSearchJobs(query: string, location: string, datePosted: string, remoteOnly: boolean, empType: string): Promise<JobResult[]> {
   try {
-    const locationSuffix = location.trim() ? ' in ' + location.trim() + (INDIAN_CITIES.map(c => c.toLowerCase()).includes(location.trim().toLowerCase()) ? ', India' : '') : '';
+    const isIndianCity = INDIAN_CITIES.map(c => c.toLowerCase()).includes(location.trim().toLowerCase());
+    const locationSuffix = location.trim() ? ' in ' + location.trim() + (isIndianCity ? ', India' : '') : '';
     const params = new URLSearchParams({
       query: query.trim() + locationSuffix,
       page: '1',
@@ -151,7 +155,138 @@ async function fetchJSearchJobs(query: string, location: string, datePosted: str
     const d = await r.json();
     return (d.data || []).map((j: any) => ({
       ...j,
-      source_platform: detectPlatform(j.job_publisher, j.job_apply_link)
+      source_platform: detectPlatform(j.job_publisher, j.job_apply_link, j.apply_options)
+    }));
+  } catch { return []; }
+}
+
+async function fetchLinkedInJobs(query: string, location: string): Promise<JobResult[]> {
+  try {
+    const r = await fetch('https://linkedin-jobs-search.p.rapidapi.com/', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-rapidapi-key': RAPIDAPI_KEY,
+        'x-rapidapi-host': 'linkedin-jobs-search.p.rapidapi.com'
+      },
+      body: JSON.stringify({
+        search_terms: query.trim(),
+        location: location.trim() || 'India',
+        page: '1',
+        fetch_full_text: 'yes'
+      })
+    });
+    if (!r.ok) return [];
+    const data = await r.json();
+    if (!Array.isArray(data)) return [];
+    return data.map((j: any) => ({
+      job_id: 'linkedin_' + (j.job_url || '').split('/').pop() || Math.random().toString(36).slice(2),
+      job_title: j.job_title || j.title || '',
+      employer_name: j.company_name || '',
+      employer_logo: j.company_logo || null,
+      employer_website: j.company_url || null,
+      job_publisher: 'LinkedIn',
+      job_employment_type: (j.job_type || '').toUpperCase().includes('FULL') ? 'FULLTIME' : (j.job_type || '').toUpperCase().includes('PART') ? 'PARTTIME' : (j.job_type || '').toUpperCase().includes('CONTRACT') ? 'CONTRACTOR' : (j.job_type || '').toUpperCase().includes('INTERN') ? 'INTERN' : '',
+      job_description: j.job_description || j.description || '',
+      job_apply_link: j.job_url || j.linkedin_job_url_cleaned || j.url || '',
+      job_city: j.job_location || j.location || '',
+      job_state: '',
+      job_country: j.country || '',
+      job_posted_at_datetime_utc: j.posted_date || j.list_date || '',
+      job_min_salary: j.salary_min || null,
+      job_max_salary: j.salary_max || null,
+      job_salary_currency: j.salary_currency || null,
+      job_salary_period: j.salary_period || null,
+      job_is_remote: (j.job_location || j.location || '').toLowerCase().includes('remote') || j.remote === true,
+      job_highlights: j.job_highlights || undefined,
+      job_google_link: undefined,
+      apply_options: undefined,
+      source_platform: 'LinkedIn'
+    }));
+  } catch { return []; }
+}
+
+async function fetchIndeedJobs(query: string, location: string): Promise<JobResult[]> {
+  try {
+    const isIndianCity = INDIAN_CITIES.map(c => c.toLowerCase()).includes(location.trim().toLowerCase());
+    const locality = isIndianCity ? 'in' : 'us';
+    const params = new URLSearchParams({
+      query: query.trim(),
+      location: location.trim() || (isIndianCity ? 'India' : ''),
+      page_id: '1',
+      locality: locality,
+      fromage: '',
+      radius: '50'
+    });
+    const r = await fetch('https://indeed12.p.rapidapi.com/jobs/search?' + params, {
+      headers: { 'x-rapidapi-key': RAPIDAPI_KEY, 'x-rapidapi-host': 'indeed12.p.rapidapi.com' }
+    });
+    if (!r.ok) return [];
+    const data = await r.json();
+    const hits = data.hits || data.results || data.jobs || (Array.isArray(data) ? data : []);
+    return hits.map((j: any) => ({
+      job_id: 'indeed_' + (j.id || j.job_id || Math.random().toString(36).slice(2)),
+      job_title: j.title || j.job_title || '',
+      employer_name: j.company_name || j.company || '',
+      employer_logo: j.company_logo || null,
+      employer_website: null,
+      job_publisher: 'Indeed',
+      job_employment_type: (j.job_type || j.type || '').toUpperCase().includes('FULL') ? 'FULLTIME' : (j.job_type || j.type || '').toUpperCase().includes('PART') ? 'PARTTIME' : (j.job_type || j.type || '').toUpperCase().includes('CONTRACT') ? 'CONTRACTOR' : '',
+      job_description: j.description || j.snippet || '',
+      job_apply_link: j.link || j.url || j.job_url || ('https://www.indeed.com/viewjob?jk=' + (j.id || '')),
+      job_city: j.location || j.city || '',
+      job_state: j.state || '',
+      job_country: j.country || '',
+      job_posted_at_datetime_utc: j.date || j.posted_at || j.formatted_relative_time || '',
+      job_min_salary: j.salary_min || j.min_salary || null,
+      job_max_salary: j.salary_max || j.max_salary || null,
+      job_salary_currency: j.salary_currency || null,
+      job_salary_period: j.salary_period || null,
+      job_is_remote: (j.location || j.city || '').toLowerCase().includes('remote') || j.remote === true,
+      job_highlights: undefined,
+      job_google_link: undefined,
+      apply_options: undefined,
+      source_platform: 'Indeed'
+    }));
+  } catch { return []; }
+}
+
+async function fetchNaukriJobs(query: string, location: string): Promise<JobResult[]> {
+  try {
+    const params = new URLSearchParams({
+      query: query.trim(),
+      location: location.trim() || 'India',
+      pageNo: '1'
+    });
+    const r = await fetch('https://naukri-com.p.rapidapi.com/jobs/search?' + params, {
+      headers: { 'x-rapidapi-key': RAPIDAPI_KEY, 'x-rapidapi-host': 'naukri-com.p.rapidapi.com' }
+    });
+    if (!r.ok) return [];
+    const data = await r.json();
+    const jobList = data.jobs || data.data || data.results || (Array.isArray(data) ? data : []);
+    return jobList.map((j: any) => ({
+      job_id: 'naukri_' + (j.jobId || j.id || Math.random().toString(36).slice(2)),
+      job_title: j.title || j.designation || '',
+      employer_name: j.company || j.companyName || '',
+      employer_logo: j.companyLogo || j.logo || null,
+      employer_website: null,
+      job_publisher: 'Naukri',
+      job_employment_type: (j.jobType || '').toUpperCase().includes('FULL') ? 'FULLTIME' : (j.jobType || '').toUpperCase().includes('PART') ? 'PARTTIME' : '',
+      job_description: j.description || j.jobDescription || j.snippet || '',
+      job_apply_link: j.jdURL || j.url || j.applyLink || ('https://www.naukri.com/' + (j.jobId || '')),
+      job_city: j.location || j.city || '',
+      job_state: '',
+      job_country: 'India',
+      job_posted_at_datetime_utc: j.createdDate || j.postedDate || '',
+      job_min_salary: j.minSalary || j.salary_min || null,
+      job_max_salary: j.maxSalary || j.salary_max || null,
+      job_salary_currency: 'INR',
+      job_salary_period: 'YEAR',
+      job_is_remote: (j.location || '').toLowerCase().includes('remote') || j.remote === true,
+      job_highlights: undefined,
+      job_google_link: undefined,
+      apply_options: undefined,
+      source_platform: 'Naukri'
     }));
   } catch { return []; }
 }
@@ -259,6 +394,7 @@ export default function JobSearchPage() {
   const [savedFilter, setSavedFilter] = useState<'all'|'saved'|'applied'|'ignored'>('all');
   const [userResume, setUserResume] = useState('');
   const [loadingMessage, setLoadingMessage] = useState('');
+  const [apiStatus, setApiStatus] = useState<Record<string, 'ok' | 'fail' | 'pending'>>({});
   const locDebounce = useRef<NodeJS.Timeout | undefined>(undefined);
   const loadingMsgRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
@@ -338,17 +474,36 @@ export default function JobSearchPage() {
     loadingMsgRef.current = setInterval(() => { mi = (mi + 1) % messages.length; setLoadingMessage(messages[mi]); }, 2000);
 
     try {
-      const [jsearchResults, remotiveResults, arbeitnowResults] = await Promise.allSettled([
+      setApiStatus({ JSearch: 'pending', LinkedIn: 'pending', Indeed: 'pending', Naukri: 'pending', Remotive: 'pending', Arbeitnow: 'pending' });
+
+      const [jsearchResults, linkedinResults, indeedResults, naukriResults, remotiveResults, arbeitnowResults] = await Promise.allSettled([
         fetchJSearchJobs(query, location, datePosted, remoteOnly, empType),
+        fetchLinkedInJobs(query, location),
+        fetchIndeedJobs(query, location),
+        fetchNaukriJobs(query, location),
         fetchRemotiveJobs(query),
         fetchArbeitnowJobs(query)
       ]);
 
       let combined: JobResult[] = [];
+      const status: Record<string, 'ok' | 'fail'> = {};
 
-      if (jsearchResults.status === 'fulfilled') combined.push(...jsearchResults.value);
-      if (remotiveResults.status === 'fulfilled' && (!location || remoteOnly)) combined.push(...remotiveResults.value);
-      if (arbeitnowResults.status === 'fulfilled') combined.push(...arbeitnowResults.value);
+      const addResults = (name: string, result: PromiseSettledResult<JobResult[]>, condition = true) => {
+        if (result.status === 'fulfilled' && result.value.length > 0 && condition) {
+          combined.push(...result.value);
+          status[name] = 'ok';
+        } else {
+          status[name] = result.status === 'fulfilled' && result.value.length === 0 ? 'ok' : 'fail';
+        }
+      };
+
+      addResults('JSearch', jsearchResults);
+      addResults('LinkedIn', linkedinResults);
+      addResults('Indeed', indeedResults);
+      addResults('Naukri', naukriResults);
+      addResults('Remotive', remotiveResults, !location || remoteOnly);
+      addResults('Arbeitnow', arbeitnowResults);
+      setApiStatus(status);
 
       if (combined.length === 0) throw new Error('No jobs found. Try different keywords or location.');
 
@@ -406,7 +561,7 @@ export default function JobSearchPage() {
     const saved = savedJobs.get(job.job_id);
     const match = userResume ? ('matchScore' in job && job.matchScore) || calcMatch(job.job_description, userResume) : null;
     const salary = formatSalary(job.job_min_salary, job.job_max_salary, job.job_salary_currency, job.job_salary_period);
-    const platform = job.source_platform || detectPlatform(job.job_publisher, job.job_apply_link);
+    const platform = job.source_platform || detectPlatform(job.job_publisher, job.job_apply_link, job.apply_options);
 
     return (
       <div style={{ padding: 20, borderRadius: 12, border: '1px solid #e5e7eb', background: '#fff', position: 'relative', transition: 'all 0.2s', height: '100%', display: 'flex', flexDirection: 'column' }}
@@ -688,6 +843,25 @@ export default function JobSearchPage() {
                 )}
               </div>
 
+              {searched && Object.values(apiStatus).some(s => s === 'fail') && (
+                <div style={{ marginBottom: 16, padding: '10px 16px', background: '#fffbeb', borderRadius: 10, border: '1px solid #fde68a', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 12, color: '#92400e', fontWeight: 500 }}>Enable more sources:</span>
+                  {Object.entries(apiStatus).filter(([, s]) => s === 'fail').map(([name]) => {
+                    const urls: Record<string, string> = {
+                      LinkedIn: 'https://rapidapi.com/jaypat87/api/linkedin-jobs-search',
+                      Indeed: 'https://rapidapi.com/indeed12-indeed12-default/api/indeed12',
+                      Naukri: 'https://rapidapi.com/naukri-com-naukri-com-default/api/naukri-com',
+                    };
+                    return urls[name] ? (
+                      <a key={name} href={urls[name]} target="_blank" rel="noopener noreferrer"
+                        style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 6, background: '#fff', border: '1px solid #fde68a', color: PLATFORM_COLORS[name] || '#92400e', fontSize: 11, fontWeight: 600, textDecoration: 'none' }}>
+                        Subscribe to {name} API (free) <ExternalLink size={9} />
+                      </a>
+                    ) : null;
+                  })}
+                </div>
+              )}
+
               {searched && query && (
                 <div style={{ marginBottom: 20, padding: '12px 16px', background: '#f9fafb', borderRadius: 10, border: '1px solid #e5e7eb' }}>
                   <p style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Also search directly on</p>
@@ -751,7 +925,7 @@ export default function JobSearchPage() {
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                   <h2 style={{ fontSize: 20, fontWeight: 700, color: '#111827', margin: 0 }}>{modalJob.job_title}</h2>
-                  <PlatformBadge platform={modalJob.source_platform || detectPlatform(modalJob.job_publisher, modalJob.job_apply_link)} />
+                  <PlatformBadge platform={modalJob.source_platform || detectPlatform(modalJob.job_publisher, modalJob.job_apply_link, modalJob.apply_options)} />
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
                   {modalJob.employer_logo && <img src={modalJob.employer_logo} alt="" style={{ width: 28, height: 28, borderRadius: 6, objectFit: 'contain' }} />}
@@ -820,7 +994,7 @@ export default function JobSearchPage() {
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                     {modalJob.apply_options.map((opt, i) => (
                       <a key={i} href={opt.apply_link} target="_blank" rel="noopener noreferrer"
-                        style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 8, background: '#fff', border: '1px solid #e5e7eb', color: PLATFORM_COLORS[detectPlatform(opt.publisher, opt.apply_link)] || '#111827', fontSize: 11, fontWeight: 600, textDecoration: 'none' }}>
+                        style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 8, background: '#fff', border: '1px solid #e5e7eb', color: PLATFORM_COLORS[detectPlatform(opt.publisher, opt.apply_link, undefined)] || '#111827', fontSize: 11, fontWeight: 600, textDecoration: 'none' }}>
                         {opt.publisher} {opt.is_direct && '(Direct)'} <ExternalLink size={10} />
                       </a>
                     ))}
@@ -831,7 +1005,7 @@ export default function JobSearchPage() {
               <div style={{ display: 'flex', gap: 10 }}>
                 <a href={modalJob.job_apply_link} target="_blank" rel="noopener noreferrer" onClick={() => updateStatus(modalJob, 'applied')}
                   style={{ flex: 1, padding: '12px', borderRadius: 10, background: '#111827', color: '#fff', fontSize: 13, fontWeight: 600, textDecoration: 'none', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-                  Apply on {modalJob.source_platform || detectPlatform(modalJob.job_publisher, modalJob.job_apply_link)} <ExternalLink size={14} />
+                  Apply on {modalJob.source_platform || detectPlatform(modalJob.job_publisher, modalJob.job_apply_link, modalJob.apply_options)} <ExternalLink size={14} />
                 </a>
                 {modalJob.job_google_link && (
                   <a href={modalJob.job_google_link} target="_blank" rel="noopener noreferrer"
