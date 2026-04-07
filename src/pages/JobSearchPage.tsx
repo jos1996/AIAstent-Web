@@ -906,28 +906,28 @@ export default function JobSearchPage() {
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
               <Filter size={14} color="#6b7280" />
               <select value={workType} onChange={e => { setWorkType(e.target.value); setRemoteOnly(e.target.value === 'remote'); }} style={{ padding: '7px 14px', borderRadius: 10, border: '1px solid ' + (workType ? '#111827' : '#e5e7eb'), background: workType ? '#111827' : '#f9fafb', fontSize: 12, color: workType ? '#fff' : '#111827', cursor: 'pointer', fontWeight: 500 }}>
-                <option value="">🏢 All Work Types</option>
-                <option value="remote">🌍 Remote</option>
-                <option value="hybrid">🔄 Hybrid</option>
-                <option value="onsite">🏠 On-site</option>
+                <option value="">All Work Types</option>
+                <option value="remote">Remote</option>
+                <option value="hybrid">Hybrid</option>
+                <option value="onsite">On-site</option>
               </select>
               <select value={expLevel} onChange={e => setExpLevel(e.target.value)} style={{ padding: '7px 14px', borderRadius: 10, border: '1px solid ' + (expLevel ? '#111827' : '#e5e7eb'), background: expLevel ? '#111827' : '#f9fafb', fontSize: 12, color: expLevel ? '#fff' : '#111827', cursor: 'pointer', fontWeight: 500 }}>
-                <option value="">👤 Experience</option>
-                <option value="fresher">🎓 Fresher (0-1 yr)</option>
-                <option value="junior">📘 Junior (1-3 yrs)</option>
-                <option value="mid">📗 Mid-level (3-5 yrs)</option>
-                <option value="senior">📙 Senior (5-10 yrs)</option>
-                <option value="lead">📕 Lead/Staff (10+ yrs)</option>
+                <option value="">Experience</option>
+                <option value="fresher">Fresher (0-1 yr)</option>
+                <option value="junior">Junior (1-3 yrs)</option>
+                <option value="mid">Mid-level (3-5 yrs)</option>
+                <option value="senior">Senior (5-10 yrs)</option>
+                <option value="lead">Lead/Staff (10+ yrs)</option>
               </select>
               <select value={datePosted} onChange={e => setDatePosted(e.target.value)} style={{ padding: '7px 14px', borderRadius: 10, border: '1px solid #e5e7eb', background: '#f9fafb', fontSize: 12, color: '#111827', cursor: 'pointer', fontWeight: 500 }}>
-                <option value="all">📅 Any time</option>
+                <option value="all">Any time</option>
                 <option value="today">Today</option>
                 <option value="3days">Last 3 days</option>
                 <option value="week">This week</option>
                 <option value="month">This month</option>
               </select>
               <select value={empType} onChange={e => setEmpType(e.target.value)} style={{ padding: '7px 14px', borderRadius: 10, border: '1px solid #e5e7eb', background: '#f9fafb', fontSize: 12, color: '#111827', cursor: 'pointer', fontWeight: 500 }}>
-                <option value="">💼 All types</option>
+                <option value="">All types</option>
                 <option value="FULLTIME">Full-time</option>
                 <option value="PARTTIME">Part-time</option>
                 <option value="CONTRACTOR">Contract</option>
