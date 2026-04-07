@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { usePlanLimits } from '../hooks/usePlanLimits';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { Search, MapPin, Briefcase, Building2, DollarSign, Clock, Globe, Bookmark, CheckCircle2, X, ExternalLink, Eye, Filter, TrendingUp, Copy, Layers } from 'lucide-react';
+import { Search, MapPin, Briefcase, Building2, DollarSign, Clock, Globe, Bookmark, CheckCircle2, X, ExternalLink, Eye, Filter, TrendingUp, Copy, Layers, FileText, User, Sparkles } from 'lucide-react';
 
 interface JobResult {
   job_id: string;
@@ -104,6 +104,69 @@ function calcMatch(jobDesc: string, resume: string): number {
   return Math.min(99, Math.round((matches / Math.max(jWords.length, 1)) * 100 * 2.5));
 }
 
+interface ResumeProfile {
+  suggestedRole: string;
+  skills: string[];
+  experienceYears: number;
+  experienceLevel: 'fresher' | 'junior' | 'mid' | 'senior' | 'lead';
+}
+
+function parseResume(resume: string): ResumeProfile {
+  const text = resume.toLowerCase();
+  
+  // Extract years of experience
+  const expMatch = text.match(/(\d+)\+?\s*(?:years?|yrs?)\s*(?:of\s*)?(?:experience|exp)/i) 
+    || text.match(/experience[:\s]*(\d+)\+?\s*(?:years?|yrs?)/i);
+  const years = expMatch ? parseInt(expMatch[1]) : 0;
+  
+  // Determine experience level
+  let level: ResumeProfile['experienceLevel'] = 'fresher';
+  if (years >= 10) level = 'lead';
+  else if (years >= 6) level = 'senior';
+  else if (years >= 3) level = 'mid';
+  else if (years >= 1) level = 'junior';
+  
+  // Extract skills
+  const techSkills = ['python', 'java', 'javascript', 'typescript', 'react', 'angular', 'vue', 'node', 'nodejs', 'sql', 'mongodb', 'aws', 'azure', 'gcp', 'docker', 'kubernetes', 'machine learning', 'ml', 'ai', 'data science', 'tensorflow', 'pytorch', 'pandas', 'numpy', 'spark', 'hadoop', 'tableau', 'power bi', 'excel', 'git', 'agile', 'scrum', 'jira', 'figma', 'sketch', 'photoshop', 'html', 'css', 'sass', 'tailwind', 'bootstrap', 'django', 'flask', 'fastapi', 'spring', 'springboot', '.net', 'c#', 'c++', 'go', 'golang', 'rust', 'swift', 'kotlin', 'flutter', 'react native', 'ios', 'android', 'devops', 'ci/cd', 'jenkins', 'terraform', 'ansible', 'linux', 'unix', 'shell', 'bash', 'api', 'rest', 'graphql', 'microservices', 'redis', 'elasticsearch', 'kafka', 'rabbitmq', 'postgresql', 'mysql', 'oracle', 'salesforce', 'sap', 'servicenow'];
+  const foundSkills = techSkills.filter(skill => text.includes(skill));
+  
+  // Detect role from common titles
+  const roles = [
+    { keywords: ['data scientist', 'data science', 'machine learning', 'ml engineer'], role: 'Data Scientist' },
+    { keywords: ['software engineer', 'software developer', 'sde', 'swe'], role: 'Software Engineer' },
+    { keywords: ['frontend', 'front-end', 'front end', 'react developer', 'ui developer'], role: 'Frontend Developer' },
+    { keywords: ['backend', 'back-end', 'back end', 'server side'], role: 'Backend Developer' },
+    { keywords: ['full stack', 'fullstack', 'full-stack'], role: 'Full Stack Developer' },
+    { keywords: ['devops', 'site reliability', 'sre', 'platform engineer'], role: 'DevOps Engineer' },
+    { keywords: ['product manager', 'product management', 'pm'], role: 'Product Manager' },
+    { keywords: ['ux designer', 'ui/ux', 'user experience', 'product designer'], role: 'UX Designer' },
+    { keywords: ['data analyst', 'business analyst', 'analytics'], role: 'Data Analyst' },
+    { keywords: ['qa', 'quality assurance', 'test engineer', 'sdet', 'automation'], role: 'QA Engineer' },
+    { keywords: ['mobile developer', 'ios developer', 'android developer', 'flutter', 'react native'], role: 'Mobile Developer' },
+    { keywords: ['project manager', 'scrum master', 'agile coach'], role: 'Project Manager' },
+    { keywords: ['cloud engineer', 'aws', 'azure', 'gcp', 'cloud architect'], role: 'Cloud Engineer' },
+  ];
+  
+  let suggestedRole = '';
+  for (const r of roles) {
+    if (r.keywords.some(k => text.includes(k))) {
+      suggestedRole = r.role;
+      break;
+    }
+  }
+  
+  // If no role found, try to infer from skills
+  if (!suggestedRole) {
+    if (foundSkills.some(s => ['python', 'machine learning', 'ml', 'tensorflow', 'pytorch', 'pandas'].includes(s))) suggestedRole = 'Data Scientist';
+    else if (foundSkills.some(s => ['react', 'angular', 'vue', 'html', 'css'].includes(s))) suggestedRole = 'Frontend Developer';
+    else if (foundSkills.some(s => ['node', 'django', 'flask', 'spring', 'java'].includes(s))) suggestedRole = 'Backend Developer';
+    else if (foundSkills.some(s => ['docker', 'kubernetes', 'terraform', 'jenkins'].includes(s))) suggestedRole = 'DevOps Engineer';
+    else suggestedRole = 'Software Engineer';
+  }
+  
+  return { suggestedRole, skills: foundSkills.slice(0, 10), experienceYears: years, experienceLevel: level };
+}
+
 function formatSalary(min: number | null, max: number | null, currency: string | null, period: string | null): string {
   if (!min && !max) return '';
   const curr = currency || 'USD';
@@ -144,7 +207,7 @@ async function fetchJSearchJobs(query: string, location: string, datePosted: str
     const params = new URLSearchParams({
       query: query.trim() + locationSuffix,
       page: '1',
-      num_pages: '5',
+      num_pages: '2',
       date_posted: datePosted,
       remote_jobs_only: remoteOnly ? 'true' : 'false'
     });
@@ -184,8 +247,8 @@ async function fetchLinkedInJobs(query: string, location: string): Promise<JobRe
   };
 
   try {
-    const [p1, p2, p3] = await Promise.all([fetchPage('1'), fetchPage('2'), fetchPage('3')]);
-    const all = [...p1, ...p2, ...p3];
+    const [p1, p2] = await Promise.all([fetchPage('1'), fetchPage('2')]);
+    const all = [...p1, ...p2].slice(0, 20); // Limit to 20 results
     if (all.length === 0) return [];
 
     return all.map((j: any) => {
@@ -221,41 +284,37 @@ async function fetchLinkedInJobs(query: string, location: string): Promise<JobRe
 
 async function fetchIndeedJobs(query: string, location: string): Promise<JobResult[]> {
   try {
-    const isIndianCity = INDIAN_CITIES.map(c => c.toLowerCase()).includes(location.trim().toLowerCase());
-    const locality = isIndianCity ? 'in' : 'us';
     const params = new URLSearchParams({
       query: query.trim(),
-      location: location.trim() || (isIndianCity ? 'India' : ''),
-      page_id: '1',
-      locality: locality,
-      fromage: '',
-      radius: '50'
+      location: location.trim() || 'India',
+      page_id: '1'
     });
     const r = await fetch('https://indeed12.p.rapidapi.com/jobs/search?' + params, {
       headers: { 'x-rapidapi-key': RAPIDAPI_KEY, 'x-rapidapi-host': 'indeed12.p.rapidapi.com' }
     });
     if (!r.ok) return [];
     const data = await r.json();
-    const hits = data.hits || data.results || data.jobs || (Array.isArray(data) ? data : []);
+    if (data.message) return []; // API error
+    const hits = (data.hits || []).slice(0, 15); // Limit to 15 to save API calls
     return hits.map((j: any) => ({
-      job_id: 'indeed_' + (j.id || j.job_id || Math.random().toString(36).slice(2)),
-      job_title: j.title || j.job_title || '',
-      employer_name: j.company_name || j.company || '',
-      employer_logo: j.company_logo || null,
+      job_id: 'indeed_' + j.id,
+      job_title: j.title || '',
+      employer_name: j.company_name || '',
+      employer_logo: null,
       employer_website: null,
       job_publisher: 'Indeed',
-      job_employment_type: (j.job_type || j.type || '').toUpperCase().includes('FULL') ? 'FULLTIME' : (j.job_type || j.type || '').toUpperCase().includes('PART') ? 'PARTTIME' : (j.job_type || j.type || '').toUpperCase().includes('CONTRACT') ? 'CONTRACTOR' : '',
-      job_description: j.description || j.snippet || '',
-      job_apply_link: j.link || j.url || j.job_url || ('https://www.indeed.com/viewjob?jk=' + (j.id || '')),
-      job_city: j.location || j.city || '',
-      job_state: j.state || '',
-      job_country: j.country || '',
-      job_posted_at_datetime_utc: j.date || j.posted_at || j.formatted_relative_time || '',
-      job_min_salary: j.salary_min || j.min_salary || null,
-      job_max_salary: j.salary_max || j.max_salary || null,
-      job_salary_currency: j.salary_currency || null,
-      job_salary_period: j.salary_period || null,
-      job_is_remote: (j.location || j.city || '').toLowerCase().includes('remote') || j.remote === true,
+      job_employment_type: '',
+      job_description: `${j.title} at ${j.company_name} - ${j.location}. Posted ${j.formatted_relative_time || 'recently'}.`,
+      job_apply_link: j.link ? 'https://www.indeed.com' + j.link : 'https://www.indeed.com/viewjob?jk=' + j.id,
+      job_city: j.location || '',
+      job_state: '',
+      job_country: j.locality === 'in' ? 'India' : j.locality === 'us' ? 'USA' : '',
+      job_posted_at_datetime_utc: j.pub_date_ts_milli ? new Date(j.pub_date_ts_milli).toISOString() : '',
+      job_min_salary: j.salary?.min || null,
+      job_max_salary: j.salary?.max || null,
+      job_salary_currency: j.locality === 'in' ? 'INR' : 'USD',
+      job_salary_period: j.salary?.type === 'YEARLY' ? 'YEAR' : j.salary?.type === 'MONTHLY' ? 'MONTH' : null,
+      job_is_remote: (j.location || '').toLowerCase().includes('remote'),
       job_highlights: undefined,
       job_google_link: undefined,
       apply_options: undefined,
@@ -398,6 +457,8 @@ export default function JobSearchPage() {
   const [showSaved, setShowSaved] = useState(false);
   const [savedFilter, setSavedFilter] = useState<'all'|'saved'|'applied'|'ignored'>('all');
   const [userResume, setUserResume] = useState('');
+  const [resumeProfile, setResumeProfile] = useState<ResumeProfile | null>(null);
+  const [showResumeModal, setShowResumeModal] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [apiStatus, setApiStatus] = useState<Record<string, 'ok' | 'fail' | 'pending'>>({});
   const locDebounce = useRef<NodeJS.Timeout | undefined>(undefined);
@@ -407,7 +468,14 @@ export default function JobSearchPage() {
   const limit = isPremium ? PREMIUM_RESULT_LIMIT : FREE_RESULT_LIMIT;
 
   useEffect(() => {
-    if (user) supabase.from('interview_context').select('resume').eq('user_id', user.id).single().then(({ data }) => { if (data?.resume) setUserResume(data.resume); });
+    if (user) supabase.from('interview_context').select('resume').eq('user_id', user.id).single().then(({ data }) => { 
+      if (data?.resume) {
+        setUserResume(data.resume);
+        const profile = parseResume(data.resume);
+        setResumeProfile(profile);
+        if (!query && profile.suggestedRole) setQuery(profile.suggestedRole);
+      }
+    });
   }, [user]);
 
   useEffect(() => { localStorage.setItem('helplyai_jobs_v2', JSON.stringify([...savedJobs])); }, [savedJobs]);
@@ -695,6 +763,49 @@ export default function JobSearchPage() {
         <div style={{ marginBottom: 20, padding: '12px 20px', borderRadius: 12, background: '#f9fafb', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ color: '#111827', fontSize: 13, fontWeight: 500 }}>Free plan: <strong>{FREE_RESULT_LIMIT} results</strong>. Upgrade for {PREMIUM_RESULT_LIMIT} jobs/page with pagination.</span>
           <button onClick={() => navigate('/settings/billing')} style={{ padding: '8px 20px', borderRadius: 8, background: '#111827', border: 'none', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Upgrade</button>
+        </div>
+      )}
+
+      {!showSaved && (
+        <div style={{ marginBottom: 20, padding: '16px 20px', borderRadius: 12, background: resumeProfile ? '#f0fdf4' : '#fffbeb', border: '1px solid ' + (resumeProfile ? '#bbf7d0' : '#fde68a') }}>
+          {resumeProfile ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: '#22c55e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <User size={20} color="#fff" />
+                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{resumeProfile.suggestedRole}</span>
+                    <span style={{ padding: '2px 8px', borderRadius: 6, background: '#dcfce7', color: '#166534', fontSize: 10, fontWeight: 600, textTransform: 'uppercase' }}>{resumeProfile.experienceLevel}</span>
+                    {resumeProfile.experienceYears > 0 && <span style={{ fontSize: 12, color: '#6b7280' }}>{resumeProfile.experienceYears} yrs exp</span>}
+                  </div>
+                  <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                    {resumeProfile.skills.slice(0, 6).map(s => (
+                      <span key={s} style={{ padding: '2px 6px', borderRadius: 4, background: '#fff', border: '1px solid #e5e7eb', fontSize: 10, color: '#6b7280' }}>{s}</span>
+                    ))}
+                    {resumeProfile.skills.length > 6 && <span style={{ fontSize: 10, color: '#9ca3af' }}>+{resumeProfile.skills.length - 6} more</span>}
+                  </div>
+                </div>
+              </div>
+              <button onClick={() => setShowResumeModal(true)} style={{ padding: '8px 16px', borderRadius: 8, background: '#fff', border: '1px solid #e5e7eb', color: '#111827', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <FileText size={14} /> Update Resume
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <Sparkles size={20} color="#f59e0b" />
+                <div>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: '#111827', margin: 0 }}>Get personalized job matches</p>
+                  <p style={{ fontSize: 12, color: '#6b7280', margin: 0 }}>Paste your resume to auto-detect role, skills & experience level</p>
+                </div>
+              </div>
+              <button onClick={() => setShowResumeModal(true)} style={{ padding: '10px 20px', borderRadius: 8, background: '#111827', border: 'none', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <FileText size={14} /> Paste Resume
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -1019,6 +1130,89 @@ export default function JobSearchPage() {
                 )}
                 <button onClick={() => navigator.clipboard.writeText(modalJob.job_apply_link)} style={{ padding: '12px 16px', borderRadius: 10, background: '#f9fafb', border: '1px solid #e5e7eb', color: '#6b7280', cursor: 'pointer' }}>
                   <Copy size={14} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showResumeModal && (
+        <div onClick={() => setShowResumeModal(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 20 }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: 16, maxWidth: 600, width: '100%', maxHeight: '90vh', overflow: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
+            <div style={{ padding: 24, borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h2 style={{ fontSize: 18, fontWeight: 700, color: '#111827', margin: 0 }}>Paste Your Resume</h2>
+                <p style={{ fontSize: 13, color: '#6b7280', margin: '4px 0 0' }}>We'll auto-detect your role, skills & experience level</p>
+              </div>
+              <button onClick={() => setShowResumeModal(false)} style={{ padding: 8, borderRadius: 8, background: '#f3f4f6', border: 'none', cursor: 'pointer' }}>
+                <X size={18} color="#6b7280" />
+              </button>
+            </div>
+            <div style={{ padding: 24 }}>
+              <textarea
+                placeholder="Paste your resume text here...&#10;&#10;Example:&#10;John Doe - Senior Software Engineer&#10;5+ years of experience in Python, React, AWS&#10;Skills: Python, JavaScript, React, Node.js, AWS, Docker..."
+                value={userResume}
+                onChange={e => setUserResume(e.target.value)}
+                style={{ width: '100%', height: 250, padding: 16, borderRadius: 12, border: '2px solid #e5e7eb', fontSize: 13, color: '#111827', outline: 'none', resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.6, boxSizing: 'border-box' }}
+                onFocus={e => e.currentTarget.style.borderColor = '#111827'}
+                onBlur={e => e.currentTarget.style.borderColor = '#e5e7eb'}
+              />
+              {userResume && (
+                <div style={{ marginTop: 16, padding: 16, background: '#f9fafb', borderRadius: 12, border: '1px solid #e5e7eb' }}>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>Preview</p>
+                  {(() => {
+                    const preview = parseResume(userResume);
+                    return (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>Detected Role:</span>
+                          <span style={{ padding: '3px 10px', borderRadius: 6, background: '#111827', color: '#fff', fontSize: 12, fontWeight: 600 }}>{preview.suggestedRole}</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>Experience:</span>
+                          <span style={{ padding: '3px 10px', borderRadius: 6, background: '#dcfce7', color: '#166534', fontSize: 12, fontWeight: 600, textTransform: 'capitalize' }}>{preview.experienceLevel}</span>
+                          {preview.experienceYears > 0 && <span style={{ fontSize: 12, color: '#6b7280' }}>({preview.experienceYears} years)</span>}
+                        </div>
+                        {preview.skills.length > 0 && (
+                          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                            <span style={{ fontSize: 13, fontWeight: 600, color: '#111827', whiteSpace: 'nowrap' }}>Skills:</span>
+                            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                              {preview.skills.map(s => (
+                                <span key={s} style={{ padding: '2px 8px', borderRadius: 4, background: '#fff', border: '1px solid #e5e7eb', fontSize: 11, color: '#6b7280' }}>{s}</span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
+              <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+                <button
+                  onClick={() => {
+                    if (userResume) {
+                      const profile = parseResume(userResume);
+                      setResumeProfile(profile);
+                      setQuery(profile.suggestedRole);
+                      setShowResumeModal(false);
+                      // Save to Supabase if user is logged in
+                      if (user) {
+                        supabase.from('interview_context').upsert({ user_id: user.id, resume: userResume }, { onConflict: 'user_id' });
+                      }
+                    }
+                  }}
+                  disabled={!userResume}
+                  style={{ flex: 1, padding: '12px', borderRadius: 10, background: userResume ? '#111827' : '#e5e7eb', border: 'none', color: userResume ? '#fff' : '#9ca3af', fontSize: 14, fontWeight: 600, cursor: userResume ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+                >
+                  <Sparkles size={16} /> Find Matching Jobs
+                </button>
+                <button
+                  onClick={() => { setUserResume(''); setResumeProfile(null); }}
+                  style={{ padding: '12px 20px', borderRadius: 10, background: '#f9fafb', border: '1px solid #e5e7eb', color: '#6b7280', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}
+                >
+                  Clear
                 </button>
               </div>
             </div>
