@@ -95,7 +95,7 @@ export default function JobSearchPage() {
   const [showSaved, setShowSaved] = useState(false);
   const [savedFilter, setSavedFilter] = useState<'all'|'saved'|'applied'|'ignored'>('all');
   const [userResume, setUserResume] = useState('');
-  const locDebounce = useRef<NodeJS.Timeout>();
+  const locDebounce = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const isPremium = !planState.isFreeUser && !planState.isExpired;
   const limit = isPremium ? PREMIUM_RESULT_LIMIT : FREE_RESULT_LIMIT;
