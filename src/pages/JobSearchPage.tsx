@@ -88,7 +88,7 @@ function timeAgo(dateString: string): string {
 // ── Component ────────────────────────────────────────────────────────────────
 
 export default function JobSearchPage() {
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const { planState } = usePlanLimits();
   const navigate = useNavigate();
 
