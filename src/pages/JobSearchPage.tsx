@@ -123,7 +123,9 @@ export default function JobSearchPage() {
   const [showSaved, setShowSaved] = useState(false);
   const [savedFilter, setSavedFilter] = useState<'all'|'saved'|'applied'|'ignored'>('all');
   const [userResume, setUserResume] = useState('');
+  const [loadingMessage, setLoadingMessage] = useState('Finding the best jobs for you...');
   const locDebounce = useRef<NodeJS.Timeout | undefined>(undefined);
+  const loadingMessageInterval = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const isPremium = !planState.isFreeUser && !planState.isExpired;
   const limit = isPremium ? PREMIUM_RESULT_LIMIT : FREE_RESULT_LIMIT;
@@ -186,6 +188,23 @@ export default function JobSearchPage() {
     }
     
     setLoading(true); setError(''); setSearched(true); setPage(p);
+    
+    // Rotating loading messages
+    const messages = [
+      'Finding the best jobs for you...',
+      'Searching across LinkedIn, Indeed & Glassdoor...',
+      'Analyzing thousands of opportunities...',
+      'Matching jobs with your profile...',
+      'Discovering relevant positions...',
+      'Curating top opportunities...'
+    ];
+    let msgIndex = 0;
+    setLoadingMessage(messages[0]);
+    
+    loadingMessageInterval.current = setInterval(() => {
+      msgIndex = (msgIndex + 1) % messages.length;
+      setLoadingMessage(messages[msgIndex]);
+    }, 2000);
     try {
       // Fetch 3 pages at once for better pagination performance
       const params = new URLSearchParams({ 
@@ -219,6 +238,10 @@ export default function JobSearchPage() {
       setJobs([]); 
       setAllJobs([]);
     } finally { 
+      if (loadingMessageInterval.current) {
+        clearInterval(loadingMessageInterval.current);
+        loadingMessageInterval.current = undefined;
+      }
       setLoading(false); 
     }
   }, [query, location, remoteOnly, datePosted, empType, limit]);
@@ -479,20 +502,38 @@ export default function JobSearchPage() {
           )}
 
           {loading && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: 16 }}>
-              {[1,2,3,4,5,6,7,8,9,10,11,12].map(i => (
-                <div key={i} style={{ padding: 20, borderRadius: 12, border: '1px solid #e5e7eb', background: '#fff', animation: 'pulse 1.5s infinite' }}>
-                  <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
-                    <div style={{ width: 48, height: 48, borderRadius: 10, background: '#f3f4f6' }}/>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ width: '70%', height: 16, background: '#f3f4f6', borderRadius: 6, marginBottom: 8 }}/>
-                      <div style={{ width: '50%', height: 14, background: '#f3f4f6', borderRadius: 6 }}/>
-                    </div>
+            <>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 20px', background: '#f9fafb', borderRadius: 16, border: '1px solid #e5e7eb', marginBottom: 32 }}>
+                <div style={{ position: 'relative', width: 80, height: 80, marginBottom: 24 }}>
+                  <div style={{ position: 'absolute', inset: 0, border: '4px solid #e5e7eb', borderRadius: '50%' }} />
+                  <div style={{ position: 'absolute', inset: 0, border: '4px solid #111827', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                  <div style={{ position: 'absolute', inset: '50%', transform: 'translate(-50%, -50%)', width: 40, height: 40, background: '#111827', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Search size={20} color="#fff" />
                   </div>
-                  <div style={{ width: '100%', height: 60, background: '#f3f4f6', borderRadius: 8 }}/>
                 </div>
-              ))}
-            </div>
+                <h3 style={{ color: '#111827', fontSize: 20, fontWeight: 700, margin: '0 0 8px', textAlign: 'center' }}>{loadingMessage}</h3>
+                <p style={{ color: '#6b7280', fontSize: 14, margin: 0, textAlign: 'center' }}>This will only take a moment</p>
+                <div style={{ display: 'flex', gap: 8, marginTop: 24 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#111827', animation: 'bounce 1.4s infinite ease-in-out both', animationDelay: '0s' }} />
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#111827', animation: 'bounce 1.4s infinite ease-in-out both', animationDelay: '0.16s' }} />
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#111827', animation: 'bounce 1.4s infinite ease-in-out both', animationDelay: '0.32s' }} />
+                </div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: 16, opacity: 0.3 }}>
+                {[1,2,3,4,5,6].map(i => (
+                  <div key={i} style={{ padding: 20, borderRadius: 12, border: '1px solid #e5e7eb', background: '#fff' }}>
+                    <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
+                      <div style={{ width: 48, height: 48, borderRadius: 10, background: '#f3f4f6' }}/>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ width: '70%', height: 16, background: '#f3f4f6', borderRadius: 6, marginBottom: 8 }}/>
+                        <div style={{ width: '50%', height: 14, background: '#f3f4f6', borderRadius: 6 }}/>
+                      </div>
+                    </div>
+                    <div style={{ width: '100%', height: 60, background: '#f3f4f6', borderRadius: 8 }}/>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
 
           {searched && !loading && (
@@ -636,7 +677,11 @@ export default function JobSearchPage() {
         </div>
       )}
 
-      <style>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }`}</style>
+      <style>{`
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+      `}</style>
     </div>
   );
 }
