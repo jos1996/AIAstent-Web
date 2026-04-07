@@ -191,12 +191,12 @@ function buildDirectLinks(query: string, location: string) {
   const q = encodeURIComponent(query);
   const loc = encodeURIComponent(location || 'India');
   return [
-    { name: 'LinkedIn', url: 'https://www.linkedin.com/jobs/search/?keywords=' + q + '&location=' + loc, color: '#0A66C2' },
-    { name: 'Naukri', url: 'https://www.naukri.com/' + query.toLowerCase().replace(/\s+/g, '-') + '-jobs' + (location ? '-in-' + location.toLowerCase().replace(/\s+/g, '-') : ''), color: '#4a90d9' },
-    { name: 'Indeed', url: 'https://www.indeed.com/jobs?q=' + q + '&l=' + loc, color: '#2557a7' },
-    { name: 'Glassdoor', url: 'https://www.glassdoor.com/Job/jobs.htm?sc.keyword=' + q + '&locT=C&locKeyword=' + loc, color: '#0caa41' },
-    { name: 'Hirist', url: 'https://www.hirist.tech/search/' + q, color: '#f97316' },
-    { name: 'Instahyre', url: 'https://www.instahyre.com/search-jobs/?search=' + q + '&location=' + loc, color: '#6366f1' },
+    { name: 'LinkedIn', url: 'https://www.linkedin.com/jobs/search/?keywords=' + q + '&location=' + loc, color: '#0A66C2', logo: 'https://www.linkedin.com/favicon.ico' },
+    { name: 'Naukri', url: 'https://www.naukri.com/' + query.toLowerCase().replace(/\s+/g, '-') + '-jobs' + (location ? '-in-' + location.toLowerCase().replace(/\s+/g, '-') : ''), color: '#4a90d9', logo: 'https://static.naukimg.com/s/4/100/i/naukri_Logo.png' },
+    { name: 'Indeed', url: 'https://www.indeed.com/jobs?q=' + q + '&l=' + loc, color: '#2557a7', logo: 'https://www.indeed.com/favicon.ico' },
+    { name: 'Glassdoor', url: 'https://www.glassdoor.com/Job/jobs.htm?sc.keyword=' + q + '&locT=C&locKeyword=' + loc, color: '#0caa41', logo: 'https://www.glassdoor.com/favicon.ico' },
+    { name: 'Hirist', url: 'https://www.hirist.tech/search/' + q, color: '#f97316', logo: 'https://www.hirist.tech/favicon.ico' },
+    { name: 'Instahyre', url: 'https://www.instahyre.com/search-jobs/?search=' + q + '&location=' + loc, color: '#6366f1', logo: 'https://www.instahyre.com/favicon.ico' },
   ];
 }
 
@@ -440,6 +440,8 @@ export default function JobSearchPage() {
   const [remoteOnly, setRemoteOnly] = useState(false);
   const [datePosted, setDatePosted] = useState('all');
   const [empType, setEmpType] = useState('');
+  const [expLevel, setExpLevel] = useState('');
+  const [workType, setWorkType] = useState('');
   const [jobs, setJobs] = useState<JobResult[]>([]);
   const [allJobs, setAllJobs] = useState<JobResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -474,6 +476,8 @@ export default function JobSearchPage() {
         const profile = parseResume(data.resume);
         setResumeProfile(profile);
         if (!query && profile.suggestedRole) setQuery(profile.suggestedRole);
+        // Auto-set experience filter based on resume
+        if (!expLevel && profile.experienceLevel) setExpLevel(profile.experienceLevel);
       }
     });
   }, [user]);
@@ -580,7 +584,43 @@ export default function JobSearchPage() {
 
       if (combined.length === 0) throw new Error('No jobs found. Try different keywords or location.');
 
-      const deduped = deduplicateJobs(combined);
+      let deduped = deduplicateJobs(combined);
+
+      // Filter by work type
+      if (workType === 'remote') {
+        deduped = deduped.filter(j => j.job_is_remote || (j.job_description + j.job_title + j.job_city).toLowerCase().includes('remote'));
+      } else if (workType === 'hybrid') {
+        deduped = deduped.filter(j => (j.job_description + j.job_title).toLowerCase().includes('hybrid'));
+      } else if (workType === 'onsite') {
+        deduped = deduped.filter(j => !j.job_is_remote && !(j.job_description + j.job_title).toLowerCase().includes('remote'));
+      }
+
+      // Filter by experience level - check job title and description for experience keywords
+      if (expLevel) {
+        const expKeywords: Record<string, { include: string[]; exclude: string[] }> = {
+          fresher: { include: ['fresher', 'entry level', 'entry-level', 'graduate', 'junior', '0-1 year', '0-2 year', 'trainee', 'intern'], exclude: ['senior', 'lead', 'principal', 'staff', 'manager', '5+ year', '7+ year', '10+ year'] },
+          junior: { include: ['junior', '1-3 year', '2-3 year', '1+ year', '2+ year', 'associate'], exclude: ['senior', 'lead', 'principal', 'staff', '5+ year', '7+ year', '10+ year'] },
+          mid: { include: ['mid', 'mid-level', '3-5 year', '4-5 year', '3+ year', '4+ year'], exclude: ['junior', 'fresher', 'senior', 'lead', 'principal', 'staff', '7+ year', '10+ year'] },
+          senior: { include: ['senior', 'sr.', 'sr ', '5+ year', '6+ year', '7+ year', '5-10 year'], exclude: ['junior', 'fresher', 'lead', 'principal', 'staff', 'director'] },
+          lead: { include: ['lead', 'principal', 'staff', 'architect', 'manager', 'director', '10+ year', '8+ year'], exclude: ['junior', 'fresher', 'entry'] }
+        };
+        const kw = expKeywords[expLevel];
+        if (kw) {
+          deduped = deduped.filter(j => {
+            const text = (j.job_title + ' ' + j.job_description).toLowerCase();
+            const hasInclude = kw.include.some(k => text.includes(k));
+            const hasExclude = kw.exclude.some(k => text.includes(k));
+            // If has include keywords and no exclude, or if no keywords found (neutral), include it
+            return hasInclude || (!hasInclude && !hasExclude);
+          });
+        }
+      }
+
+      // Sort by match score if resume is available
+      if (userResume) {
+        deduped = deduped.map(j => ({ ...j, _matchScore: calcMatch(j.job_description + ' ' + j.job_title, userResume) }))
+          .sort((a: any, b: any) => (b._matchScore || 0) - (a._matchScore || 0));
+      }
 
       const stats: Record<string, number> = {};
       deduped.forEach(j => { const s = j.source_platform || 'Other'; stats[s] = (stats[s] || 0) + 1; });
@@ -600,7 +640,7 @@ export default function JobSearchPage() {
       if (loadingMsgRef.current) { clearInterval(loadingMsgRef.current); loadingMsgRef.current = undefined; }
       setLoading(false);
     }
-  }, [query, location, remoteOnly, datePosted, empType, limit]);
+  }, [query, location, remoteOnly, datePosted, empType, expLevel, workType, userResume, limit]);
 
   const changePage = useCallback((newPage: number) => {
     if (allJobs.length > 0) {
@@ -865,16 +905,39 @@ export default function JobSearchPage() {
             </div>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
               <Filter size={14} color="#6b7280" />
-              <label style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 10, background: remoteOnly ? '#111827' : '#f9fafb', border: '1px solid ' + (remoteOnly ? '#111827' : '#e5e7eb'), cursor: 'pointer', fontSize: 12, color: remoteOnly ? '#fff' : '#6b7280', fontWeight: 600 }}>
-                <input type="checkbox" checked={remoteOnly} onChange={e => setRemoteOnly(e.target.checked)} style={{ accentColor: '#111827', width: 14, height: 14 }} />
-                <Globe size={13} /> Remote Only
-              </label>
+              <select value={workType} onChange={e => { setWorkType(e.target.value); setRemoteOnly(e.target.value === 'remote'); }} style={{ padding: '7px 14px', borderRadius: 10, border: '1px solid ' + (workType ? '#111827' : '#e5e7eb'), background: workType ? '#111827' : '#f9fafb', fontSize: 12, color: workType ? '#fff' : '#111827', cursor: 'pointer', fontWeight: 500 }}>
+                <option value="">🏢 All Work Types</option>
+                <option value="remote">🌍 Remote</option>
+                <option value="hybrid">🔄 Hybrid</option>
+                <option value="onsite">🏠 On-site</option>
+              </select>
+              <select value={expLevel} onChange={e => setExpLevel(e.target.value)} style={{ padding: '7px 14px', borderRadius: 10, border: '1px solid ' + (expLevel ? '#111827' : '#e5e7eb'), background: expLevel ? '#111827' : '#f9fafb', fontSize: 12, color: expLevel ? '#fff' : '#111827', cursor: 'pointer', fontWeight: 500 }}>
+                <option value="">👤 Experience</option>
+                <option value="fresher">🎓 Fresher (0-1 yr)</option>
+                <option value="junior">📘 Junior (1-3 yrs)</option>
+                <option value="mid">📗 Mid-level (3-5 yrs)</option>
+                <option value="senior">📙 Senior (5-10 yrs)</option>
+                <option value="lead">📕 Lead/Staff (10+ yrs)</option>
+              </select>
               <select value={datePosted} onChange={e => setDatePosted(e.target.value)} style={{ padding: '7px 14px', borderRadius: 10, border: '1px solid #e5e7eb', background: '#f9fafb', fontSize: 12, color: '#111827', cursor: 'pointer', fontWeight: 500 }}>
-                <option value="all">Any time</option><option value="today">Today</option><option value="3days">Last 3 days</option><option value="week">This week</option><option value="month">This month</option>
+                <option value="all">📅 Any time</option>
+                <option value="today">Today</option>
+                <option value="3days">Last 3 days</option>
+                <option value="week">This week</option>
+                <option value="month">This month</option>
               </select>
               <select value={empType} onChange={e => setEmpType(e.target.value)} style={{ padding: '7px 14px', borderRadius: 10, border: '1px solid #e5e7eb', background: '#f9fafb', fontSize: 12, color: '#111827', cursor: 'pointer', fontWeight: 500 }}>
-                <option value="">All types</option><option value="FULLTIME">Full-time</option><option value="PARTTIME">Part-time</option><option value="CONTRACTOR">Contract</option><option value="INTERN">Internship</option>
+                <option value="">💼 All types</option>
+                <option value="FULLTIME">Full-time</option>
+                <option value="PARTTIME">Part-time</option>
+                <option value="CONTRACTOR">Contract</option>
+                <option value="INTERN">Internship</option>
               </select>
+              {(workType || expLevel || datePosted !== 'all' || empType) && (
+                <button onClick={() => { setWorkType(''); setExpLevel(''); setDatePosted('all'); setEmpType(''); setRemoteOnly(false); }} style={{ padding: '7px 12px', borderRadius: 10, border: '1px solid #fecaca', background: '#fef2f2', fontSize: 11, color: '#dc2626', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <X size={12} /> Clear
+                </button>
+              )}
             </div>
           </form>
 
@@ -978,15 +1041,17 @@ export default function JobSearchPage() {
               )}
 
               {searched && query && (
-                <div style={{ marginBottom: 20, padding: '12px 16px', background: '#f9fafb', borderRadius: 10, border: '1px solid #e5e7eb' }}>
-                  <p style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Also search directly on</p>
-                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <div style={{ marginBottom: 20, padding: '14px 18px', background: '#f9fafb', borderRadius: 12, border: '1px solid #e5e7eb' }}>
+                  <p style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Also search directly on</p>
+                  <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                     {buildDirectLinks(query, location).map(link => (
                       <a key={link.name} href={link.url} target="_blank" rel="noopener noreferrer"
-                        style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 8, background: '#fff', border: '1px solid #e5e7eb', color: link.color, fontSize: 11, fontWeight: 600, textDecoration: 'none', transition: 'all 0.15s' }}
-                        onMouseEnter={e => (e.currentTarget.style.background = link.color, e.currentTarget.style.color = '#fff')}
-                        onMouseLeave={e => (e.currentTarget.style.background = '#fff', e.currentTarget.style.color = link.color)}>
-                        {link.name} <ExternalLink size={10} />
+                        style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px', borderRadius: 10, background: '#fff', border: '1px solid #e5e7eb', color: '#111827', fontSize: 12, fontWeight: 600, textDecoration: 'none', transition: 'all 0.15s', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = link.color; e.currentTarget.style.boxShadow = '0 2px 8px ' + link.color + '25'; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.04)'; }}>
+                        <img src={link.logo} alt={link.name} style={{ width: 18, height: 18, borderRadius: 4, objectFit: 'contain' }} onError={e => (e.currentTarget.style.display = 'none')} />
+                        <span style={{ color: link.color }}>{link.name}</span>
+                        <ExternalLink size={11} color="#9ca3af" />
                       </a>
                     ))}
                   </div>
