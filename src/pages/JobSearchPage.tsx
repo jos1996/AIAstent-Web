@@ -108,12 +108,14 @@ export default function JobSearchPage() {
   const [datePosted, setDatePosted] = useState('all');
   const [empType, setEmpType] = useState('');
   const [jobs, setJobs] = useState<JobResult[]>([]);
+  const [allJobs, setAllJobs] = useState<JobResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [searched, setSearched] = useState(false);
   const [modalJob, setModalJob] = useState<JobResult | null>(null);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const searchCacheRef = useRef<{ query: string; results: JobResult[]; timestamp: number } | null>(null);
   const [savedJobs, setSavedJobs] = useState<Map<string, SavedJob>>(() => {
     try { const s = localStorage.getItem('helplyai_jobs_v2'); return s ? new Map(JSON.parse(s)) : new Map(); }
     catch { return new Map(); }
@@ -165,20 +167,72 @@ export default function JobSearchPage() {
     });
   };
 
-  const search = useCallback(async (p = 1) => {
+  const search = useCallback(async (p = 1, forceRefresh = false) => {
     if (!query.trim()) return;
+    
+    const searchKey = `${query.trim()}_${location.trim()}_${datePosted}_${remoteOnly}_${empType}`;
+    const now = Date.now();
+    
+    // Check cache (valid for 5 minutes)
+    if (!forceRefresh && searchCacheRef.current && searchCacheRef.current.query === searchKey && (now - searchCacheRef.current.timestamp) < 300000) {
+      const cached = searchCacheRef.current.results;
+      setAllJobs(cached);
+      setTotal(cached.length);
+      const start = (p - 1) * limit;
+      setJobs(cached.slice(start, start + limit));
+      setPage(p);
+      setSearched(true);
+      return;
+    }
+    
     setLoading(true); setError(''); setSearched(true); setPage(p);
     try {
-      const params = new URLSearchParams({ query: `${query.trim()}${location.trim() ? ` in ${location.trim()}` : ''}`, page: String(p), num_pages: '1', date_posted: datePosted, remote_jobs_only: remoteOnly ? 'true' : 'false' });
+      // Fetch 3 pages at once for better pagination performance
+      const params = new URLSearchParams({ 
+        query: `${query.trim()}${location.trim() ? ` in ${location.trim()}` : ''}`, 
+        page: '1', 
+        num_pages: '3', 
+        date_posted: datePosted, 
+        remote_jobs_only: remoteOnly ? 'true' : 'false' 
+      });
       if (empType) params.set('employment_types', empType);
-      const r = await fetch(`https://jsearch.p.rapidapi.com/search?${params}`, { headers: { 'x-rapidapi-key': RAPIDAPI_KEY, 'x-rapidapi-host': 'jsearch.p.rapidapi.com' } });
+      
+      const r = await fetch(`https://jsearch.p.rapidapi.com/search?${params}`, { 
+        headers: { 'x-rapidapi-key': RAPIDAPI_KEY, 'x-rapidapi-host': 'jsearch.p.rapidapi.com' } 
+      });
+      
       if (!r.ok) throw new Error(r.status === 429 ? 'Rate limit. Wait and retry.' : `Error ${r.status}`);
+      
       const d = await r.json();
       const res: JobResult[] = d.data || [];
-      setJobs(res.slice(0, limit)); setTotal(res.length); setModalJob(null);
-    } catch (e: any) { setError(e.message); setJobs([]); }
-    finally { setLoading(false); }
+      
+      // Cache results
+      searchCacheRef.current = { query: searchKey, results: res, timestamp: now };
+      
+      setAllJobs(res);
+      setTotal(res.length);
+      const start = (p - 1) * limit;
+      setJobs(res.slice(start, start + limit));
+      setModalJob(null);
+    } catch (e: any) { 
+      setError(e.message); 
+      setJobs([]); 
+      setAllJobs([]);
+    } finally { 
+      setLoading(false); 
+    }
   }, [query, location, remoteOnly, datePosted, empType, limit]);
+
+  const changePage = useCallback((newPage: number) => {
+    if (allJobs.length > 0) {
+      const start = (newPage - 1) * limit;
+      setJobs(allJobs.slice(start, start + limit));
+      setPage(newPage);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      search(newPage);
+    }
+  }, [allJobs, limit, search]);
 
   const onSubmit = (e: React.FormEvent) => { e.preventDefault(); search(1); };
 
@@ -454,9 +508,9 @@ export default function JobSearchPage() {
               
               {isPremium && total > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginTop: 32 }}>
-                  <button onClick={() => search(page - 1)} disabled={page <= 1} style={{ padding: '12px 24px', borderRadius: 10, background: page <= 1 ? '#f3f4f6' : '#fff', border: '1px solid #e5e7eb', color: page <= 1 ? '#d1d5db' : '#111827', fontSize: 14, fontWeight: 600, cursor: page <= 1 ? 'not-allowed' : 'pointer' }}>← Previous</button>
-                  <span style={{ padding: '12px 20px', color: '#6b7280', fontSize: 14, fontWeight: 600 }}>Page {page}</span>
-                  <button onClick={() => search(page + 1)} style={{ padding: '12px 24px', borderRadius: 10, background: '#fff', border: '1px solid #e5e7eb', color: '#111827', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Next →</button>
+                  <button onClick={() => changePage(page - 1)} disabled={page <= 1} style={{ padding: '12px 24px', borderRadius: 10, background: page <= 1 ? '#f3f4f6' : '#fff', border: '1px solid #e5e7eb', color: page <= 1 ? '#d1d5db' : '#111827', fontSize: 14, fontWeight: 600, cursor: page <= 1 ? 'not-allowed' : 'pointer' }}>← Previous</button>
+                  <span style={{ padding: '12px 20px', color: '#6b7280', fontSize: 14, fontWeight: 600 }}>Page {page} of {Math.ceil(total / limit)}</span>
+                  <button onClick={() => changePage(page + 1)} disabled={page >= Math.ceil(total / limit)} style={{ padding: '12px 24px', borderRadius: 10, background: page >= Math.ceil(total / limit) ? '#f3f4f6' : '#fff', border: '1px solid #e5e7eb', color: page >= Math.ceil(total / limit) ? '#d1d5db' : '#111827', fontSize: 14, fontWeight: 600, cursor: page >= Math.ceil(total / limit) ? 'not-allowed' : 'pointer' }}>Next →</button>
                 </div>
               )}
               
