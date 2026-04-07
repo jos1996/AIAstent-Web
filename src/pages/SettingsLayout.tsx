@@ -6,13 +6,13 @@ import { supabase } from '../lib/supabase';
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: 'grid', path: '/settings/dashboard' },
   { id: 'billing', label: 'Billing', icon: 'card', path: '/settings/billing' },
+  { id: 'job-search', label: 'Job Search', icon: 'briefcase', path: '/settings/job-search' },
   { id: 'history', label: 'History', icon: 'clock', path: '/settings/history' },
   { id: 'reminders', label: 'Reminders', icon: 'bell', path: '/settings/reminders' },
   { id: 'language', label: 'Language', icon: 'globe', path: '/settings/language' },
   { id: 'updates', label: 'Latest Updates', icon: 'sparkle', path: '/settings/updates' },
   { id: 'tutorials', label: 'Tutorials', icon: 'play', path: '/settings/tutorials' },
   { id: 'profile', label: 'Profile', icon: 'user', path: '/settings/profile' },
-  { id: 'job-search', label: 'Job Search', icon: 'briefcase', path: '/settings/job-search' },
 ];
 
 const supportItems = [
