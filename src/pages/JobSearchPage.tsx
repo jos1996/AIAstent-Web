@@ -328,7 +328,7 @@ export default function JobSearchPage() {
           )}
         </>
       )}
-      <style>{\`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }\`}</style>
+      <style>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }`}</style>
     </div>
   );
 }
