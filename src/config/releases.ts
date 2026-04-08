@@ -10,13 +10,13 @@
 export const RELEASE_VERSION = 'v0.1.0';
 
 export const DOWNLOAD_LINKS = {
-  // macOS Downloads (from GitHub Releases) - SIGNED with Developer ID
-  macAppleSilicon: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply-AI_0.1.0_aarch64_signed.dmg`,
-  macIntel: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply-AI_0.1.0_x64_signed.dmg`,
-  
+  // macOS Downloads (from GitHub Releases)
+  macAppleSilicon: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply%20AI_0.1.0_aarch64.dmg`,
+  macIntel: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply%20AI_0.1.0_x64.dmg`,
+
   // Windows Downloads (from GitHub Releases)
-  windowsNSIS: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply.AI_0.1.0_x64-setup.exe`,
-  windowsMSI: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply.AI_0.1.0_x64_en-US.msi`,
+  windowsNSIS: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply-AI_${RELEASE_VERSION}_x64-setup.exe`,
+  windowsMSI: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply-AI_${RELEASE_VERSION}_x64.msi`,
 };
 
 /**
