@@ -10,7 +10,7 @@
 export const RELEASE_VERSION = 'v0.1.0';
 
 export const DOWNLOAD_LINKS = {
-  // macOS Downloads (from GitHub Releases) - Using Helply.AI format (with dots)
+  // macOS Downloads (from GitHub Releases - notarized by Apple)
   macAppleSilicon: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply.AI_0.1.0_aarch64.dmg`,
   macIntel: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply.AI_0.1.0_x64.dmg`,
 
