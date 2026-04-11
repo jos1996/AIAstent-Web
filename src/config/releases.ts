@@ -9,14 +9,16 @@
 
 export const RELEASE_VERSION = 'v0.1.0';
 
-export const DOWNLOAD_LINKS = {
-  // macOS Downloads (from GitHub Releases - notarized by Apple)
-  macAppleSilicon: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply.AI_0.1.0_aarch64.dmg`,
-  macIntel: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply.AI_0.1.0_x64.dmg`,
+const PUBLIC_RELEASES_BASE = `https://github.com/jos1996/helplyai-releases/releases/download/${RELEASE_VERSION}`;
 
-  // Windows Downloads (from GitHub Releases)
-  windowsNSIS: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply.AI_0.1.0_x64-setup.exe`,
-  windowsMSI: `https://github.com/jos1996/AIAstent/releases/download/${RELEASE_VERSION}/Helply.AI_0.1.0_x64_en-US.msi`,
+export const DOWNLOAD_LINKS = {
+  // macOS Downloads — public repo, no login required
+  macAppleSilicon: `${PUBLIC_RELEASES_BASE}/Helply.AI_0.1.0_aarch64.dmg`,
+  macIntel: `${PUBLIC_RELEASES_BASE}/Helply.AI_0.1.0_aarch64.dmg`,
+
+  // Windows Downloads — public repo, no login required
+  windowsNSIS: `${PUBLIC_RELEASES_BASE}/Helply.AI_0.1.0_x64-setup.exe`,
+  windowsMSI: `${PUBLIC_RELEASES_BASE}/Helply.AI_0.1.0_x64_en-US.msi`,
 };
 
 /**
