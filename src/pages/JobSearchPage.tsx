@@ -207,7 +207,7 @@ async function fetchJSearchJobs(query: string, location: string, datePosted: str
     const params = new URLSearchParams({
       query: query.trim() + locationSuffix,
       page: '1',
-      num_pages: '2',
+      num_pages: '1',
       date_posted: datePosted,
       remote_jobs_only: remoteOnly ? 'true' : 'false'
     });
@@ -247,8 +247,9 @@ async function fetchLinkedInJobs(query: string, location: string): Promise<JobRe
   };
 
   try {
-    const [p1, p2] = await Promise.all([fetchPage('1'), fetchPage('2')]);
-    const all = [...p1, ...p2].slice(0, 20); // Limit to 20 results
+    // Only fetch page 1 for speed — page 2 rarely adds relevant results
+    const p1 = await fetchPage('1');
+    const all = p1.slice(0, 15);
     if (all.length === 0) return [];
 
     return all.map((j: any) => {
@@ -428,6 +429,23 @@ function deduplicateJobs(jobs: JobResult[]): JobResult[] {
   return [...seen.values()];
 }
 
+// Score how relevant a job title is to the search query (0-100)
+function titleRelevanceScore(jobTitle: string, query: string): number {
+  const title = jobTitle.toLowerCase();
+  const queryWords = query.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+  if (queryWords.length === 0) return 50;
+  const exactMatch = title.includes(query.toLowerCase());
+  if (exactMatch) return 100;
+  const wordMatches = queryWords.filter(w => title.includes(w)).length;
+  return Math.round((wordMatches / queryWords.length) * 80);
+}
+
+// Filter out clearly irrelevant jobs (title relevance < threshold)
+function filterRelevantJobs(jobs: JobResult[], query: string): JobResult[] {
+  if (!query.trim()) return jobs;
+  return jobs.filter(j => titleRelevanceScore(j.job_title, query) >= 30);
+}
+
 export default function JobSearchPage() {
   const { user } = useAuth();
   const { planState } = usePlanLimits();
@@ -538,28 +556,23 @@ export default function JobSearchPage() {
     setLoading(true); setError(''); setSearched(true); setPage(p);
 
     const messages = [
-      'Searching LinkedIn, Indeed & Glassdoor...',
-      'Scanning Naukri, ZipRecruiter & Monster...',
-      'Finding jobs from Remotive & Arbeitnow...',
-      'Analyzing thousands of job listings...',
-      'Matching the best opportunities for you...',
-      'Curating results from 10+ platforms...',
-      'Almost there, gathering final results...'
+      'Searching LinkedIn & Indeed...',
+      'Scanning JSearch job board...',
+      'Matching jobs to your profile...',
+      'Almost ready...'
     ];
     let mi = 0;
     setLoadingMessage(messages[0]);
-    loadingMsgRef.current = setInterval(() => { mi = (mi + 1) % messages.length; setLoadingMessage(messages[mi]); }, 2000);
+    loadingMsgRef.current = setInterval(() => { mi = (mi + 1) % messages.length; setLoadingMessage(messages[mi]); }, 1500);
 
     try {
       setApiStatus({ JSearch: 'pending', LinkedIn: 'pending', Indeed: 'pending', Jobicy: 'pending', Remotive: 'pending', Arbeitnow: 'pending' });
 
-      const [jsearchResults, linkedinResults, indeedResults, jobicyResults, remotiveResults, arbeitnowResults] = await Promise.allSettled([
+      // Fast primary sources (low latency, high relevance) — await these first
+      const [jsearchResults, linkedinResults, indeedResults] = await Promise.allSettled([
         fetchJSearchJobs(query, location, datePosted, remoteOnly, empType),
         fetchLinkedInJobs(query, location),
         fetchIndeedJobs(query, location),
-        fetchJobicyJobs(query),
-        fetchRemotiveJobs(query),
-        fetchArbeitnowJobs(query)
       ]);
 
       let combined: JobResult[] = [];
@@ -577,6 +590,18 @@ export default function JobSearchPage() {
       addResults('JSearch', jsearchResults);
       addResults('LinkedIn', linkedinResults);
       addResults('Indeed', indeedResults);
+
+      // Slow secondary sources (free APIs) — fire in background, add if they return quickly
+      const secondaryTimeout = 3000; // max 3s for secondary sources
+      const withTimeout = <T>(p: Promise<T>, ms: number, fallback: T): Promise<T> =>
+        Promise.race([p, new Promise<T>(res => setTimeout(() => res(fallback), ms))]);
+
+      const [jobicyResults, remotiveResults, arbeitnowResults] = await Promise.allSettled([
+        withTimeout(fetchJobicyJobs(query), secondaryTimeout, []),
+        withTimeout(fetchRemotiveJobs(query), secondaryTimeout, []),
+        withTimeout(fetchArbeitnowJobs(query), secondaryTimeout, []),
+      ]);
+
       addResults('Jobicy', jobicyResults, !location || remoteOnly);
       addResults('Remotive', remotiveResults, !location || remoteOnly);
       addResults('Arbeitnow', arbeitnowResults);
@@ -586,7 +611,10 @@ export default function JobSearchPage() {
 
       let deduped = deduplicateJobs(combined);
 
-      // Filter by work type
+      // Step 1: Filter out irrelevant jobs by title relevance to query
+      deduped = filterRelevantJobs(deduped, query);
+
+      // Step 2: Filter by work type
       if (workType === 'remote') {
         deduped = deduped.filter(j => j.job_is_remote || (j.job_description + j.job_title + j.job_city).toLowerCase().includes('remote'));
       } else if (workType === 'hybrid') {
@@ -595,32 +623,30 @@ export default function JobSearchPage() {
         deduped = deduped.filter(j => !j.job_is_remote && !(j.job_description + j.job_title).toLowerCase().includes('remote'));
       }
 
-      // Filter by experience level - check job title and description for experience keywords
+      // Step 3: Filter by experience level — only exclude clearly wrong levels, don't require exact match
       if (expLevel) {
-        const expKeywords: Record<string, { include: string[]; exclude: string[] }> = {
-          fresher: { include: ['fresher', 'entry level', 'entry-level', 'graduate', 'junior', '0-1 year', '0-2 year', 'trainee', 'intern'], exclude: ['senior', 'lead', 'principal', 'staff', 'manager', '5+ year', '7+ year', '10+ year'] },
-          junior: { include: ['junior', '1-3 year', '2-3 year', '1+ year', '2+ year', 'associate'], exclude: ['senior', 'lead', 'principal', 'staff', '5+ year', '7+ year', '10+ year'] },
-          mid: { include: ['mid', 'mid-level', '3-5 year', '4-5 year', '3+ year', '4+ year'], exclude: ['junior', 'fresher', 'senior', 'lead', 'principal', 'staff', '7+ year', '10+ year'] },
-          senior: { include: ['senior', 'sr.', 'sr ', '5+ year', '6+ year', '7+ year', '5-10 year'], exclude: ['junior', 'fresher', 'lead', 'principal', 'staff', 'director'] },
-          lead: { include: ['lead', 'principal', 'staff', 'architect', 'manager', 'director', '10+ year', '8+ year'], exclude: ['junior', 'fresher', 'entry'] }
+        const expExclude: Record<string, string[]> = {
+          fresher: ['senior', 'sr.', 'sr ', 'lead', 'principal', 'staff', 'manager', 'director', 'head of', '5+ years', '7+ years', '10+ years', '8+ years'],
+          junior:  ['senior', 'sr.', 'sr ', 'lead', 'principal', 'staff', 'director', '7+ years', '10+ years'],
+          mid:     ['senior', 'lead', 'principal', 'staff', 'director', 'junior', 'fresher', 'entry level', '10+ years'],
+          senior:  ['junior', 'fresher', 'entry level', 'intern', 'trainee', '0-1 year', '0-2 year'],
+          lead:    ['junior', 'fresher', 'entry level', 'intern', 'trainee', '0-1 year', '0-2 year']
         };
-        const kw = expKeywords[expLevel];
-        if (kw) {
+        const excludeKw = expExclude[expLevel] || [];
+        if (excludeKw.length > 0) {
           deduped = deduped.filter(j => {
-            const text = (j.job_title + ' ' + j.job_description).toLowerCase();
-            const hasInclude = kw.include.some(k => text.includes(k));
-            const hasExclude = kw.exclude.some(k => text.includes(k));
-            // If has include keywords and no exclude, or if no keywords found (neutral), include it
-            return hasInclude || (!hasInclude && !hasExclude);
+            const text = (j.job_title + ' ' + j.job_description.slice(0, 300)).toLowerCase();
+            return !excludeKw.some(k => text.includes(k));
           });
         }
       }
 
-      // Sort by match score if resume is available
-      if (userResume) {
-        deduped = deduped.map(j => ({ ...j, _matchScore: calcMatch(j.job_description + ' ' + j.job_title, userResume) }))
-          .sort((a: any, b: any) => (b._matchScore || 0) - (a._matchScore || 0));
-      }
+      // Step 4: Sort by combined title relevance + resume match score
+      deduped = deduped.map(j => {
+        const titleScore = titleRelevanceScore(j.job_title, query);
+        const resumeScore = userResume ? calcMatch(j.job_description + ' ' + j.job_title, userResume) : 0;
+        return { ...j, _sortScore: titleScore * 0.6 + resumeScore * 0.4 };
+      }).sort((a: any, b: any) => (b._sortScore || 0) - (a._sortScore || 0));
 
       const stats: Record<string, number> = {};
       deduped.forEach(j => { const s = j.source_platform || 'Other'; stats[s] = (stats[s] || 0) + 1; });
