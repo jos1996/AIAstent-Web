@@ -21,6 +21,9 @@ import JobSearchPage from './pages/JobSearchPage';
 import ComparisonPage from './pages/ComparisonPage';
 import { competitors } from './data/competitors';
 import HowToCrackInterviewPage from './pages/blog/HowToCrackInterviewPage';
+import RealTimeAIInterviewHelperPage from './pages/blog/RealTimeAIInterviewHelperPage';
+import ZoomAIInterviewHelperPage from './pages/blog/ZoomAIInterviewHelperPage';
+import OnlineInterviewHelperPage from './pages/blog/OnlineInterviewHelperPage';
 import AIInterviewTipsPage from './pages/blog/AIInterviewTipsPage';
 import STARMethodGuidePage from './pages/blog/STARMethodGuidePage';
 import BestAIInterviewToolsPage from './pages/blog/BestAIInterviewToolsPage';
@@ -78,6 +81,9 @@ export default function App() {
           <Route path="/vs/uncharted-career" element={<ComparisonPage competitor={competitors['uncharted-career']} />} />
           {/* Blog Pages */}
           <Route path="/blog/how-to-crack-interview" element={<HowToCrackInterviewPage />} />
+          <Route path="/blog/real-time-ai-interview-helper" element={<RealTimeAIInterviewHelperPage />} />
+          <Route path="/blog/zoom-ai-interview-helper" element={<ZoomAIInterviewHelperPage />} />
+          <Route path="/blog/online-interview-helper" element={<OnlineInterviewHelperPage />} />
           <Route path="/blog/ai-interview-tips" element={<AIInterviewTipsPage />} />
           <Route path="/blog/star-method-guide" element={<STARMethodGuidePage />} />
           <Route path="/blog/best-ai-interview-helper-tools" element={<BestAIInterviewToolsPage />} />
