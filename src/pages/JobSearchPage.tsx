@@ -60,6 +60,7 @@ const PLATFORM_COLORS: Record<string, string> = {
   'Remotive': '#00b4d8',
   'Arbeitnow': '#ff6b35',
   'Jobicy': '#7c3aed',
+  'Adzuna': '#d97706',
   'Google': '#4285f4',
 };
 
@@ -388,6 +389,39 @@ async function fetchRemotiveJobs(query: string): Promise<JobResult[]> {
   } catch { return []; }
 }
 
+async function fetchUsaJobsJobs(query: string, location: string): Promise<JobResult[]> {
+  try {
+    const isIndia = INDIAN_CITIES.map(c => c.toLowerCase()).includes((location || '').trim().toLowerCase());
+    const baseUrl = isIndia
+      ? `https://api.adzuna.com/v1/api/jobs/in/search/1?app_id=c8ce0e96&app_key=0ecf9fcce4d1d1e07e2f5ac3a7f4ef50&results_per_page=20&what=${encodeURIComponent(query)}&where=${encodeURIComponent(location || 'India')}&content-type=application/json`
+      : `https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=c8ce0e96&app_key=0ecf9fcce4d1d1e07e2f5ac3a7f4ef50&results_per_page=20&what=${encodeURIComponent(query)}&content-type=application/json`;
+    const r = await fetch(baseUrl);
+    if (!r.ok) return [];
+    const d = await r.json();
+    return (d.results || []).map((j: any) => ({
+      job_id: 'adzuna_' + j.id,
+      job_title: j.title || '',
+      employer_name: j.company?.display_name || '',
+      employer_logo: null,
+      employer_website: j.redirect_url || null,
+      job_publisher: 'Adzuna',
+      job_employment_type: j.contract_time === 'full_time' ? 'FULLTIME' : j.contract_time === 'part_time' ? 'PARTTIME' : '',
+      job_description: j.description || '',
+      job_apply_link: j.redirect_url || '',
+      job_city: j.location?.display_name || location || '',
+      job_state: '',
+      job_country: isIndia ? 'India' : 'USA',
+      job_posted_at_datetime_utc: j.created || '',
+      job_min_salary: j.salary_min || null,
+      job_max_salary: j.salary_max || null,
+      job_salary_currency: isIndia ? 'INR' : 'USD',
+      job_salary_period: 'YEAR',
+      job_is_remote: (j.title + ' ' + j.description).toLowerCase().includes('remote'),
+      source_platform: 'Adzuna'
+    }));
+  } catch { return []; }
+}
+
 async function fetchArbeitnowJobs(query: string): Promise<JobResult[]> {
   try {
     const r = await fetch('https://www.arbeitnow.com/api/job-board-api?search=' + encodeURIComponent(query) + '&per_page=20');
@@ -443,7 +477,7 @@ function titleRelevanceScore(jobTitle: string, query: string): number {
 // Filter out clearly irrelevant jobs (title relevance < threshold)
 function filterRelevantJobs(jobs: JobResult[], query: string): JobResult[] {
   if (!query.trim()) return jobs;
-  return jobs.filter(j => titleRelevanceScore(j.job_title, query) >= 30);
+  return jobs.filter(j => titleRelevanceScore(j.job_title, query) >= 20);
 }
 
 export default function JobSearchPage() {
@@ -566,7 +600,7 @@ export default function JobSearchPage() {
     loadingMsgRef.current = setInterval(() => { mi = (mi + 1) % messages.length; setLoadingMessage(messages[mi]); }, 1500);
 
     try {
-      setApiStatus({ JSearch: 'pending', LinkedIn: 'pending', Indeed: 'pending', Jobicy: 'pending', Remotive: 'pending', Arbeitnow: 'pending' });
+      setApiStatus({ JSearch: 'pending', LinkedIn: 'pending', Indeed: 'pending', Jobicy: 'pending', Remotive: 'pending', Arbeitnow: 'pending', Adzuna: 'pending' });
 
       // Fast primary sources (low latency, high relevance) — await these first
       const [jsearchResults, linkedinResults, indeedResults] = await Promise.allSettled([
@@ -597,23 +631,25 @@ export default function JobSearchPage() {
       const withTimeout = (p: Promise<any>, ms: number, fallback: any): Promise<any> =>
         Promise.race([p, new Promise<any>(res => setTimeout(() => res(fallback), ms))]);
 
-      const [jobicyResults, remotiveResults, arbeitnowResults] = await Promise.allSettled([
+      const [jobicyResults, remotiveResults, arbeitnowResults, adzunaResults] = await Promise.allSettled([
         withTimeout(fetchJobicyJobs(query), secondaryTimeout, []),
         withTimeout(fetchRemotiveJobs(query), secondaryTimeout, []),
         withTimeout(fetchArbeitnowJobs(query), secondaryTimeout, []),
+        withTimeout(fetchUsaJobsJobs(query, location), secondaryTimeout, []),
       ]);
 
-      addResults('Jobicy', jobicyResults, !location || remoteOnly);
-      addResults('Remotive', remotiveResults, !location || remoteOnly);
+      addResults('Jobicy', jobicyResults);
+      addResults('Remotive', remotiveResults);
       addResults('Arbeitnow', arbeitnowResults);
+      addResults('Adzuna', adzunaResults);
       setApiStatus(status);
 
-      if (combined.length === 0) throw new Error('No jobs found. Try different keywords or location.');
+      if (combined.length === 0) throw new Error('No jobs found. The job APIs may be temporarily unavailable. Please try again in a moment or use the direct search links below.');
 
       let deduped = deduplicateJobs(combined);
 
       // Step 1: Filter out irrelevant jobs by title relevance to query
-      deduped = filterRelevantJobs(deduped, query);
+      deduped = deduped.length > 0 ? filterRelevantJobs(deduped, query) : deduped;
 
       // Step 2: Filter by work type
       if (workType === 'remote') {
@@ -627,7 +663,7 @@ export default function JobSearchPage() {
       // Step 3: Filter by experience level — only exclude clearly wrong levels, don't require exact match
       if (expLevel) {
         const expExclude: Record<string, string[]> = {
-          fresher: ['senior', 'sr.', 'sr ', 'lead', 'principal', 'staff', 'manager', 'director', 'head of', '5+ years', '7+ years', '10+ years', '8+ years'],
+          fresher: ['senior', 'sr.', 'sr ', 'lead', 'principal', 'staff', 'director', 'head of', '7+ years', '10+ years', '8+ years'],
           junior:  ['senior', 'sr.', 'sr ', 'lead', 'principal', 'staff', 'director', '7+ years', '10+ years'],
           mid:     ['senior', 'lead', 'principal', 'staff', 'director', 'junior', 'fresher', 'entry level', '10+ years'],
           senior:  ['junior', 'fresher', 'entry level', 'intern', 'trainee', '0-1 year', '0-2 year'],
