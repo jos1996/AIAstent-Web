@@ -2467,7 +2467,7 @@ export default function HomePage() {
                     </svg>
                     <span>MSI Installer (Individual)</span>
                   </div>
-                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', fontWeight: 400 }}>Traditional Windows installer for personal use</span>
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', fontWeight: 400 }}>Download ZIP → extract → run .exe to install</span>
                 </button>
 
                 <button onClick={() => handleDirectDownload(downloadLinks.windowsNSIS)} style={{
