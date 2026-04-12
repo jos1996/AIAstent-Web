@@ -1173,6 +1173,94 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Universal Job Search Section */}
+      <section style={{ padding: '80px 24px', background: '#fff', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 48 }}>
+            <div style={{
+              display: 'inline-block', padding: '6px 18px', borderRadius: 100,
+              background: '#000', color: '#fff', fontSize: 11, fontWeight: 800,
+              textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16,
+            }}>Universal Job Search</div>
+            <h2 style={{ fontSize: 'clamp(24px, 3.5vw, 40px)', fontWeight: 900, color: '#000', margin: '0 auto 16px', maxWidth: 700, lineHeight: 1.15 }}>
+              Find jobs from every platform — in one place
+            </h2>
+            <p style={{ fontSize: 16, color: '#555', maxWidth: 600, margin: '0 auto', lineHeight: 1.7 }}>
+              No more switching between LinkedIn, Naukri, Indeed, and Glassdoor. HelplyAI searches all major job platforms simultaneously and shows the best matches right here — just click <strong>Apply</strong> and you're redirected directly to the job.
+            </p>
+          </div>
+
+          {/* Feature highlights */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 20, marginBottom: 56 }}>
+            {[
+              { icon: '🔍', title: 'Search Once', desc: 'One search across LinkedIn, Indeed, Naukri, Glassdoor & more' },
+              { icon: '⚡', title: 'Instant Results', desc: 'Real-time job listings updated as you search, no delays' },
+              { icon: '🎯', title: 'Smart Matching', desc: 'AI scores jobs by relevance to your role, skills & experience' },
+              { icon: '🔗', title: 'Direct Apply', desc: 'Click Apply and go straight to the job on the original platform' },
+            ].map((f, i) => (
+              <div key={i} style={{
+                padding: '24px 20px', borderRadius: 14,
+                border: '1px solid rgba(0,0,0,0.08)', background: '#fafafa',
+                transition: 'all 0.25s',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#000'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.transform = 'translateY(-4px)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#fafafa'; e.currentTarget.style.color = ''; e.currentTarget.style.transform = 'translateY(0)' }}
+              >
+                <div style={{ fontSize: 28, marginBottom: 10 }}>{f.icon}</div>
+                <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 6 }}>{f.title}</div>
+                <div style={{ fontSize: 13, lineHeight: 1.6, opacity: 0.7 }}>{f.desc}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Screenshots */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
+            <div style={{
+              borderRadius: 16, overflow: 'hidden',
+              border: '1px solid rgba(0,0,0,0.1)',
+              boxShadow: '0 16px 48px rgba(0,0,0,0.1)',
+              transition: 'all 0.35s',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 28px 64px rgba(0,0,0,0.18)' }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.1)' }}
+            >
+              <div style={{ padding: '10px 14px', background: '#1a1a1a', display: 'flex', alignItems: 'center', gap: 7 }}>
+                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#ff5f57' }} />
+                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#febc2e' }} />
+                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#28c840' }} />
+                <span style={{ marginLeft: 10, color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 600 }}>HelplyAI — Interview Assistant</span>
+              </div>
+              <img
+                src="https://beeptalk.s3.eu-north-1.amazonaws.com/520f487f-051a-47a0-b252-8b12dd857c7d.png"
+                alt="HelplyAI interview assistant"
+                style={{ width: '100%', display: 'block', objectFit: 'cover' }}
+              />
+            </div>
+            <div style={{
+              borderRadius: 16, overflow: 'hidden',
+              border: '1px solid rgba(0,0,0,0.1)',
+              boxShadow: '0 16px 48px rgba(0,0,0,0.1)',
+              transition: 'all 0.35s',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 28px 64px rgba(0,0,0,0.18)' }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.1)' }}
+            >
+              <div style={{ padding: '10px 14px', background: '#1a1a1a', display: 'flex', alignItems: 'center', gap: 7 }}>
+                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#ff5f57' }} />
+                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#febc2e' }} />
+                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#28c840' }} />
+                <span style={{ marginLeft: 10, color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 600 }}>HelplyAI — AI Suggestions</span>
+              </div>
+              <img
+                src="https://beeptalk.s3.eu-north-1.amazonaws.com/d4ef4241-efb1-41c8-8420-8caf0d06a790.png"
+                alt="HelplyAI AI suggestions"
+                style={{ width: '100%', display: 'block', objectFit: 'cover' }}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Privacy Demo Videos Section */}
       <section style={{
         padding: '40px 24px',
