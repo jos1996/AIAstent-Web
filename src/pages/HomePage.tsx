@@ -293,54 +293,29 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* App Screenshots */}
-        <div style={{ marginTop: 60, width: '100%', maxWidth: 1100, margin: '60px auto 0' }}>
-          <div style={{ textAlign: 'center', marginBottom: 32 }}>
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#888', letterSpacing: 2, textTransform: 'uppercase' }}>See it in action</span>
-            <h2 style={{ fontSize: 'clamp(20px, 3vw, 32px)', fontWeight: 800, color: '#000', marginTop: 8, marginBottom: 0 }}>Real-time AI assistance during your interview</h2>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
-            <div style={{
-              borderRadius: 16, overflow: 'hidden',
-              border: '1px solid rgba(0,0,0,0.1)',
-              boxShadow: '0 16px 48px rgba(0,0,0,0.12)',
-              transition: 'all 0.35s',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 28px 64px rgba(0,0,0,0.2)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.12)' }}
-            >
-              <div style={{ padding: '10px 14px', background: '#1a1a1a', display: 'flex', alignItems: 'center', gap: 7 }}>
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#ff5f57' }} />
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#febc2e' }} />
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#28c840' }} />
-                <span style={{ marginLeft: 10, color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 600 }}>HelplyAI — Interview Assistant</span>
-              </div>
-              <img
-                src="https://beeptalk.s3.eu-north-1.amazonaws.com/520f487f-051a-47a0-b252-8b12dd857c7d.png"
-                alt="HelplyAI interview assistant screenshot"
-                style={{ width: '100%', display: 'block', objectFit: 'cover' }}
-              />
+        {/* Video Demo */}
+        <div style={{ marginTop: 60, width: '100%', maxWidth: 1000, margin: '60px auto 0' }}>
+          <div style={{
+            borderRadius: 20, overflow: 'hidden',
+            border: '1px solid rgba(0,0,0,0.12)',
+            background: '#000',
+            boxShadow: '0 24px 70px rgba(0,0,0,0.2)',
+            transition: 'all 0.4s',
+          }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 32px 90px rgba(0,0,0,0.3)' }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 24px 70px rgba(0,0,0,0.2)' }}
+          >
+            <div style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 8, background: 'linear-gradient(to bottom, #1a1a1a, #0a0a0a)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+              <div style={{ width: 13, height: 13, borderRadius: '50%', background: '#ff5f57' }} />
+              <div style={{ width: 13, height: 13, borderRadius: '50%', background: '#febc2e' }} />
+              <div style={{ width: 13, height: 13, borderRadius: '50%', background: '#28c840' }} />
+              <span style={{ marginLeft: 14, color: '#fff', fontSize: 13, fontWeight: 600 }}>HelplyAI — Live Demo</span>
             </div>
-            <div style={{
-              borderRadius: 16, overflow: 'hidden',
-              border: '1px solid rgba(0,0,0,0.1)',
-              boxShadow: '0 16px 48px rgba(0,0,0,0.12)',
-              transition: 'all 0.35s',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 28px 64px rgba(0,0,0,0.2)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.12)' }}
-            >
-              <div style={{ padding: '10px 14px', background: '#1a1a1a', display: 'flex', alignItems: 'center', gap: 7 }}>
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#ff5f57' }} />
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#febc2e' }} />
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#28c840' }} />
-                <span style={{ marginLeft: 10, color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 600 }}>HelplyAI — AI Suggestions</span>
+            <div style={{ minHeight: 480, background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, padding: 40 }}>
+              <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid rgba(255,255,255,0.15)' }}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg>
               </div>
-              <img
-                src="https://beeptalk.s3.eu-north-1.amazonaws.com/d4ef4241-efb1-41c8-8420-8caf0d06a790.png"
-                alt="HelplyAI AI suggestions screenshot"
-                style={{ width: '100%', display: 'block', objectFit: 'cover' }}
-              />
+              <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, fontWeight: 500 }}>Video coming soon</span>
             </div>
           </div>
         </div>
@@ -940,6 +915,42 @@ export default function HomePage() {
               <span style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '8px 16px', borderRadius: 100, fontSize: 13, fontWeight: 600 }}>
                 ✓ LeetCode
               </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* App Screenshots — after How It Works */}
+      <section style={{ padding: '80px 24px', background: '#fff', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 40 }}>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#888', letterSpacing: 2, textTransform: 'uppercase' }}>See it in action</span>
+            <h2 style={{ fontSize: 'clamp(22px, 3vw, 36px)', fontWeight: 900, color: '#000', marginTop: 10, marginBottom: 0 }}>Real-time AI assistance during your interview</h2>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
+            <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(0,0,0,0.1)', boxShadow: '0 16px 48px rgba(0,0,0,0.1)', transition: 'all 0.35s' }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 28px 64px rgba(0,0,0,0.18)' }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.1)' }}
+            >
+              <div style={{ padding: '10px 14px', background: '#1a1a1a', display: 'flex', alignItems: 'center', gap: 7 }}>
+                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#ff5f57' }} />
+                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#febc2e' }} />
+                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#28c840' }} />
+                <span style={{ marginLeft: 10, color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 600 }}>HelplyAI — Interview Assistant</span>
+              </div>
+              <img src="https://beeptalk.s3.eu-north-1.amazonaws.com/520f487f-051a-47a0-b252-8b12dd857c7d.png" alt="HelplyAI interview assistant" style={{ width: '100%', display: 'block', objectFit: 'cover' }} />
+            </div>
+            <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(0,0,0,0.1)', boxShadow: '0 16px 48px rgba(0,0,0,0.1)', transition: 'all 0.35s' }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 28px 64px rgba(0,0,0,0.18)' }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.1)' }}
+            >
+              <div style={{ padding: '10px 14px', background: '#1a1a1a', display: 'flex', alignItems: 'center', gap: 7 }}>
+                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#ff5f57' }} />
+                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#febc2e' }} />
+                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#28c840' }} />
+                <span style={{ marginLeft: 10, color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 600 }}>HelplyAI — AI Suggestions</span>
+              </div>
+              <img src="https://beeptalk.s3.eu-north-1.amazonaws.com/d4ef4241-efb1-41c8-8420-8caf0d06a790.png" alt="HelplyAI AI suggestions" style={{ width: '100%', display: 'block', objectFit: 'cover' }} />
             </div>
           </div>
         </div>
