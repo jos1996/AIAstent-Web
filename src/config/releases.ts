@@ -16,9 +16,9 @@ export const DOWNLOAD_LINKS = {
   macAppleSilicon: `${S3_BASE}/Helply+AI_0.1.0_aarch64.dmg`,
   macIntel: `${S3_BASE}/Helply+AI_0.1.0_aarch64.dmg`,
 
-  // Windows Downloads — AWS S3 public bucket
-  windowsNSIS: `${S3_BASE}/windows-nsis-installer.zip`,
-  windowsMSI: `${S3_BASE}/windows-msi-installer.zip`,
+  // Windows Downloads — AWS S3 public bucket (direct installers)
+  windowsNSIS: `${S3_BASE}/Helply+AI_0.1.0_x64-setup.exe`,
+  windowsMSI: `${S3_BASE}/Helply+AI_0.1.0_x64_en-US.msi`,
 };
 
 /**

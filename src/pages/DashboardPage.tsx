@@ -643,7 +643,7 @@ export default function DashboardPage() {
                     </svg>
                     <span>MSI Installer (Individual)</span>
                   </div>
-                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', fontWeight: 400 }}>Download ZIP → extract → run .msi to install</span>
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', fontWeight: 400 }}>Traditional Windows installer for personal use</span>
                 </button>
 
                 <button onClick={() => handleDirectDownload(downloadLinks.windowsNSIS)} style={{
@@ -664,7 +664,7 @@ export default function DashboardPage() {
                     </svg>
                     <span>NSIS Installer (Organization)</span>
                   </div>
-                  <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.6)', fontWeight: 400 }}>Download ZIP → extract → run .exe to install</span>
+                  <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.6)', fontWeight: 400 }}>Modern installer for enterprise deployment</span>
                 </button>
               </div>
             )}
