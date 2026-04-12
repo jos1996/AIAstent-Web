@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { trackJobSearch, trackJobSaved, trackJobApplied, trackJobViewed } from '../lib/analytics';
 import { usePlanLimits } from '../hooks/usePlanLimits';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -563,7 +564,11 @@ export default function JobSearchPage() {
       const next = new Map(prev);
       const ex = next.get(job.job_id);
       if (ex && ex.status === status) next.delete(job.job_id);
-      else next.set(job.job_id, { ...job, savedAt: Date.now(), status, matchScore: userResume ? calcMatch(job.job_description, userResume) : undefined });
+      else {
+        next.set(job.job_id, { ...job, savedAt: Date.now(), status, matchScore: userResume ? calcMatch(job.job_description, userResume) : undefined });
+        if (status === 'saved') trackJobSaved(job.job_title, job.employer_name);
+        if (status === 'applied') trackJobApplied(job.job_title, job.employer_name, job.source_platform || 'unknown');
+      }
       return next;
     });
   };
@@ -696,6 +701,7 @@ export default function JobSearchPage() {
       const start = (p - 1) * limit;
       setJobs(deduped.slice(start, start + limit));
       setModalJob(null);
+      trackJobSearch(query, location, deduped.length);
     } catch (e: any) {
       setError(e.message);
       setJobs([]); setAllJobs([]);
@@ -817,7 +823,7 @@ export default function JobSearchPage() {
             style={{ flex: 1, padding: '9px', borderRadius: 8, background: '#111827', border: 'none', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, textDecoration: 'none' }}>
             Apply on {platform} <ExternalLink size={12} />
           </a>
-          <button onClick={(e) => { e.stopPropagation(); setModalJob(job); }}
+          <button onClick={(e) => { e.stopPropagation(); setModalJob(job); trackJobViewed(job.job_title, job.employer_name); }}
             style={{ padding: '9px 14px', borderRadius: 8, background: '#f9fafb', border: '1px solid #e5e7eb', color: '#111827', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5 }}>
             <Eye size={13} /> View
           </button>

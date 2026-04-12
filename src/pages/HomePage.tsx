@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { DOWNLOAD_LINKS } from '../config/releases'
+import { trackVideoPlayed, trackVideoPaused, trackCTAClick, trackDownload } from '../lib/analytics'
 
 function VideoDemo() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -11,11 +12,13 @@ function VideoDemo() {
     setIsHovered(true);
     videoRef.current?.play();
     setIsPlaying(true);
+    trackVideoPlayed();
   };
   const handleMouseLeave = () => {
     setIsHovered(false);
     videoRef.current?.pause();
     setIsPlaying(false);
+    trackVideoPaused();
   };
 
   return (
@@ -124,6 +127,8 @@ export default function HomePage() {
   const downloadLinks = DOWNLOAD_LINKS;
 
   const handleDirectDownload = (url: string) => {
+    const platform = url.includes('aarch64') ? 'mac_apple_silicon' : url.includes('x86_64') && url.includes('.dmg') ? 'mac_intel' : url.includes('.msi') ? 'windows_msi' : 'windows_nsis';
+    trackDownload(platform);
     window.open(url, '_blank')
     setShowDownloadModal(false)
   }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { trackUpgradeClick, trackPaymentStarted, trackPaymentCompleted } from '../lib/analytics';
 import { PLANS, PLAN_ORDER, GENERAL_PLANS, formatMinutes } from '../lib/plans';
 import type { PlanId } from '../lib/plans';
 import { usePlanLimits } from '../hooks/usePlanLimits';
@@ -84,6 +85,8 @@ export default function BillingPage() {
   const handlePurchaseCredits = async (planId: PlanId) => {
     if (planId === 'free') return; // Can't purchase free
     setUpgradeLoading(planId);
+    trackUpgradeClick('billing_page');
+    trackPaymentStarted(planId);
 
     const plan = PLANS[planId as keyof typeof PLANS];
     const amount = plan.priceInPaise;
@@ -108,6 +111,7 @@ export default function BillingPage() {
         credits_minutes: plan.limits.totalMinutes,
       },
       handler: async function (response: any) {
+        trackPaymentCompleted(planId, amount / 100, 'INR');
         const razorpayPaymentId = response.razorpay_payment_id || null;
         const razorpayOrderId = response.razorpay_order_id || null;
         const razorpaySignature = response.razorpay_signature || null;

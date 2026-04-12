@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { supabase, supabaseConfigured } from '../lib/supabase';
+import { trackSignUp, trackLogin, trackLogout } from '../lib/analytics';
 import type { User, Session } from '@supabase/supabase-js';
 
 interface AuthContextType {
@@ -205,12 +206,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password,
       options: { data: { full_name: fullName } },
     });
+    if (!error) trackSignUp('email');
     return { error: error?.message ?? null };
   };
 
   const signIn = async (email: string, password: string) => {
     if (!supabaseConfigured) return { error: notConfiguredError };
     const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (!error) trackLogin('email');
     return { error: error?.message ?? null };
   };
 
@@ -233,11 +236,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         queryParams: { prompt: 'select_account' },
       },
     });
+    if (!error) trackLogin('google');
     return { error: error?.message ?? null };
   };
 
   const signOut = async () => {
     if (!supabaseConfigured) return;
+    trackLogout();
     await supabase.auth.signOut();
   };
 

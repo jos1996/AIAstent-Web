@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { DOWNLOAD_LINKS } from '../config/releases';
+import { trackDownload } from '../lib/analytics';
 
 interface ProfileData {
   full_name: string;
@@ -51,6 +52,8 @@ export default function DashboardPage() {
   const downloadLinks = DOWNLOAD_LINKS;
 
   const handleDirectDownload = (url: string) => {
+    const platform = url.includes('aarch64') ? 'mac_apple_silicon' : url.includes('x86_64') && url.includes('.dmg') ? 'mac_intel' : url.includes('.msi') ? 'windows_msi' : 'windows_nsis';
+    trackDownload(platform);
     window.open(url, '_blank');
     setShowDownloadModal(false);
   };
