@@ -1,6 +1,73 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { DOWNLOAD_LINKS } from '../config/releases'
+
+function VideoDemo() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    videoRef.current?.play();
+    setIsPlaying(true);
+  };
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    videoRef.current?.pause();
+    setIsPlaying(false);
+  };
+
+  return (
+    <div style={{ marginTop: 60, width: '100%', maxWidth: 1000, margin: '60px auto 0' }}>
+      <div
+        style={{
+          borderRadius: 20, overflow: 'hidden',
+          border: '1px solid rgba(0,0,0,0.12)',
+          background: '#000',
+          boxShadow: isHovered ? '0 32px 90px rgba(0,0,0,0.3)' : '0 24px 70px rgba(0,0,0,0.2)',
+          transform: isHovered ? 'translateY(-8px)' : 'translateY(0)',
+          transition: 'all 0.4s',
+          position: 'relative',
+          cursor: 'pointer',
+        }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 8, background: 'linear-gradient(to bottom, #1a1a1a, #0a0a0a)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+          <div style={{ width: 13, height: 13, borderRadius: '50%', background: '#ff5f57' }} />
+          <div style={{ width: 13, height: 13, borderRadius: '50%', background: '#febc2e' }} />
+          <div style={{ width: 13, height: 13, borderRadius: '50%', background: '#28c840' }} />
+          <span style={{ marginLeft: 14, color: '#fff', fontSize: 13, fontWeight: 600 }}>HelplyAI — Live Demo</span>
+        </div>
+        <div style={{ position: 'relative', background: '#000', lineHeight: 0 }}>
+          <video
+            ref={videoRef}
+            src="https://beeptalk.s3.eu-north-1.amazonaws.com/AI+bot.mp4"
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            style={{ width: '100%', display: 'block', maxHeight: 520, objectFit: 'cover' }}
+          />
+          <div style={{
+            position: 'absolute', inset: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: isPlaying ? 'rgba(0,0,0,0)' : 'rgba(0,0,0,0.45)',
+            transition: 'background 0.3s',
+            pointerEvents: 'none',
+          }}>
+            {!isPlaying && (
+              <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid rgba(255,255,255,0.4)' }}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const Icon = ({ name, size = 24 }: { name: string; size?: number }) => {
   const icons: Record<string, React.ReactElement> = {
@@ -294,31 +361,7 @@ export default function HomePage() {
         </div>
 
         {/* Video Demo */}
-        <div style={{ marginTop: 60, width: '100%', maxWidth: 1000, margin: '60px auto 0' }}>
-          <div style={{
-            borderRadius: 20, overflow: 'hidden',
-            border: '1px solid rgba(0,0,0,0.12)',
-            background: '#000',
-            boxShadow: '0 24px 70px rgba(0,0,0,0.2)',
-            transition: 'all 0.4s',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 32px 90px rgba(0,0,0,0.3)' }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 24px 70px rgba(0,0,0,0.2)' }}
-          >
-            <div style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 8, background: 'linear-gradient(to bottom, #1a1a1a, #0a0a0a)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-              <div style={{ width: 13, height: 13, borderRadius: '50%', background: '#ff5f57' }} />
-              <div style={{ width: 13, height: 13, borderRadius: '50%', background: '#febc2e' }} />
-              <div style={{ width: 13, height: 13, borderRadius: '50%', background: '#28c840' }} />
-              <span style={{ marginLeft: 14, color: '#fff', fontSize: 13, fontWeight: 600 }}>HelplyAI — Live Demo</span>
-            </div>
-            <div style={{ minHeight: 480, background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, padding: 40 }}>
-              <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid rgba(255,255,255,0.15)' }}>
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              </div>
-              <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, fontWeight: 500 }}>Video coming soon</span>
-            </div>
-          </div>
-        </div>
+        <VideoDemo />
         </div>
       </section>
 
