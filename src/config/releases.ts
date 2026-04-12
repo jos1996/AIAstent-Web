@@ -9,16 +9,16 @@
 
 export const RELEASE_VERSION = 'v0.1.0';
 
-const PUBLIC_RELEASES_BASE = `https://github.com/jos1996/helplyai-releases/releases/download/${RELEASE_VERSION}`;
+const S3_BASE = 'https://beeptalk.s3.eu-north-1.amazonaws.com';
 
 export const DOWNLOAD_LINKS = {
-  // macOS Downloads — public repo, no login required
-  macAppleSilicon: `${PUBLIC_RELEASES_BASE}/Helply.AI_0.1.0_aarch64.dmg`,
-  macIntel: `${PUBLIC_RELEASES_BASE}/Helply.AI_0.1.0_aarch64.dmg`,
+  // macOS Downloads — AWS S3 public bucket
+  macAppleSilicon: `${S3_BASE}/Helply+AI_0.1.0_aarch64.dmg`,
+  macIntel: `${S3_BASE}/Helply+AI_0.1.0_aarch64.dmg`,
 
-  // Windows Downloads — public repo, no login required
-  windowsNSIS: `${PUBLIC_RELEASES_BASE}/Helply.AI_0.1.0_x64-setup.exe`,
-  windowsMSI: `${PUBLIC_RELEASES_BASE}/Helply.AI_0.1.0_x64_en-US.msi`,
+  // Windows Downloads — AWS S3 public bucket
+  windowsNSIS: `${S3_BASE}/windows-nsis-installer.zip`,
+  windowsMSI: `${S3_BASE}/windows-msi-installer.zip`,
 };
 
 /**
