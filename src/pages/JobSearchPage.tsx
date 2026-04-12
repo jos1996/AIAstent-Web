@@ -593,8 +593,9 @@ export default function JobSearchPage() {
 
       // Slow secondary sources (free APIs) — fire in background, add if they return quickly
       const secondaryTimeout = 3000; // max 3s for secondary sources
-      const withTimeout = <T>(p: Promise<T>, ms: number, fallback: T): Promise<T> =>
-        Promise.race([p, new Promise<T>(res => setTimeout(() => res(fallback), ms))]);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const withTimeout = (p: Promise<any>, ms: number, fallback: any): Promise<any> =>
+        Promise.race([p, new Promise<any>(res => setTimeout(() => res(fallback), ms))]);
 
       const [jobicyResults, remotiveResults, arbeitnowResults] = await Promise.allSettled([
         withTimeout(fetchJobicyJobs(query), secondaryTimeout, []),
