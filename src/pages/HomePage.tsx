@@ -186,6 +186,12 @@ export default function HomePage() {
             onMouseEnter={e => (e.currentTarget.style.color = '#000')}
             onMouseLeave={e => (e.currentTarget.style.color = '#555')}
           >Features</a>
+          <a href="#pricing" style={{
+            color: '#555', fontSize: 14, fontWeight: 500, transition: 'color 0.2s',
+          }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#000')}
+            onMouseLeave={e => (e.currentTarget.style.color = '#555')}
+          >Pricing</a>
           <a href="#about" style={{
             color: '#555', fontSize: 14, fontWeight: 500, transition: 'color 0.2s',
           }}
@@ -1481,6 +1487,301 @@ export default function HomePage() {
               fontSize: 300,
               opacity: 0.1,
             }}>💰</div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" style={{ padding: '80px 24px', background: '#fff', borderTop: '1px solid rgba(0,0,0,0.08)' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          {/* Header */}
+          <div style={{ textAlign: 'center', marginBottom: 48 }}>
+            <h2 style={{
+              fontSize: 'clamp(28px, 4.5vw, 44px)', fontWeight: 900, letterSpacing: '-1px', marginBottom: 16,
+              color: '#000',
+            }}>
+              Simple, Transparent Pricing
+            </h2>
+            <p style={{ color: '#666', fontSize: 17, maxWidth: 600, margin: '0 auto 24px' }}>
+              Pay only for what you use. No subscriptions, no hidden fees. Credits never expire.
+            </p>
+
+            {/* Mode Toggle */}
+            <div style={{
+              display: 'inline-flex',
+              background: '#f5f5f5',
+              borderRadius: 100,
+              padding: 4,
+              gap: 4,
+            }}>
+              <button style={{
+                padding: '10px 24px',
+                borderRadius: 100,
+                border: 'none',
+                background: '#000',
+                color: '#fff',
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}>Interview Mode</button>
+              <a href="/settings/billing" style={{
+                padding: '10px 24px',
+                borderRadius: 100,
+                border: 'none',
+                background: 'transparent',
+                color: '#666',
+                fontSize: 14,
+                fontWeight: 500,
+                cursor: 'pointer',
+                textDecoration: 'none',
+              }}>General Mode →</a>
+            </div>
+          </div>
+
+          {/* Pricing Cards */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+            gap: 24,
+          }}>
+            {/* Free Trial */}
+            <div style={{
+              background: '#f9f9f9',
+              borderRadius: 20,
+              padding: 32,
+              border: '1px solid rgba(0,0,0,0.06)',
+            }}>
+              <div style={{ marginBottom: 16 }}>
+                <span style={{
+                  display: 'inline-block',
+                  padding: '6px 12px',
+                  background: 'rgba(0,0,0,0.05)',
+                  borderRadius: 100,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: '#666',
+                }}>Free Trial</span>
+              </div>
+              <div style={{ marginBottom: 12 }}>
+                <span style={{ fontSize: 42, fontWeight: 800, color: '#000' }}>Free</span>
+              </div>
+              <p style={{ fontSize: 14, color: '#666', marginBottom: 24 }}>15 minutes free to try all features.</p>
+
+              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0' }}>
+                {['15 minutes free usage', 'Full AI chat access', 'Interview mode included', 'Screen analysis included', 'Generate answers included', 'No credit card required'].map((f, i) => (
+                  <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, fontSize: 14, color: '#444' }}>
+                    <span style={{ color: '#22c55e', fontWeight: 700 }}>✓</span> {f}
+                  </li>
+                ))}
+              </ul>
+
+              <a href="/settings/dashboard" style={{
+                display: 'block',
+                width: '100%',
+                padding: '14px',
+                borderRadius: 12,
+                background: '#fff',
+                color: '#000',
+                fontSize: 14,
+                fontWeight: 600,
+                textAlign: 'center',
+                textDecoration: 'none',
+                border: '1px solid rgba(0,0,0,0.1)',
+                transition: 'all 0.2s',
+              }}>Get Started Free</a>
+            </div>
+
+            {/* 1 Credit */}
+            <div style={{
+              background: '#fff',
+              borderRadius: 20,
+              padding: 32,
+              border: '1px solid rgba(0,0,0,0.08)',
+            }}>
+              <div style={{ marginBottom: 16 }}>
+                <span style={{
+                  display: 'inline-block',
+                  padding: '6px 12px',
+                  background: 'rgba(0,0,0,0.05)',
+                  borderRadius: 100,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: '#666',
+                }}>1 Credit</span>
+              </div>
+              <div style={{ marginBottom: 4 }}>
+                <span style={{ fontSize: 42, fontWeight: 800, color: '#000' }}>₹399</span>
+                <span style={{ fontSize: 14, color: '#666', marginLeft: 4 }}>/ hour</span>
+              </div>
+              <p style={{ fontSize: 14, color: '#666', marginBottom: 24 }}>1 hour of full access.</p>
+
+              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0' }}>
+                {['1 hour of usage', 'Unlimited AI responses', 'Unlimited interview mode', 'Unlimited screen analysis', 'Unlimited generate answers', 'All features unlocked'].map((f, i) => (
+                  <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, fontSize: 14, color: '#444' }}>
+                    <span style={{ color: '#22c55e', fontWeight: 700 }}>✓</span> {f}
+                  </li>
+                ))}
+              </ul>
+
+              <a href="/settings/billing" style={{
+                display: 'block',
+                width: '100%',
+                padding: '14px',
+                borderRadius: 12,
+                background: '#000',
+                color: '#fff',
+                fontSize: 14,
+                fontWeight: 600,
+                textAlign: 'center',
+                textDecoration: 'none',
+                transition: 'all 0.2s',
+              }}>Buy Credits</a>
+            </div>
+
+            {/* 3 Credits - Best Value */}
+            <div style={{
+              background: '#000',
+              borderRadius: 20,
+              padding: 32,
+              border: '2px solid #000',
+              position: 'relative',
+              transform: 'scale(1.02)',
+            }}>
+              <div style={{
+                position: 'absolute',
+                top: -12,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                background: '#fff',
+                padding: '6px 16px',
+                borderRadius: 100,
+                fontSize: 12,
+                fontWeight: 700,
+                color: '#000',
+              }}>BEST VALUE</div>
+
+              <div style={{ marginBottom: 16, marginTop: 8 }}>
+                <span style={{
+                  display: 'inline-block',
+                  padding: '6px 12px',
+                  background: 'rgba(255,255,255,0.1)',
+                  borderRadius: 100,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: '#fff',
+                }}>3 Credits</span>
+              </div>
+              <div style={{ marginBottom: 4 }}>
+                <span style={{ fontSize: 42, fontWeight: 800, color: '#fff' }}>₹599</span>
+                <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginLeft: 4 }}>/ 3 hours</span>
+              </div>
+              <div style={{ marginBottom: 16 }}>
+                <span style={{
+                  display: 'inline-block',
+                  padding: '4px 10px',
+                  background: 'rgba(34,197,94,0.2)',
+                  borderRadius: 6,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: '#4ade80',
+                }}>₹200/hr — Save 33%</span>
+              </div>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 24 }}>3 hours — best for interview prep.</p>
+
+              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0' }}>
+                {['3 hours of usage', 'Unlimited AI responses', 'Unlimited interview mode', 'Unlimited screen analysis', 'Unlimited generate answers', 'All features unlocked', 'Best for interview prep'].map((f, i) => (
+                  <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, fontSize: 14, color: '#fff' }}>
+                    <span style={{ color: '#4ade80', fontWeight: 700 }}>✓</span> {f}
+                  </li>
+                ))}
+              </ul>
+
+              <a href="/settings/billing" style={{
+                display: 'block',
+                width: '100%',
+                padding: '14px',
+                borderRadius: 12,
+                background: '#fff',
+                color: '#000',
+                fontSize: 14,
+                fontWeight: 700,
+                textAlign: 'center',
+                textDecoration: 'none',
+                transition: 'all 0.2s',
+              }}>Buy Credits</a>
+            </div>
+
+            {/* 10 Credits */}
+            <div style={{
+              background: '#fff',
+              borderRadius: 20,
+              padding: 32,
+              border: '1px solid rgba(0,0,0,0.08)',
+            }}>
+              <div style={{ marginBottom: 16 }}>
+                <span style={{
+                  display: 'inline-block',
+                  padding: '6px 12px',
+                  background: 'rgba(0,0,0,0.05)',
+                  borderRadius: 100,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: '#666',
+                }}>10 Credits</span>
+              </div>
+              <div style={{ marginBottom: 4 }}>
+                <span style={{ fontSize: 42, fontWeight: 800, color: '#000' }}>₹1,999</span>
+                <span style={{ fontSize: 14, color: '#666', marginLeft: 4 }}>/ 10 hours</span>
+              </div>
+              <div style={{ marginBottom: 16 }}>
+                <span style={{
+                  display: 'inline-block',
+                  padding: '4px 10px',
+                  background: 'rgba(34,197,94,0.15)',
+                  borderRadius: 6,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: '#16a34a',
+                }}>₹200/hr — Save 33%</span>
+              </div>
+              <p style={{ fontSize: 14, color: '#666', marginBottom: 24 }}>10 hours — maximum value.</p>
+
+              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0' }}>
+                {['10 hours of usage', 'Unlimited AI responses', 'Unlimited interview mode', 'Unlimited screen analysis', 'Unlimited generate answers', 'All features unlocked', 'Maximum value pack', 'Priority support'].map((f, i) => (
+                  <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, fontSize: 14, color: '#444' }}>
+                    <span style={{ color: '#22c55e', fontWeight: 700 }}>✓</span> {f}
+                  </li>
+                ))}
+              </ul>
+
+              <a href="/settings/billing" style={{
+                display: 'block',
+                width: '100%',
+                padding: '14px',
+                borderRadius: 12,
+                background: '#000',
+                color: '#fff',
+                fontSize: 14,
+                fontWeight: 600,
+                textAlign: 'center',
+                textDecoration: 'none',
+                transition: 'all 0.2s',
+              }}>Buy Credits</a>
+            </div>
+          </div>
+
+          {/* Bottom note */}
+          <div style={{
+            marginTop: 32,
+            padding: 20,
+            borderRadius: 12,
+            background: '#f9f9f9',
+            textAlign: 'center',
+          }}>
+            <p style={{ fontSize: 14, color: '#666', margin: 0 }}>
+              💡 <strong>How it works:</strong> Purchase credits and use them anytime. 1 credit = 1 hour of AI assistance. 
+              <a href="/settings/billing" style={{ color: '#000', fontWeight: 600 }}>View full pricing →</a>
+            </p>
           </div>
         </div>
       </section>
