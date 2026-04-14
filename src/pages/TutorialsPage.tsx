@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 interface Tutorial {
   id: string;
   title: string;
@@ -104,6 +106,103 @@ const categoryColors: Record<string, string> = {
   Setup: '#06b6d4',
 };
 
+function VideoCard({ tutorial, catColor }: { tutorial: Tutorial; catColor: string }) {
+  const [playing, setPlaying] = useState(false);
+  const thumb = `https://img.youtube.com/vi/${tutorial.youtubeId}/maxresdefault.jpg`;
+
+  return (
+    <div
+      style={{
+        borderRadius: 14,
+        background: '#fff',
+        border: '1px solid rgba(0,0,0,0.08)',
+        overflow: 'hidden',
+        boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
+        transition: 'all 0.2s',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.12)'; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.06)'; }}
+    >
+      {/* Thumbnail or iframe */}
+      <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', cursor: 'pointer' }} onClick={() => setPlaying(true)}>
+        {playing ? (
+          <iframe
+            src={`https://www.youtube.com/embed/${tutorial.youtubeId}?autoplay=1&rel=0&modestbranding=1`}
+            title={tutorial.title}
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+          />
+        ) : (
+          <>
+            <img
+              src={thumb}
+              alt={tutorial.title}
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+              onError={e => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${tutorial.youtubeId}/hqdefault.jpg`; }}
+            />
+            {/* Play button overlay */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: 'rgba(0,0,0,0.25)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'background 0.2s',
+            }}
+              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(0,0,0,0.45)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(0,0,0,0.25)'; }}
+            >
+              <div style={{
+                width: 56, height: 56, borderRadius: '50%',
+                background: '#ff0000',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                boxShadow: '0 4px 20px rgba(255,0,0,0.5)',
+                transition: 'transform 0.15s',
+              }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff">
+                  <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Info */}
+      <div style={{ padding: '14px 16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+          <span style={{
+            fontSize: 10, fontWeight: 700, color: catColor,
+            background: `${catColor}18`, padding: '3px 8px', borderRadius: 4,
+            textTransform: 'uppercase' as const, letterSpacing: 0.5,
+          }}>
+            {tutorial.category}
+          </span>
+        </div>
+        <div style={{ fontSize: 14, fontWeight: 700, color: '#111', marginBottom: 6, lineHeight: 1.4 }}>
+          {tutorial.title}
+        </div>
+        <div style={{ fontSize: 12, color: '#555', lineHeight: 1.6 }}>
+          {tutorial.description}
+        </div>
+        <a
+          href={`https://youtu.be/${tutorial.youtubeId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            marginTop: 12, fontSize: 12, fontWeight: 600, color: '#ff0000',
+            textDecoration: 'none',
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+          Watch on YouTube
+        </a>
+      </div>
+    </div>
+  );
+}
+
 export default function TutorialsPage() {
   const live = tutorials.filter(t => !t.comingSoon);
   const coming = tutorials.filter(t => t.comingSoon);
@@ -122,74 +221,13 @@ export default function TutorialsPage() {
         gap: 20,
         marginBottom: 40,
       }}>
-        {live.map(tutorial => {
-          const catColor = categoryColors[tutorial.category] || '#6b7280';
-          return (
-            <div
-              key={tutorial.id}
-              style={{
-                borderRadius: 14,
-                background: '#fff',
-                border: '1px solid rgba(0,0,0,0.08)',
-                overflow: 'hidden',
-                boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
-                transition: 'all 0.2s',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.transform = 'translateY(-3px)';
-                e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.12)';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.06)';
-              }}
-            >
-              {/* YouTube embed */}
-              <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
-                <iframe
-                  src={`https://www.youtube.com/embed/${tutorial.youtubeId}?rel=0&modestbranding=1`}
-                  title={tutorial.title}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
-                />
-              </div>
-
-              {/* Info */}
-              <div style={{ padding: '14px 16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                  <span style={{
-                    fontSize: 10, fontWeight: 700, color: catColor,
-                    background: `${catColor}18`, padding: '3px 8px', borderRadius: 4,
-                    textTransform: 'uppercase', letterSpacing: 0.5,
-                  }}>
-                    {tutorial.category}
-                  </span>
-                </div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: '#111', marginBottom: 6, lineHeight: 1.4 }}>
-                  {tutorial.title}
-                </div>
-                <div style={{ fontSize: 12, color: '#555', lineHeight: 1.6 }}>
-                  {tutorial.description}
-                </div>
-                <a
-                  href={`https://youtu.be/${tutorial.youtubeId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 6,
-                    marginTop: 12, fontSize: 12, fontWeight: 600, color: '#ff0000',
-                    textDecoration: 'none',
-                  }}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
-                  Watch on YouTube
-                </a>
-              </div>
-            </div>
-          );
-        })}
+        {live.map(tutorial => (
+          <VideoCard
+            key={tutorial.id}
+            tutorial={tutorial}
+            catColor={categoryColors[tutorial.category] || '#6b7280'}
+          />
+        ))}
       </div>
 
       {/* Coming Soon */}
