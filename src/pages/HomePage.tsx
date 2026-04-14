@@ -94,6 +94,129 @@ const Icon = ({ name, size = 24 }: { name: string; size?: number }) => {
   return icons[name] || null
 }
 
+const VIDEO_CHIPS = [
+  { id: 'ZxO1OHEdxw4', label: '🎯 Interview Mode', desc: 'See how Interview Mode gives you real-time AI answers during live interviews.' },
+  { id: 'FgKdax1TnM0', label: '🤖 General Mode',   desc: 'Use HelplyAI for everyday tasks — writing, coding, screen analysis and more.' },
+  { id: 'DvdSQMR_hsY', label: '🪟 Windows Setup',  desc: 'Install and launch HelplyAI on Windows in under 2 minutes.' },
+  { id: 'dhEGDlpOUbg', label: '🔍 Job Search',      desc: 'Find jobs, save listings, track applications and match your resume.' },
+  { id: 'qnJ7UpRNR40', label: '📊 Dashboard',       desc: 'A full tour of the dashboard — settings, downloads, and getting started.' },
+];
+
+function VideoShowcase() {
+  const [activeId, setActiveId] = useState(VIDEO_CHIPS[0].id);
+  const [playing, setPlaying] = useState(false);
+  const active = VIDEO_CHIPS.find(v => v.id === activeId)!;
+
+  const selectChip = (id: string) => {
+    setActiveId(id);
+    setPlaying(false);
+  };
+
+  return (
+    <section style={{ padding: '80px 24px', background: '#f9f9f9', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+      <div style={{ maxWidth: 900, margin: '0 auto' }}>
+        {/* Header */}
+        <div style={{ textAlign: 'center', marginBottom: 36 }}>
+          <h2 style={{ fontSize: 'clamp(24px, 4vw, 40px)', fontWeight: 900, letterSpacing: '-1px', color: '#000', marginBottom: 12 }}>
+            See HelplyAI in Action
+          </h2>
+          <p style={{ fontSize: 16, color: '#666', maxWidth: 520, margin: '0 auto' }}>
+            Watch how each feature works — pick a topic below.
+          </p>
+        </div>
+
+        {/* Chips */}
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 32 }}>
+          {VIDEO_CHIPS.map(v => (
+            <button
+              key={v.id}
+              onClick={() => selectChip(v.id)}
+              style={{
+                padding: '10px 20px',
+                borderRadius: 100,
+                border: activeId === v.id ? '2px solid #000' : '2px solid rgba(0,0,0,0.12)',
+                background: activeId === v.id ? '#000' : '#fff',
+                color: activeId === v.id ? '#fff' : '#333',
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+            >
+              {v.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Description */}
+        <p style={{ textAlign: 'center', fontSize: 14, color: '#555', marginBottom: 20 }}>{active.desc}</p>
+
+        {/* Video Player */}
+        <div style={{
+          borderRadius: 20,
+          overflow: 'hidden',
+          boxShadow: '0 16px 60px rgba(0,0,0,0.15)',
+          position: 'relative',
+          aspectRatio: '16/9',
+          cursor: 'pointer',
+          background: '#000',
+        }} onClick={() => setPlaying(true)}>
+          {playing ? (
+            <iframe
+              src={`https://www.youtube.com/embed/${activeId}?autoplay=1&rel=0&modestbranding=1`}
+              title={active.label}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+            />
+          ) : (
+            <>
+              <img
+                src={`https://img.youtube.com/vi/${activeId}/maxresdefault.jpg`}
+                alt={active.label}
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                onError={e => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${activeId}/hqdefault.jpg`; }}
+              />
+              <div style={{
+                position: 'absolute', inset: 0,
+                background: 'rgba(0,0,0,0.3)',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16,
+                transition: 'background 0.2s',
+              }}>
+                <div style={{
+                  width: 72, height: 72, borderRadius: '50%',
+                  background: '#ff0000',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 6px 28px rgba(255,0,0,0.55)',
+                }}>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                  </svg>
+                </div>
+                <span style={{ color: '#fff', fontSize: 15, fontWeight: 600, letterSpacing: 0.3 }}>Click to play</span>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* YouTube link */}
+        <div style={{ textAlign: 'center', marginTop: 16 }}>
+          <a
+            href={`https://youtu.be/${activeId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ fontSize: 13, fontWeight: 600, color: '#ff0000', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+            Watch on YouTube
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function HomePage() {
   const { user } = useAuth()
   const [scrolled, setScrolled] = useState(false)
@@ -1785,6 +1908,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Video Showcase Section */}
+      <VideoShowcase />
 
       {/* Features Section */}
       <section id="features" style={{ padding: '40px 24px', maxWidth: 1100, margin: '0 auto' }}>
