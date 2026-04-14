@@ -113,7 +113,7 @@ function VideoShowcase() {
   };
 
   return (
-    <section style={{ padding: '80px 24px', background: '#f9f9f9', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+    <section id="how-it-works" style={{ padding: '60px 24px', background: 'linear-gradient(180deg, #f9f9f9 0%, #fff 100%)', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
       <div style={{ maxWidth: 900, margin: '0 auto' }}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 36 }}>
@@ -315,6 +315,12 @@ export default function HomePage() {
             onMouseEnter={e => (e.currentTarget.style.color = '#000')}
             onMouseLeave={e => (e.currentTarget.style.color = '#555')}
           >Pricing</a>
+          <a href="#how-it-works" style={{
+            color: '#555', fontSize: 14, fontWeight: 500, transition: 'color 0.2s',
+          }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#000')}
+            onMouseLeave={e => (e.currentTarget.style.color = '#555')}
+          >How It Works</a>
           <a href="#about" style={{
             color: '#555', fontSize: 14, fontWeight: 500, transition: 'color 0.2s',
           }}
@@ -1615,297 +1621,66 @@ export default function HomePage() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" style={{ padding: '80px 24px', background: '#fff', borderTop: '1px solid rgba(0,0,0,0.08)' }}>
+      <section id="pricing" style={{ padding: '60px 24px', background: 'linear-gradient(180deg, #000 0%, #111 100%)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          {/* Header */}
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <h2 style={{
-              fontSize: 'clamp(28px, 4.5vw, 44px)', fontWeight: 900, letterSpacing: '-1px', marginBottom: 16,
-              color: '#000',
-            }}>
+          <div style={{ textAlign: 'center', marginBottom: 36 }}>
+            <h2 style={{ fontSize: 'clamp(22px, 3.5vw, 36px)', fontWeight: 900, letterSpacing: '-1px', color: '#fff', marginBottom: 8 }}>
               Simple, Transparent Pricing
             </h2>
-            <p style={{ color: '#666', fontSize: 17, maxWidth: 600, margin: '0 auto 24px' }}>
-              Pay only for what you use. No subscriptions, no hidden fees. Credits never expire.
-            </p>
-
-            {/* Mode Toggle */}
-            <div style={{
-              display: 'inline-flex',
-              background: '#f5f5f5',
-              borderRadius: 100,
-              padding: 4,
-              gap: 4,
-            }}>
-              <button style={{
-                padding: '10px 24px',
-                borderRadius: 100,
-                border: 'none',
-                background: '#000',
-                color: '#fff',
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}>Interview Mode</button>
-              <a href="/settings/billing" style={{
-                padding: '10px 24px',
-                borderRadius: 100,
-                border: 'none',
-                background: 'transparent',
-                color: '#666',
-                fontSize: 14,
-                fontWeight: 500,
-                cursor: 'pointer',
-                textDecoration: 'none',
-              }}>General Mode →</a>
-            </div>
-          </div>
-
-          {/* Pricing Cards */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-            gap: 24,
-          }}>
-            {/* Free Trial */}
-            <div style={{
-              background: '#f9f9f9',
-              borderRadius: 20,
-              padding: 32,
-              border: '1px solid rgba(0,0,0,0.06)',
-            }}>
-              <div style={{ marginBottom: 16 }}>
-                <span style={{
-                  display: 'inline-block',
-                  padding: '6px 12px',
-                  background: 'rgba(0,0,0,0.05)',
-                  borderRadius: 100,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: '#666',
-                }}>Free Trial</span>
-              </div>
-              <div style={{ marginBottom: 12 }}>
-                <span style={{ fontSize: 42, fontWeight: 800, color: '#000' }}>Free</span>
-              </div>
-              <p style={{ fontSize: 14, color: '#666', marginBottom: 24 }}>15 minutes free to try all features.</p>
-
-              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0' }}>
-                {['15 minutes free usage', 'Full AI chat access', 'Interview mode included', 'Screen analysis included', 'Generate answers included', 'No credit card required'].map((f, i) => (
-                  <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, fontSize: 14, color: '#444' }}>
-                    <span style={{ color: '#22c55e', fontWeight: 700 }}>✓</span> {f}
-                  </li>
-                ))}
-              </ul>
-
-              <a href="/settings/dashboard" style={{
-                display: 'block',
-                width: '100%',
-                padding: '14px',
-                borderRadius: 12,
-                background: '#fff',
-                color: '#000',
-                fontSize: 14,
-                fontWeight: 600,
-                textAlign: 'center',
-                textDecoration: 'none',
-                border: '1px solid rgba(0,0,0,0.1)',
-                transition: 'all 0.2s',
-              }}>Get Started Free</a>
-            </div>
-
-            {/* 1 Credit */}
-            <div style={{
-              background: '#fff',
-              borderRadius: 20,
-              padding: 32,
-              border: '1px solid rgba(0,0,0,0.08)',
-            }}>
-              <div style={{ marginBottom: 16 }}>
-                <span style={{
-                  display: 'inline-block',
-                  padding: '6px 12px',
-                  background: 'rgba(0,0,0,0.05)',
-                  borderRadius: 100,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: '#666',
-                }}>1 Credit</span>
-              </div>
-              <div style={{ marginBottom: 4 }}>
-                <span style={{ fontSize: 42, fontWeight: 800, color: '#000' }}>₹399</span>
-                <span style={{ fontSize: 14, color: '#666', marginLeft: 4 }}>/ hour</span>
-              </div>
-              <p style={{ fontSize: 14, color: '#666', marginBottom: 24 }}>1 hour of full access.</p>
-
-              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0' }}>
-                {['1 hour of usage', 'Unlimited AI responses', 'Unlimited interview mode', 'Unlimited screen analysis', 'Unlimited generate answers', 'All features unlocked'].map((f, i) => (
-                  <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, fontSize: 14, color: '#444' }}>
-                    <span style={{ color: '#22c55e', fontWeight: 700 }}>✓</span> {f}
-                  </li>
-                ))}
-              </ul>
-
-              <a href="/settings/billing" style={{
-                display: 'block',
-                width: '100%',
-                padding: '14px',
-                borderRadius: 12,
-                background: '#000',
-                color: '#fff',
-                fontSize: 14,
-                fontWeight: 600,
-                textAlign: 'center',
-                textDecoration: 'none',
-                transition: 'all 0.2s',
-              }}>Buy Credits</a>
-            </div>
-
-            {/* 3 Credits - Best Value */}
-            <div style={{
-              background: '#000',
-              borderRadius: 20,
-              padding: 32,
-              border: '2px solid #000',
-              position: 'relative',
-              transform: 'scale(1.02)',
-            }}>
-              <div style={{
-                position: 'absolute',
-                top: -12,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                background: '#fff',
-                padding: '6px 16px',
-                borderRadius: 100,
-                fontSize: 12,
-                fontWeight: 700,
-                color: '#000',
-              }}>BEST VALUE</div>
-
-              <div style={{ marginBottom: 16, marginTop: 8 }}>
-                <span style={{
-                  display: 'inline-block',
-                  padding: '6px 12px',
-                  background: 'rgba(255,255,255,0.1)',
-                  borderRadius: 100,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: '#fff',
-                }}>3 Credits</span>
-              </div>
-              <div style={{ marginBottom: 4 }}>
-                <span style={{ fontSize: 42, fontWeight: 800, color: '#fff' }}>₹599</span>
-                <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginLeft: 4 }}>/ 3 hours</span>
-              </div>
-              <div style={{ marginBottom: 16 }}>
-                <span style={{
-                  display: 'inline-block',
-                  padding: '4px 10px',
-                  background: 'rgba(34,197,94,0.2)',
-                  borderRadius: 6,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: '#4ade80',
-                }}>₹200/hr — Save 33%</span>
-              </div>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 24 }}>3 hours — best for interview prep.</p>
-
-              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0' }}>
-                {['3 hours of usage', 'Unlimited AI responses', 'Unlimited interview mode', 'Unlimited screen analysis', 'Unlimited generate answers', 'All features unlocked', 'Best for interview prep'].map((f, i) => (
-                  <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, fontSize: 14, color: '#fff' }}>
-                    <span style={{ color: '#4ade80', fontWeight: 700 }}>✓</span> {f}
-                  </li>
-                ))}
-              </ul>
-
-              <a href="/settings/billing" style={{
-                display: 'block',
-                width: '100%',
-                padding: '14px',
-                borderRadius: 12,
-                background: '#fff',
-                color: '#000',
-                fontSize: 14,
-                fontWeight: 700,
-                textAlign: 'center',
-                textDecoration: 'none',
-                transition: 'all 0.2s',
-              }}>Buy Credits</a>
-            </div>
-
-            {/* 10 Credits */}
-            <div style={{
-              background: '#fff',
-              borderRadius: 20,
-              padding: 32,
-              border: '1px solid rgba(0,0,0,0.08)',
-            }}>
-              <div style={{ marginBottom: 16 }}>
-                <span style={{
-                  display: 'inline-block',
-                  padding: '6px 12px',
-                  background: 'rgba(0,0,0,0.05)',
-                  borderRadius: 100,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: '#666',
-                }}>10 Credits</span>
-              </div>
-              <div style={{ marginBottom: 4 }}>
-                <span style={{ fontSize: 42, fontWeight: 800, color: '#000' }}>₹1,999</span>
-                <span style={{ fontSize: 14, color: '#666', marginLeft: 4 }}>/ 10 hours</span>
-              </div>
-              <div style={{ marginBottom: 16 }}>
-                <span style={{
-                  display: 'inline-block',
-                  padding: '4px 10px',
-                  background: 'rgba(34,197,94,0.15)',
-                  borderRadius: 6,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: '#16a34a',
-                }}>₹200/hr — Save 33%</span>
-              </div>
-              <p style={{ fontSize: 14, color: '#666', marginBottom: 24 }}>10 hours — maximum value.</p>
-
-              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0' }}>
-                {['10 hours of usage', 'Unlimited AI responses', 'Unlimited interview mode', 'Unlimited screen analysis', 'Unlimited generate answers', 'All features unlocked', 'Maximum value pack', 'Priority support'].map((f, i) => (
-                  <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, fontSize: 14, color: '#444' }}>
-                    <span style={{ color: '#22c55e', fontWeight: 700 }}>✓</span> {f}
-                  </li>
-                ))}
-              </ul>
-
-              <a href="/settings/billing" style={{
-                display: 'block',
-                width: '100%',
-                padding: '14px',
-                borderRadius: 12,
-                background: '#000',
-                color: '#fff',
-                fontSize: 14,
-                fontWeight: 600,
-                textAlign: 'center',
-                textDecoration: 'none',
-                transition: 'all 0.2s',
-              }}>Buy Credits</a>
-            </div>
-          </div>
-
-          {/* Bottom note */}
-          <div style={{
-            marginTop: 32,
-            padding: 20,
-            borderRadius: 12,
-            background: '#f9f9f9',
-            textAlign: 'center',
-          }}>
-            <p style={{ fontSize: 14, color: '#666', margin: 0 }}>
-              💡 <strong>How it works:</strong> Purchase credits and use them anytime. 1 credit = 1 hour of AI assistance. 
-              <a href="/settings/billing" style={{ color: '#000', fontWeight: 600 }}>View full pricing →</a>
+            <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 15, margin: 0 }}>
+              Pay only for what you use — no subscriptions, no hidden fees.
             </p>
           </div>
+
+          {/* Compact 4-column grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 20 }}>
+            {[
+              { label: 'Free Trial', price: 'Free', sub: '15 min', features: ['15 min free', 'Full AI chat', 'Interview mode', 'No card needed'], cta: 'Start Free', href: '/settings/dashboard', highlight: false, badge: '' },
+              { label: '1 Credit', price: '₹399', sub: '/ hour', features: ['1 hr usage', 'Unlimited AI', 'Screen analysis', 'All features'], cta: 'Buy', href: '/settings/billing', highlight: false, badge: '' },
+              { label: '3 Credits', price: '₹599', sub: '/ 3 hrs', features: ['3 hrs usage', 'Unlimited AI', 'Save 33%', 'Best for prep'], cta: 'Buy', href: '/settings/billing', highlight: true, badge: 'BEST VALUE' },
+              { label: '10 Credits', price: '₹1,999', sub: '/ 10 hrs', features: ['10 hrs usage', 'Unlimited AI', 'Save 33%', 'Max value'], cta: 'Buy', href: '/settings/billing', highlight: false, badge: '' },
+            ].map((plan, i) => (
+              <div key={i} style={{
+                background: plan.highlight ? '#fff' : 'rgba(255,255,255,0.06)',
+                borderRadius: 16,
+                padding: '24px 20px',
+                border: plan.highlight ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                position: 'relative',
+              }}>
+                {plan.badge && (
+                  <div style={{
+                    position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)',
+                    background: '#000', color: '#fff', fontSize: 10, fontWeight: 800,
+                    padding: '3px 12px', borderRadius: 20, letterSpacing: 1, whiteSpace: 'nowrap' as const,
+                    border: '1px solid rgba(255,255,255,0.2)',
+                  }}>{plan.badge}</div>
+                )}
+                <div style={{ fontSize: 11, fontWeight: 700, color: plan.highlight ? '#666' : 'rgba(255,255,255,0.5)', textTransform: 'uppercase' as const, letterSpacing: 1, marginBottom: 8 }}>{plan.label}</div>
+                <div style={{ marginBottom: 4 }}>
+                  <span style={{ fontSize: 32, fontWeight: 900, color: plan.highlight ? '#000' : '#fff' }}>{plan.price}</span>
+                  <span style={{ fontSize: 12, color: plan.highlight ? '#666' : 'rgba(255,255,255,0.5)', marginLeft: 4 }}>{plan.sub}</span>
+                </div>
+                <ul style={{ listStyle: 'none', padding: 0, margin: '12px 0 16px 0' }}>
+                  {plan.features.map((f, fi) => (
+                    <li key={fi} style={{ fontSize: 12, color: plan.highlight ? '#333' : 'rgba(255,255,255,0.7)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ color: plan.highlight ? '#000' : '#4ade80', fontSize: 14, lineHeight: 1 }}>✓</span> {f}
+                    </li>
+                  ))}
+                </ul>
+                <a href={plan.href} style={{
+                  display: 'block', textAlign: 'center', padding: '10px 0',
+                  borderRadius: 10, fontSize: 13, fontWeight: 700,
+                  background: plan.highlight ? '#000' : 'rgba(255,255,255,0.1)',
+                  color: plan.highlight ? '#fff' : '#fff',
+                  textDecoration: 'none', transition: 'all 0.2s',
+                  border: plan.highlight ? 'none' : '1px solid rgba(255,255,255,0.2)',
+                }}>{plan.cta}</a>
+              </div>
+            ))}
+          </div>
+          <p style={{ textAlign: 'center', fontSize: 13, color: 'rgba(255,255,255,0.4)', margin: 0 }}>
+            Credits never expire · 1 credit = 1 hour · <a href="/settings/billing" style={{ color: 'rgba(255,255,255,0.65)', fontWeight: 600 }}>Full billing details →</a>
+          </p>
         </div>
       </section>
 
@@ -1913,275 +1688,37 @@ export default function HomePage() {
       <VideoShowcase />
 
       {/* Features Section */}
-      <section id="features" style={{ padding: '40px 24px', maxWidth: 1100, margin: '0 auto' }}>
-        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-          
-          {/* Speech Recognition */}
-          <div style={{
-            flex: '1 1 300px',
-            borderRadius: 18,
-            background: '#fff',
-            border: '1px solid rgba(0,0,0,0.1)',
-            transition: 'all 0.4s',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
-            overflow: 'hidden',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.12)' }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.06)' }}
-          >
-            <div style={{ padding: 36 }}>
-              <div style={{
-                display: 'inline-block',
-                padding: '5px 14px',
-                borderRadius: 100,
-                background: '#000',
-                fontSize: 10,
-                fontWeight: 800,
-                color: '#fff',
-                marginBottom: 20,
-                textTransform: 'uppercase',
-                letterSpacing: 0.5,
-              }}>SPEECH RECOGNITION</div>
-              <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 20, color: '#000', lineHeight: 1.3 }}>
-                Blazing Fast Transcription
-              </h3>
-              
-              <div style={{
-                background: '#fafafa',
-                borderRadius: 12,
-                padding: 20,
-                marginBottom: 20,
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                  <div style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: '50%',
-                    background: '#000',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                    <Icon name="Mic" size={18} />
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 11, color: '#999', fontWeight: 600 }}>Rob Stanley</div>
-                    <div style={{ fontSize: 10, color: '#ccc' }}>Talking...</div>
-                  </div>
-                </div>
-                <div style={{
-                  height: 40,
-                  background: 'linear-gradient(90deg, #000 0%, #333 50%, #000 100%)',
-                  borderRadius: 6,
-                  backgroundSize: '200% 100%',
-                  animation: 'waveform 1.5s ease-in-out infinite',
-                }}/>
-              </div>
-
-              <p style={{ color: '#666', fontSize: 14, lineHeight: 1.7 }}>
-                We use a state-of-the-art transcription model that provides a highly accurate transcription in 
-                record breaking speed!
-              </p>
-            </div>
+      <section id="features" style={{ padding: '60px 24px', background: 'linear-gradient(180deg, #fff 0%, #f5f5f5 100%)' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 36 }}>
+            <h2 style={{ fontSize: 'clamp(22px, 3.5vw, 34px)', fontWeight: 900, letterSpacing: '-1px', color: '#000', marginBottom: 8 }}>
+              Everything You Need to Ace Interviews
+            </h2>
+            <p style={{ color: '#666', fontSize: 15, margin: 0 }}>Powerful features built for real interview success</p>
           </div>
-
-          {/* AI Answers */}
-          <div style={{
-            flex: '1 1 300px',
-            borderRadius: 18,
-            background: '#fff',
-            border: '1px solid rgba(0,0,0,0.1)',
-            transition: 'all 0.4s',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
-            overflow: 'hidden',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.12)' }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.06)' }}
-          >
-            <div style={{ padding: 36 }}>
-              <div style={{
-                display: 'inline-block',
-                padding: '5px 14px',
-                borderRadius: 100,
-                background: '#000',
-                fontSize: 10,
-                fontWeight: 800,
-                color: '#fff',
-                marginBottom: 20,
-                textTransform: 'uppercase',
-                letterSpacing: 0.5,
-              }}>AI ANSWERS</div>
-              <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 20, color: '#000', lineHeight: 1.3 }}>
-                100% Accurate Responses
-              </h3>
-              
-              <div style={{
-                background: '#fafafa',
-                borderRadius: 12,
-                padding: 16,
-                marginBottom: 20,
-                border: '1px solid #000',
-              }}>
-                <div style={{ fontSize: 12, color: '#000', marginBottom: 8, fontWeight: 600 }}>
-                  💬 Some question placeholder goes here
-                </div>
-                <div style={{
-                  background: '#fff',
-                  borderRadius: 8,
-                  padding: 12,
-                  fontSize: 13,
-                  color: '#333',
-                  lineHeight: 1.6,
-                }}>
-                  tellus velit suspicing vestibulum tellus velit.
-                </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+            {[
+              { icon: '🎙️', tag: 'Speech Recognition', title: 'Blazing Fast Transcription', desc: 'State-of-the-art speech-to-text that transcribes both your voice and interviewer audio in real time.' },
+              { icon: '🤖', tag: 'AI Answers', title: '100% Accurate Responses', desc: 'Choose between GPT-4.1 and Claude 4.0 Sonnet — the best LLMs tailored to your resume & JD.' },
+              { icon: '💻', tag: 'Coding', title: 'Full Coding Interview Support', desc: 'Analyzes LeetCode/HackerRank screen content and provides real-time solutions for coding rounds.' },
+              { icon: '🖥️', tag: 'Screen Analyzer', title: 'Analyze Any Screen Content', desc: 'Instantly analyze technical questions, documents, and code shared on screen.' },
+              { icon: '🔔', tag: 'Reminders', title: 'Smart Interview Reminders', desc: 'Set natural language reminders for follow-ups, applications, and deadlines — never miss one.' },
+              { icon: '🕵️', tag: 'Privacy', title: '100% Undetectable', desc: 'Invisible on Zoom, Meet, and Teams. Advanced overlay tech means interviewers see nothing.' },
+            ].map((f, i) => (
+              <div key={i} style={{
+                borderRadius: 16, background: '#fff', border: '1px solid rgba(0,0,0,0.08)',
+                padding: '24px 22px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+                transition: 'all 0.2s',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 10px 32px rgba(0,0,0,0.1)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.04)'; }}
+              >
+                <div style={{ fontSize: 28, marginBottom: 12 }}>{f.icon}</div>
+                <div style={{ fontSize: 10, fontWeight: 800, color: '#888', textTransform: 'uppercase' as const, letterSpacing: 1, marginBottom: 8 }}>{f.tag}</div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: '#000', marginBottom: 10, lineHeight: 1.3 }}>{f.title}</div>
+                <p style={{ fontSize: 13, color: '#555', lineHeight: 1.6, margin: 0 }}>{f.desc}</p>
               </div>
-
-              <p style={{ color: '#666', fontSize: 14, lineHeight: 1.7 }}>
-                You choose between GPT-5, GPT-4.1 and Claude 4.0 Sonnet, the best LLMs available, to 
-                provide the most accurate answers.
-              </p>
-            </div>
-          </div>
-
-          {/* Programming */}
-          <div style={{
-            flex: '1 1 300px',
-            borderRadius: 18,
-            background: '#fff',
-            border: '1px solid rgba(0,0,0,0.1)',
-            transition: 'all 0.4s',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
-            overflow: 'hidden',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.12)' }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.06)' }}
-          >
-            <div style={{ padding: 36 }}>
-              <div style={{
-                display: 'inline-block',
-                padding: '5px 14px',
-                borderRadius: 100,
-                background: '#000',
-                fontSize: 10,
-                fontWeight: 800,
-                color: '#000',
-                marginBottom: 20,
-                textTransform: 'uppercase',
-                letterSpacing: 0.5,
-              }}>PROGRAMMING</div>
-              <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 20, color: '#000', lineHeight: 1.3 }}>
-                Full Coding Interview Support
-              </h3>
-              
-              <div style={{
-                background: '#0a0a0a',
-                borderRadius: 12,
-                padding: 16,
-                marginBottom: 20,
-                fontFamily: 'monospace',
-              }}>
-                <div style={{ color: '#fff', fontSize: 12, marginBottom: 8 }}>
-                  <span style={{ color: '#999' }}>function</span> generatePrimes(n) {'{'}
-                </div>
-                <div style={{ color: '#fff', fontSize: 12, paddingLeft: 16, marginBottom: 4 }}>
-                  <span style={{ color: '#999' }}>if</span> (num {'<'} <span style={{ color: '#fff' }}>2</span>) <span style={{ color: '#999' }}>return</span> [];
-                </div>
-                <div style={{ color: '#fff', fontSize: 12 }}>{'}'}</div>
-              </div>
-
-              <p style={{ color: '#666', fontSize: 14, lineHeight: 1.7 }}>
-                You can use HelplyAI for coding interviews. It can both listen for coding questions and capture the 
-                screen if a LeetCode-style question is being screen shared with you.
-              </p>
-            </div>
-          </div>
-
-          {/* Row 2: Additional Features */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24, marginTop: 24 }}>
-            {/* Reminders */}
-            <div style={{
-              borderRadius: 18, background: '#fff', border: '1px solid rgba(0,0,0,0.1)',
-              transition: 'all 0.4s', boxShadow: '0 4px 24px rgba(0,0,0,0.06)', overflow: 'hidden',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.12)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.06)' }}
-            >
-              <div style={{ padding: 36 }}>
-                <div style={{ display: 'inline-block', padding: '5px 14px', borderRadius: 100, background: '#000',
-                  fontSize: 10, fontWeight: 800, color: '#fff', marginBottom: 20, textTransform: 'uppercase', letterSpacing: 0.5,
-                }}>REMINDERS</div>
-                <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 20, color: '#000', lineHeight: 1.3 }}>
-                  Smart Interview Reminders
-                </h3>
-                <p style={{ color: '#666', fontSize: 14, lineHeight: 1.7 }}>
-                  Set up smart reminders for interview follow-ups, job applications, and career deadlines. Never miss an important interview or deadline again.
-                </p>
-              </div>
-            </div>
-
-            {/* Screen Analyzer */}
-            <div style={{
-              borderRadius: 18, background: '#fff', border: '1px solid rgba(0,0,0,0.1)',
-              transition: 'all 0.4s', boxShadow: '0 4px 24px rgba(0,0,0,0.06)', overflow: 'hidden',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.12)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.06)' }}
-            >
-              <div style={{ padding: 36 }}>
-                <div style={{ display: 'inline-block', padding: '5px 14px', borderRadius: 100, background: '#000',
-                  fontSize: 10, fontWeight: 800, color: '#fff', marginBottom: 20, textTransform: 'uppercase', letterSpacing: 0.5,
-                }}>SCREEN ANALYZER</div>
-                <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 20, color: '#000', lineHeight: 1.3 }}>
-                  Analyze Any Screen Content
-                </h3>
-                <p style={{ color: '#666', fontSize: 14, lineHeight: 1.7 }}>
-                  Capture and analyze coding challenges, technical questions, and interview documents instantly. AI-powered screen analysis for problem-solving.
-                </p>
-              </div>
-            </div>
-
-            {/* 100% Accuracy */}
-            <div style={{
-              borderRadius: 18, background: '#fff', border: '1px solid rgba(0,0,0,0.1)',
-              transition: 'all 0.4s', boxShadow: '0 4px 24px rgba(0,0,0,0.06)', overflow: 'hidden',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.12)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.06)' }}
-            >
-              <div style={{ padding: 36 }}>
-                <div style={{ display: 'inline-block', padding: '5px 14px', borderRadius: 100, background: '#22c55e',
-                  fontSize: 10, fontWeight: 800, color: '#fff', marginBottom: 20, textTransform: 'uppercase', letterSpacing: 0.5,
-                }}>100% ACCURACY</div>
-                <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 20, color: '#000', lineHeight: 1.3 }}>
-                  Highly Accurate AI Responses
-                </h3>
-                <p style={{ color: '#666', fontSize: 14, lineHeight: 1.7 }}>
-                  Powered by GPT-4.1, Claude 4.0, and advanced AI models to provide the most accurate interview answers tailored to your resume and experience.
-                </p>
-              </div>
-            </div>
-
-            {/* Instant Answers */}
-            <div style={{
-              borderRadius: 18, background: '#fff', border: '1px solid rgba(0,0,0,0.1)',
-              transition: 'all 0.4s', boxShadow: '0 4px 24px rgba(0,0,0,0.06)', overflow: 'hidden',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.12)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.06)' }}
-            >
-              <div style={{ padding: 36 }}>
-                <div style={{ display: 'inline-block', padding: '5px 14px', borderRadius: 100, background: '#000',
-                  fontSize: 10, fontWeight: 800, color: '#fff', marginBottom: 20, textTransform: 'uppercase', letterSpacing: 0.5,
-                }}>INSTANT ANSWERS</div>
-                <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 20, color: '#000', lineHeight: 1.3 }}>
-                  Real-Time Interview Answers
-                </h3>
-                <p style={{ color: '#666', fontSize: 14, lineHeight: 1.7 }}>
-                  Get instant AI-generated answers during live interviews. Automatic question detection and personalized responses based on your background.
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -2554,91 +2091,47 @@ export default function HomePage() {
       )}
 
       {/* FAQ Section */}
-      <section style={{
-        padding: '80px 24px',
-        background: '#fff',
-      }}>
-        <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 50 }}>
-            <span style={{
-              display: 'inline-block',
-              padding: '8px 16px',
-              background: '#000',
-              color: '#fff',
-              borderRadius: 100,
-              fontSize: 13,
-              fontWeight: 700,
-              marginBottom: 16,
-            }}>
-              ❓ FAQ
-            </span>
-            <h2 style={{
-              fontSize: 'clamp(28px, 4.5vw, 44px)',
-              fontWeight: 900,
-              letterSpacing: '-1px',
-              marginBottom: 16,
-              color: '#000',
-            }}>
+      <section id="faq" style={{ padding: '60px 24px', background: 'linear-gradient(180deg, #f9f9f9 0%, #fff 100%)' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 36 }}>
+            <h2 style={{ fontSize: 'clamp(22px, 3.5vw, 34px)', fontWeight: 900, letterSpacing: '-1px', color: '#000', marginBottom: 8 }}>
               Frequently Asked Questions
             </h2>
-            <p style={{ color: '#666', fontSize: 17, maxWidth: 600, margin: '0 auto' }}>
-              Everything you need to know about HelplyAI
-            </p>
+            <p style={{ color: '#666', fontSize: 15, margin: 0 }}>Everything you need to know about HelplyAI</p>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(440px, 1fr))', gap: 10 }}>
             {[
-              { q: 'What is HelplyAI?', a: 'HelplyAI is an AI-powered interview assistant that provides real-time support during coding and behavioral interviews. It listens to interview questions and provides instant, contextual answers to help you succeed.' },
-              { q: 'Is HelplyAI detectable during screen sharing?', a: 'No! HelplyAI is 100% invisible on screen share. The app uses advanced overlay technology that is completely undetectable on Zoom, Google Meet, Microsoft Teams, and other video platforms.' },
-              { q: 'How does the pricing work?', a: 'HelplyAI uses a pay-per-use credit system. You only pay for what you use - no monthly subscriptions required. Credits never expire, so you can use them whenever you need. Starting at just ₹399 per hour.' },
-              { q: 'What platforms does HelplyAI support?', a: 'HelplyAI works on both Mac (Apple Silicon & Intel) and Windows. It supports all major interview platforms including Zoom, Google Meet, Microsoft Teams, HackerRank, LeetCode, and more.' },
-              { q: 'How do I get started?', a: 'Simply download the app, create an account, purchase credits, and you\'re ready to go! The setup takes less than 2 minutes. We also offer a free trial so you can test the features before purchasing.' },
-              { q: 'What is Interview Mode vs General Mode?', a: 'Interview Mode is specifically designed for job interviews - it captures both your voice and the interviewer\'s audio for perfect context. General Mode is for everyday tasks like writing emails, analyzing documents, and coding help.' },
-              { q: 'Can I use HelplyAI for coding interviews?', a: 'Absolutely! HelplyAI excels at coding interviews. It can analyze screen content, understand coding problems, and provide solutions in real-time. It works with HackerRank, LeetCode, CoderPad, and other coding platforms.' },
-              { q: 'How does the voice recognition work?', a: 'HelplyAI uses advanced speech-to-text technology to capture and transcribe interview questions in real-time. It captures both your microphone and system audio (interviewer\'s voice) for complete context.' },
-              { q: 'Is my data secure?', a: 'Yes, we take security seriously. All data is encrypted in transit and at rest. We do not store your interview conversations permanently. Your privacy is our top priority.' },
-              { q: 'What if I have technical issues?', a: 'Our support team is available to help you. You can reach us through the Help Center in the app or contact us via email. We typically respond within 24 hours.' },
-              { q: 'Can I get a refund?', a: 'Yes, we offer refunds for unused credits. Please refer to our Refund Policy for detailed terms and conditions. Customer satisfaction is important to us.' },
-              { q: 'How do I paste my JD and Resume?', a: 'In Interview Mode, simply copy your Job Description and Resume, then paste them into the chatbot. The AI will analyze them and tailor its answers to match your profile and the job requirements.' },
-              { q: 'Does HelplyAI work with behavioral interviews?', a: 'Yes! HelplyAI is excellent for behavioral interviews. It can help you structure STAR responses, provide relevant examples, and answer common behavioral questions effectively.' },
-              { q: 'How many credits do I need for an interview?', a: 'A typical 1-hour interview uses about 1 hour of credits (₹399). We recommend purchasing 3 credits (₹599 for 3 hours) if you have multiple interviews lined up.' },
-              { q: 'Can I use HelplyAI on multiple devices?', a: 'Yes, you can use your account on multiple devices. However, you can only have one active session at a time. Your credits are linked to your account, not the device.' },
+              { q: 'What is HelplyAI?', a: 'AI-powered interview assistant giving real-time answers during coding & behavioral interviews — 100% invisible on screen share.' },
+              { q: 'Is it detectable on Zoom / Meet?', a: 'No. HelplyAI uses advanced overlay tech that is completely undetectable on Zoom, Google Meet, Teams, and all major platforms.' },
+              { q: 'How does pricing work?', a: 'Pay-per-use credits — no monthly subscription. Credits never expire. Start free (15 min), then from ₹399/hr.' },
+              { q: 'Mac or Windows?', a: 'Both! Works on macOS (Apple Silicon & Intel) and Windows 10/11. Download from the Dashboard.' },
+              { q: 'Interview Mode vs General Mode?', a: 'Interview Mode captures interviewer audio for live Q&A. General Mode is for everyday tasks — writing, coding, screen analysis.' },
+              { q: 'How do I start?', a: 'Download the app → sign up → paste your JD & resume → start your session. Setup takes under 2 minutes.' },
             ].map((faq, i) => (
               <div key={i} style={{
                 border: '1px solid #e5e7eb',
                 borderRadius: 12,
                 overflow: 'hidden',
-                background: openFaq === i ? '#f9fafb' : '#fff',
+                background: openFaq === i ? '#000' : '#fff',
+                transition: 'background 0.2s',
               }}>
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
                   style={{
-                    width: '100%',
-                    padding: '20px 24px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    background: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    textAlign: 'left',
+                    width: '100%', padding: '16px 20px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left',
                   }}
                 >
-                  <span style={{ fontSize: 16, fontWeight: 600, color: '#000' }}>{faq.q}</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: openFaq === i ? '#fff' : '#000' }}>{faq.q}</span>
                   <span style={{
-                    fontSize: 24,
-                    color: '#666',
-                    transform: openFaq === i ? 'rotate(45deg)' : 'rotate(0deg)',
-                    transition: 'transform 0.3s',
+                    fontSize: 20, color: openFaq === i ? '#fff' : '#666', flexShrink: 0, marginLeft: 12,
+                    transform: openFaq === i ? 'rotate(45deg)' : 'rotate(0deg)', transition: 'transform 0.2s',
                   }}>+</span>
                 </button>
                 {openFaq === i && (
-                  <div style={{
-                    padding: '0 24px 20px',
-                    color: '#666',
-                    fontSize: 15,
-                    lineHeight: 1.7,
-                  }}>
+                  <div style={{ padding: '0 20px 16px', color: 'rgba(255,255,255,0.75)', fontSize: 13, lineHeight: 1.6 }}>
                     {faq.a}
                   </div>
                 )}
