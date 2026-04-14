@@ -1140,120 +1140,83 @@ export default function HomePage() {
       </section>
 
       {/* Competitor Comparison Section */}
-      <section style={{
-        padding: '80px 24px',
-        background: '#000',
-      }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 50 }}>
-            <span style={{
-              display: 'inline-block',
-              padding: '8px 16px',
-              background: '#fff',
-              color: '#000',
-              borderRadius: 100,
-              fontSize: 13,
-              fontWeight: 700,
-              marginBottom: 16,
-            }}>
-              💰 SAVE UP TO 95%
-            </span>
-            <h2 style={{
-              fontSize: 'clamp(28px, 4.5vw, 44px)',
-              fontWeight: 900,
-              letterSpacing: '-1px',
-              marginBottom: 16,
-              color: '#fff',
-            }}>
+      <section style={{ padding: '60px 24px', background: '#000' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 32 }}>
+            <h2 style={{ fontSize: 'clamp(22px, 3.5vw, 34px)', fontWeight: 900, letterSpacing: '-1px', color: '#fff', marginBottom: 8 }}>
               Why Pay More? Compare & Save
             </h2>
-            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 17, maxWidth: 700, margin: '0 auto' }}>
-              HelplyAI offers the same powerful features at a fraction of the cost. No expensive subscriptions required.
+            <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14, margin: 0 }}>
+              Same powerful features — fraction of the cost.
             </p>
           </div>
 
           {/* Comparison Table */}
-          <div style={{
-            background: '#111',
-            borderRadius: 20,
-            overflow: 'hidden',
-            border: '1px solid rgba(255,255,255,0.1)',
-          }}>
+          <div style={{ background: '#111', borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
             {/* Table Header */}
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 1fr',
-              gap: 1,
-              background: 'rgba(255,255,255,0.05)',
-              padding: '20px 24px',
-              borderBottom: '1px solid rgba(255,255,255,0.1)',
+              display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 1fr',
+              padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.1)',
+              background: 'rgba(255,255,255,0.04)',
             }}>
-              <div style={{ color: '#fff', fontSize: 14, fontWeight: 700 }}>Feature</div>
-              <div style={{ color: '#fff', fontSize: 14, fontWeight: 700, textAlign: 'center' }}>
-                <span style={{ background: '#fff', color: '#000', padding: '4px 12px', borderRadius: 100, fontSize: 12 }}>HelplyAI</span>
+              <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: 0.5 }}>Feature</div>
+              <div style={{ textAlign: 'center' }}>
+                <span style={{ background: '#fff', color: '#000', padding: '3px 10px', borderRadius: 100, fontSize: 11, fontWeight: 800 }}>HelplyAI</span>
               </div>
-              <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 600, textAlign: 'center' }}>ParakeetAI</div>
-              <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 600, textAlign: 'center' }}>Final Round AI</div>
-              <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 600, textAlign: 'center' }}>LockedIn AI</div>
-              <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 600, textAlign: 'center' }}>Interview Sidekick</div>
+              {['ParakeetAI', 'Final Round', 'LockedIn AI', 'Sidekick'].map(n => (
+                <div key={n} style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 600, textAlign: 'center' }}>{n}</div>
+              ))}
             </div>
 
             {/* Pricing Row */}
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 1fr',
-              gap: 1,
-              padding: '20px 24px',
-              borderBottom: '1px solid rgba(255,255,255,0.05)',
+              display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 1fr',
+              padding: '12px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)',
               background: 'rgba(255,255,255,0.02)',
             }}>
-              <div style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>💰 Pricing</div>
-              <div style={{ textAlign: 'center' }}>
-                <span style={{ color: '#22c55e', fontSize: 18, fontWeight: 800 }}>₹399</span>
+              <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                Pricing / hr
               </div>
               <div style={{ textAlign: 'center' }}>
-                <span style={{ color: '#ef4444', fontSize: 16, fontWeight: 700 }}>₹6,730</span>
-                <span style={{ color: '#22c55e', fontSize: 11, display: 'block', fontWeight: 600 }}>Save 94%</span>
+                <span style={{ color: '#fff', fontSize: 14, fontWeight: 800 }}>₹399</span>
               </div>
-              <div style={{ textAlign: 'center' }}>
-                <span style={{ color: '#ef4444', fontSize: 16, fontWeight: 700 }}>₹2,125-7,650</span>
-                <span style={{ color: '#22c55e', fontSize: 11, display: 'block', fontWeight: 600 }}>Save 95%</span>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <span style={{ color: '#ef4444', fontSize: 16, fontWeight: 700 }}>₹4,880</span>
-                <span style={{ color: '#22c55e', fontSize: 11, display: 'block', fontWeight: 600 }}>Save 92%</span>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <span style={{ color: '#ef4444', fontSize: 16, fontWeight: 700 }}>₹1,700</span>
-                <span style={{ color: '#22c55e', fontSize: 11, display: 'block', fontWeight: 600 }}>Save 76%</span>
-              </div>
+              {[{ p: '₹6,730', s: '–94%' }, { p: '₹5,000+', s: '–92%' }, { p: '₹4,880', s: '–92%' }, { p: '₹1,700', s: '–76%' }].map((c, ci) => (
+                <div key={ci} style={{ textAlign: 'center' }}>
+                  <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, fontWeight: 600, textDecoration: 'line-through' }}>{c.p}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10 }}>{c.s}</div>
+                </div>
+              ))}
             </div>
 
             {/* Feature Rows */}
             {[
-              { feature: '🎯 Real-time Interview Assistance', helply: true, parakeet: true, finalround: true, lockedin: true, sidekick: true },
-              { feature: '🖥️ Screen Analysis', helply: true, parakeet: true, finalround: true, lockedin: true, sidekick: false },
-              { feature: '👻 Invisible on Screen Share', helply: true, parakeet: true, finalround: true, lockedin: true, sidekick: true },
-              { feature: '🎙️ Voice Recognition', helply: true, parakeet: true, finalround: true, lockedin: true, sidekick: true },
-              { feature: '📋 JD & Resume Analysis', helply: true, parakeet: false, finalround: true, lockedin: true, sidekick: false },
-              { feature: '💳 Pay-Per-Use (No Subscription)', helply: true, parakeet: false, finalround: false, lockedin: false, sidekick: false },
-              { feature: '⏰ Credits Never Expire', helply: true, parakeet: false, finalround: false, lockedin: false, sidekick: false },
-              { feature: '🆓 Free Trial Included', helply: true, parakeet: false, finalround: true, lockedin: false, sidekick: true },
-              { feature: '💻 Mac & Windows Support', helply: true, parakeet: true, finalround: true, lockedin: true, sidekick: true },
+              { icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>, label: 'Real-time Assistance', vals: [true, true, true, true, true] },
+              { icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>, label: 'Screen Analysis', vals: [true, true, true, true, false] },
+              { icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>, label: 'Invisible on Screen Share', vals: [true, true, true, true, true] },
+              { icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>, label: 'Voice Recognition', vals: [true, true, true, true, true] },
+              { icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>, label: 'JD & Resume Analysis', vals: [true, false, true, true, false] },
+              { icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>, label: 'Pay-Per-Use (No Sub)', vals: [true, false, false, false, false] },
+              { icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>, label: 'Credits Never Expire', vals: [true, false, false, false, false] },
+              { icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>, label: 'Free Trial Included', vals: [true, false, true, false, true] },
+              { icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>, label: 'Mac & Windows', vals: [true, true, true, true, true] },
             ].map((row, i) => (
               <div key={i} style={{
-                display: 'grid',
-                gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 1fr',
-                gap: 1,
-                padding: '16px 24px',
-                borderBottom: '1px solid rgba(255,255,255,0.05)',
+                display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 1fr',
+                padding: '11px 20px', borderBottom: '1px solid rgba(255,255,255,0.04)',
               }}>
-                <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: 14 }}>{row.feature}</div>
-                <div style={{ textAlign: 'center', fontSize: 18 }}>{row.helply ? '✅' : '❌'}</div>
-                <div style={{ textAlign: 'center', fontSize: 18 }}>{row.parakeet ? '✅' : '❌'}</div>
-                <div style={{ textAlign: 'center', fontSize: 18 }}>{row.finalround ? '✅' : '❌'}</div>
-                <div style={{ textAlign: 'center', fontSize: 18 }}>{row.lockedin ? '✅' : '❌'}</div>
-                <div style={{ textAlign: 'center', fontSize: 18 }}>{row.sidekick ? '✅' : '❌'}</div>
+                <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ color: 'rgba(255,255,255,0.5)' }}>{row.icon}</span>
+                  {row.label}
+                </div>
+                {row.vals.map((v, vi) => (
+                  <div key={vi} style={{ textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {v
+                      ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    }
+                  </div>
+                ))}
               </div>
             ))}
           </div>
@@ -1518,105 +1481,6 @@ export default function HomePage() {
             ))}
           </div>
 
-        </div>
-      </section>
-
-      {/* Pricing Highlight Section */}
-      <section style={{
-        padding: '60px 24px',
-        background: 'linear-gradient(135deg, #000 0%, #1a1a1a 100%)',
-        borderTop: '1px solid rgba(255,255,255,0.1)',
-      }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', textAlign: 'center' }}>
-          <div style={{
-            background: '#000',
-            borderRadius: 24,
-            padding: '50px 40px',
-            position: 'relative',
-            overflow: 'hidden',
-            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6)',
-            border: '1px solid rgba(255,255,255,0.1)',
-          }}>
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <h2 style={{
-                fontSize: 'clamp(32px, 5vw, 56px)',
-                fontWeight: 900,
-                color: '#fff',
-                marginBottom: 20,
-                letterSpacing: '-1px',
-                textShadow: '0 2px 10px rgba(0,0,0,0.2)',
-              }}>
-                🎯 Crack Your Interview for Just ₹399!
-              </h2>
-              <p style={{
-                fontSize: 'clamp(18px, 3vw, 24px)',
-                color: '#fff',
-                marginBottom: 30,
-                fontWeight: 600,
-                opacity: 0.95,
-              }}>
-                Unlimited usage for the entire day • Pay only when you need it
-              </p>
-              
-              <div style={{ display: 'flex', gap: 30, justifyContent: 'center', flexWrap: 'wrap', marginTop: 40 }}>
-                <div style={{
-                  background: 'rgba(255,255,255,0.15)',
-                  backdropFilter: 'blur(10px)',
-                  borderRadius: 20,
-                  padding: '30px 40px',
-                  border: '2px solid rgba(255,255,255,0.3)',
-                  minWidth: 280,
-                }}>
-                  <div style={{ fontSize: 48, fontWeight: 900, color: '#fff', marginBottom: 8 }}>₹399</div>
-                  <div style={{ fontSize: 18, color: '#fff', fontWeight: 600, marginBottom: 4 }}>Day Pass</div>
-                  <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)' }}>24 hours unlimited access</div>
-                </div>
-
-                <div style={{
-                  background: 'rgba(255,255,255,0.2)',
-                  backdropFilter: 'blur(10px)',
-                  borderRadius: 20,
-                  padding: '30px 40px',
-                  border: '2px solid rgba(255,255,255,0.4)',
-                  minWidth: 280,
-                  position: 'relative',
-                }}>
-                  <div style={{
-                    position: 'absolute',
-                    top: -12,
-                    right: 20,
-                    background: '#000',
-                    color: '#84cc16',
-                    padding: '4px 12px',
-                    borderRadius: 100,
-                    fontSize: 11,
-                    fontWeight: 800,
-                  }}>BEST VALUE</div>
-                  <div style={{ fontSize: 48, fontWeight: 900, color: '#fff', marginBottom: 8 }}>₹799</div>
-                  <div style={{ fontSize: 18, color: '#fff', fontWeight: 600, marginBottom: 4 }}>Week Pass</div>
-                  <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)' }}>7 days unlimited access</div>
-                </div>
-              </div>
-
-              <p style={{
-                fontSize: 16,
-                color: '#fff',
-                marginTop: 30,
-                fontWeight: 500,
-                opacity: 0.9,
-              }}>
-                💼 Join 100K+ candidates who landed their dream jobs • 🚀 Start cracking interviews today!
-              </p>
-            </div>
-            
-            <div style={{
-              position: 'absolute',
-              right: -80,
-              bottom: -80,
-              fontSize: 300,
-              opacity: 0.1,
-            }}>💰</div>
-          </div>
         </div>
       </section>
 
