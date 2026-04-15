@@ -1,7 +1,7 @@
 // ── AI Resume Tailoring ───────────────────────────────────────────────────────
-// Uses OpenRouter (gpt-4o-mini) to tailor a resume against a Job Description.
+// Uses OpenRouter (gpt-4o-mini → deepseek fallback) to tailor resume vs JD.
 
-const OPENROUTER_KEY = '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';
+const OPENROUTER_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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';
 
 export interface TailoredResume {
   name: string;
@@ -79,33 +79,71 @@ Return ONLY valid JSON (no markdown, no code blocks) matching this exact schema:
   "matchKeywords": ["keyword1", "keyword2", ...top 8 keywords matched from JD]
 }`;
 
-  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${OPENROUTER_KEY}`,
-      'Content-Type': 'application/json',
-      'HTTP-Referer': 'https://helplyai.co',
-      'X-Title': 'HelplyAI Resume Tailor',
-    },
-    body: JSON.stringify({
-      model: 'openai/gpt-4o-mini',
-      messages: [{ role: 'user', content: prompt }],
-      max_tokens: 2000,
-      temperature: 0.3,
-    }),
-  });
+  const models = ['openai/gpt-4o-mini', 'deepseek/deepseek-chat-v3-0324', 'mistralai/mistral-7b-instruct'];
+  let lastError = '';
 
-  if (!response.ok) throw new Error('AI service unavailable. Please try again.');
+  for (const model of models) {
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENROUTER_KEY}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://helplyai.co',
+          'X-Title': 'HelplyAI Resume Tailor',
+        },
+        body: JSON.stringify({
+          model,
+          messages: [{ role: 'user', content: prompt }],
+          max_tokens: 2500,
+          temperature: 0.3,
+        }),
+      });
 
-  const data = await response.json();
-  const raw = data.choices?.[0]?.message?.content || '';
+      if (!response.ok) {
+        const errBody = await response.text();
+        lastError = `HTTP ${response.status}: ${errBody.slice(0, 200)}`;
+        console.warn(`Model ${model} failed:`, lastError);
+        continue;
+      }
 
-  // Strip any markdown code fences if present
-  const cleaned = raw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+      const data = await response.json();
+      const raw = data.choices?.[0]?.message?.content || '';
 
-  try {
-    return JSON.parse(cleaned) as TailoredResume;
-  } catch {
-    throw new Error('Failed to parse AI response. Please try again.');
+      if (!raw) { lastError = 'Empty response from AI'; continue; }
+
+      // Strip markdown code fences
+      const cleaned = raw
+        .replace(/^```json\s*/i, '')
+        .replace(/^```\s*/i, '')
+        .replace(/```\s*$/i, '')
+        .trim();
+
+      // Find first { to handle any preamble text
+      const jsonStart = cleaned.indexOf('{');
+      const jsonEnd = cleaned.lastIndexOf('}');
+      if (jsonStart === -1 || jsonEnd === -1) { lastError = 'No JSON in response'; continue; }
+      const jsonStr = cleaned.slice(jsonStart, jsonEnd + 1);
+
+      try {
+        const parsed = JSON.parse(jsonStr) as TailoredResume;
+        // Ensure required arrays exist
+        parsed.skills = parsed.skills || [];
+        parsed.experience = parsed.experience || [];
+        parsed.education = parsed.education || [];
+        parsed.projects = parsed.projects || [];
+        parsed.certifications = parsed.certifications || [];
+        parsed.matchKeywords = parsed.matchKeywords || [];
+        return parsed;
+      } catch (parseErr) {
+        lastError = 'JSON parse failed: ' + String(parseErr);
+        continue;
+      }
+    } catch (fetchErr) {
+      lastError = 'Network error: ' + String(fetchErr);
+      continue;
+    }
   }
+
+  throw new Error(`Resume generation failed. ${lastError}`);
 }

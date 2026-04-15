@@ -849,7 +849,7 @@ export default function JobSearchPage() {
   if (showResumeBuilder && userResume) {
     return (
       <div style={{ maxWidth: 1400, margin: '0 auto' }}>
-        <ResumeBuilderPage resumeText={userResume} onBack={() => setShowResumeBuilder(false)} />
+        <ResumeBuilderPage resumeText={userResume} onClose={() => setShowResumeBuilder(false)} />
       </div>
     );
   }
@@ -874,6 +874,14 @@ export default function JobSearchPage() {
           </div>
           <button onClick={() => setShowSaved(!showSaved)} style={{ padding: '10px 20px', borderRadius: 10, border: '1px solid #e5e7eb', background: showSaved ? '#111827' : '#fff', color: showSaved ? '#fff' : '#111827', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
             <Bookmark size={14} /> {showSaved ? 'Back to Search' : 'Saved Jobs'}
+          </button>
+          <button
+            onClick={() => {
+              if (!userResume) { setShowResumeModal(true); } else { setShowResumeBuilder(true); }
+            }}
+            style={{ padding: '10px 20px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#7c3aed,#4f46e5)', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 12px #7c3aed40' }}
+          >
+            <Wand2 size={14} /> AI Resume Builder
           </button>
         </div>
       </div>
@@ -1333,50 +1341,30 @@ export default function JobSearchPage() {
                   })()}
                 </div>
               )}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 20 }}>
-                <div style={{ display: 'flex', gap: 10 }}>
-                  <button
-                    onClick={() => {
-                      if (userResume) {
-                        const profile = parseResume(userResume);
-                        setResumeProfile(profile);
-                        setQuery(profile.suggestedRole);
-                        setShowResumeModal(false);
-                        if (user) {
-                          supabase.from('interview_context').upsert({ user_id: user.id, resume: userResume }, { onConflict: 'user_id' });
-                        }
-                      }
-                    }}
-                    disabled={!userResume}
-                    style={{ flex: 1, padding: '12px', borderRadius: 10, background: userResume ? '#111827' : '#e5e7eb', border: 'none', color: userResume ? '#fff' : '#9ca3af', fontSize: 14, fontWeight: 600, cursor: userResume ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
-                  >
-                    <Sparkles size={16} /> Find Matching Jobs
-                  </button>
-                  <button
-                    onClick={() => { setUserResume(''); setResumeProfile(null); }}
-                    style={{ padding: '12px 20px', borderRadius: 10, background: '#f9fafb', border: '1px solid #e5e7eb', color: '#6b7280', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}
-                  >
-                    Clear
-                  </button>
-                </div>
-                {userResume && (
-                  <button
-                    onClick={() => {
-                      if (userResume) {
-                        const profile = parseResume(userResume);
-                        setResumeProfile(profile);
-                        if (user) {
-                          supabase.from('interview_context').upsert({ user_id: user.id, resume: userResume }, { onConflict: 'user_id' });
-                        }
-                      }
+              <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+                <button
+                  onClick={() => {
+                    if (userResume) {
+                      const profile = parseResume(userResume);
+                      setResumeProfile(profile);
+                      setQuery(profile.suggestedRole);
                       setShowResumeModal(false);
-                      setShowResumeBuilder(true);
-                    }}
-                    style={{ width: '100%', padding: '12px', borderRadius: 10, background: 'linear-gradient(135deg, #7c3aed, #4f46e5)', border: 'none', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
-                  >
-                    <Wand2 size={16} /> Create Resume for a Job (Paste JD) ✨
-                  </button>
-                )}
+                      if (user) {
+                        supabase.from('interview_context').upsert({ user_id: user.id, resume: userResume }, { onConflict: 'user_id' });
+                      }
+                    }
+                  }}
+                  disabled={!userResume}
+                  style={{ flex: 1, padding: '12px', borderRadius: 10, background: userResume ? '#111827' : '#e5e7eb', border: 'none', color: userResume ? '#fff' : '#9ca3af', fontSize: 14, fontWeight: 600, cursor: userResume ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+                >
+                  <Sparkles size={16} /> Find Matching Jobs
+                </button>
+                <button
+                  onClick={() => { setUserResume(''); setResumeProfile(null); }}
+                  style={{ padding: '12px 20px', borderRadius: 10, background: '#f9fafb', border: '1px solid #e5e7eb', color: '#6b7280', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}
+                >
+                  Clear
+                </button>
               </div>
             </div>
           </div>
