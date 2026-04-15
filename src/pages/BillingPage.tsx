@@ -5,6 +5,8 @@ import { trackUpgradeClick, trackPaymentStarted, trackPaymentCompleted } from '.
 import { PLANS, PLAN_ORDER, GENERAL_PLANS, formatMinutes } from '../lib/plans';
 import type { PlanId } from '../lib/plans';
 import { usePlanLimits } from '../hooks/usePlanLimits';
+import { detectRegionalPricing, getDefaultPricing } from '../lib/pricing';
+import type { RegionalPricing } from '../lib/pricing';
 
 declare global {
   interface Window {
@@ -33,10 +35,19 @@ export default function BillingPage() {
   const [generalCredits, setGeneralCredits] = useState<{ totalMinutes: number; usedMinutes: number }>({ totalMinutes: 0, usedMinutes: 0 });
   const [pricingMode, setPricingMode] = useState<'interview' | 'general'>('interview');
   const { planState, loaded, refreshPlan } = usePlanLimits();
+  const [regionalPricing, setRegionalPricing] = useState<RegionalPricing>(getDefaultPricing());
+  const [pricingLoaded, setPricingLoaded] = useState(false);
 
   useEffect(() => {
     if (user) loadBilling();
   }, [user]);
+
+  useEffect(() => {
+    detectRegionalPricing().then(p => {
+      setRegionalPricing(p);
+      setPricingLoaded(true);
+    });
+  }, []);
 
   const loadBilling = async () => {
     const { data } = await supabase
@@ -83,13 +94,19 @@ export default function BillingPage() {
   };
 
   const handlePurchaseCredits = async (planId: PlanId) => {
-    if (planId === 'free') return; // Can't purchase free
+    if (planId === 'free') return;
     setUpgradeLoading(planId);
     trackUpgradeClick('billing_page');
     trackPaymentStarted(planId);
 
     const plan = PLANS[planId as keyof typeof PLANS];
-    const amount = plan.priceInPaise;
+    // Use regional pricing amount if available, else fall back to plan default
+    const regionalPlan = planId === 'credit_1hr' ? regionalPricing.credit_1hr
+      : planId === 'credit_3hr' ? regionalPricing.credit_3hr
+      : planId === 'credit_10hr' ? regionalPricing.credit_10hr
+      : null;
+    const amount = regionalPlan ? regionalPlan.amountInPaise : plan.priceInPaise;
+    const displayPrice = regionalPlan ? regionalPlan.label : plan.priceLabel;
 
     const scriptLoaded = await loadRazorpayScript();
     if (!scriptLoaded) {
@@ -109,6 +126,8 @@ export default function BillingPage() {
         user_id: user!.id,
         plan: planId,
         credits_minutes: plan.limits.totalMinutes,
+        region: regionalPricing.region,
+        display_price: displayPrice,
       },
       handler: async function (response: any) {
         trackPaymentCompleted(planId, amount / 100, 'INR');
@@ -126,7 +145,7 @@ export default function BillingPage() {
               plan_name: plan.name,
               amount: amount,
               currency: 'INR',
-              amount_display: '₹' + (amount / 100),
+              amount_display: displayPrice,
               razorpay_payment_id: razorpayPaymentId,
               razorpay_order_id: razorpayOrderId,
               razorpay_signature: razorpaySignature,
@@ -199,7 +218,7 @@ export default function BillingPage() {
             setPaymentSuccess({
               planName: plan.name,
               planId: planId,
-              amount: '₹' + (amount / 100),
+              amount: displayPrice,
               paymentId: razorpayPaymentId || 'N/A',
               creditsAdded: plan.limits.totalMinutes,
             });
@@ -619,11 +638,32 @@ export default function BillingPage() {
         </div>
       </div>
 
+      {/* ── Regional Pricing Notice ── */}
+      {pricingLoaded && regionalPricing.region !== 'IN' && (
+        <div style={{
+          marginBottom: 16, padding: '10px 16px', borderRadius: 10,
+          background: '#f9fafb', border: '1px solid #e5e7eb',
+          display: 'flex', alignItems: 'center', gap: 8,
+        }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span style={{ color: '#6b7280', fontSize: 12 }}>
+            Prices shown in {regionalPricing.currencyCode}. {regionalPricing.note}
+          </span>
+        </div>
+      )}
+
       {/* ── Credit Plan Cards — 4 cards ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 24 }}>
         {PLAN_ORDER.map(planId => {
           const plan = PLANS[planId];
           const isFree = planId === 'free';
+          const rp = planId === 'credit_1hr' ? regionalPricing.credit_1hr
+            : planId === 'credit_3hr' ? regionalPricing.credit_3hr
+            : planId === 'credit_10hr' ? regionalPricing.credit_10hr
+            : null;
+          const displayLabel = rp ? rp.label : plan.priceLabel;
+          const displaySavings = rp ? rp.savingsNote : plan.savingsNote;
+          const displayBadge = rp?.badge || (plan.highlighted ? 'Best Value' : '');
 
           return (
             <div key={planId} style={{
@@ -633,16 +673,16 @@ export default function BillingPage() {
               transition: 'all 0.2s',
               boxShadow: plan.highlighted ? '0 4px 16px rgba(0,0,0,0.05)' : '0 1px 3px rgba(0,0,0,0.05)',
             }}>
-              {/* Best Value Badge */}
-              {plan.highlighted && (
+              {/* Badge */}
+              {displayBadge && (
                 <div style={{
                   position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)',
                   background: '#000',
                   color: '#fff', padding: '4px 14px', borderRadius: 12,
                   fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5,
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)', whiteSpace: 'nowrap' as const,
                 }}>
-                  Best Value
+                  {displayBadge}
                 </div>
               )}
 
@@ -664,20 +704,20 @@ export default function BillingPage() {
                     </span>
                   </div>
                 )}
-                <span style={{ color: '#000', fontSize: 28, fontWeight: 800, letterSpacing: '-1px' }}>{plan.priceLabel}</span>
+                <span style={{ color: '#000', fontSize: 28, fontWeight: 800, letterSpacing: '-1px' }}>{isFree ? 'Free' : displayLabel}</span>
                 {!isFree && (
                   <span style={{ color: '#6b7280', fontSize: 12, marginLeft: 4 }}>{plan.priceSuffix}</span>
                 )}
               </div>
 
               {/* Savings Badge */}
-              {plan.savingsNote && (
+              {displaySavings && (
                 <div style={{
                   fontSize: 10, fontWeight: 700, color: '#16a34a',
                   background: 'rgba(22,163,74,0.1)', padding: '3px 8px', borderRadius: 6,
                   display: 'inline-block', marginBottom: 8,
                 }}>
-                  {plan.savingsNote}
+                  {displaySavings}
                 </div>
               )}
 

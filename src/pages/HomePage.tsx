@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { DOWNLOAD_LINKS } from '../config/releases'
 import { trackVideoPlayed, trackVideoPaused, trackCTAClick, trackDownload } from '../lib/analytics'
+import { detectRegionalPricing, getDefaultPricing } from '../lib/pricing'
+import type { RegionalPricing } from '../lib/pricing'
 
 function VideoDemo() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -223,6 +225,11 @@ export default function HomePage() {
   const [showDownloadModal, setShowDownloadModal] = useState(false)
   const [selectedPlatform, setSelectedPlatform] = useState<'ios' | 'windows' | null>(null)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [regionalPricing, setRegionalPricing] = useState<RegionalPricing>(getDefaultPricing())
+
+  useEffect(() => {
+    detectRegionalPricing().then(setRegionalPricing)
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -1500,9 +1507,9 @@ export default function HomePage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 20 }}>
             {[
               { label: 'Free Trial', price: 'Free', sub: '15 min', features: ['15 min free', 'Full AI chat', 'Interview mode', 'No card needed'], cta: 'Start Free', href: '/settings/dashboard', highlight: false, badge: '' },
-              { label: '1 Credit', price: '₹399', sub: '/ hour', features: ['1 hr usage', 'Unlimited AI', 'Screen analysis', 'All features'], cta: 'Buy', href: '/settings/billing', highlight: false, badge: '' },
-              { label: '3 Credits', price: '₹599', sub: '/ 3 hrs', features: ['3 hrs usage', 'Unlimited AI', 'Save 33%', 'Best for prep'], cta: 'Buy', href: '/settings/billing', highlight: true, badge: 'BEST VALUE' },
-              { label: '10 Credits', price: '₹1,999', sub: '/ 10 hrs', features: ['10 hrs usage', 'Unlimited AI', 'Save 33%', 'Max value'], cta: 'Buy', href: '/settings/billing', highlight: false, badge: '' },
+              { label: '1 Credit', price: regionalPricing.credit_1hr.label, sub: regionalPricing.credit_1hr.sub, features: ['1 hr usage', 'Unlimited AI', 'Screen analysis', 'All features'], cta: 'Buy', href: '/settings/billing', highlight: false, badge: regionalPricing.credit_1hr.badge },
+              { label: '3 Credits', price: regionalPricing.credit_3hr.label, sub: regionalPricing.credit_3hr.sub, features: ['3 hrs usage', 'Unlimited AI', regionalPricing.credit_3hr.savingsNote || 'Best for prep', 'All features'], cta: 'Buy', href: '/settings/billing', highlight: true, badge: regionalPricing.credit_3hr.badge || 'BEST VALUE' },
+              { label: '10 Credits', price: regionalPricing.credit_10hr.label, sub: regionalPricing.credit_10hr.sub, features: ['10 hrs usage', 'Unlimited AI', regionalPricing.credit_10hr.savingsNote || 'Max value', 'Priority support'], cta: 'Buy', href: '/settings/billing', highlight: false, badge: regionalPricing.credit_10hr.badge },
             ].map((plan, i) => (
               <div key={i} style={{
                 background: plan.highlight ? '#fff' : 'rgba(255,255,255,0.06)',
