@@ -1,14 +1,15 @@
 // ── AI Resume Tailoring ──────────────────────────────────────────────────────
-// Calls OpenRouter directly from the browser.
-// Key is read from VITE_OPENROUTER_API_KEY env var (set in Vercel dashboard).
+// Uses OpenRouter SDK with API key stored securely in Supabase (api_keys table)
+// Key is fetched at runtime - NEVER hardcoded or exposed in git
 
-const OPENROUTER_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '';
+import { OpenRouter } from '@openrouter/sdk';
+import { getApiKey } from './apiKeyService';
 
 const MODELS = [
-  'openai/gpt-4o-mini',
-  'deepseek/deepseek-chat-v3-0324:free',
+  'google/gemma-4-26b-a4b-it:free',
   'mistralai/mistral-7b-instruct:free',
   'meta-llama/llama-3.1-8b-instruct:free',
+  'deepseek/deepseek-chat-v3-0324:free',
 ];
 
 export interface TailoredResume {
@@ -86,41 +87,33 @@ export async function tailorResumeWithAI(
   resumeText: string,
   jdText: string
 ): Promise<TailoredResume> {
-  if (!OPENROUTER_KEY) {
-    throw new Error('OpenRouter API key not configured. Please set VITE_OPENROUTER_API_KEY in Vercel environment variables.');
+  // Fetch key from Supabase (secure, per-user storage)
+  const apiKey = await getApiKey('openrouter');
+  if (!apiKey) {
+    throw new Error('OpenRouter API key not found. Please add your key in Settings > API Keys.');
   }
 
+  // Initialize OpenRouter SDK
+  const openrouter = new OpenRouter({ apiKey });
   const prompt = buildPrompt(resumeText, jdText);
   let lastError = 'All models failed';
 
   for (const model of MODELS) {
     try {
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${OPENROUTER_KEY}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': 'https://helplyai.co',
-          'X-Title': 'HelplyAI Resume Tailor',
-        },
-        body: JSON.stringify({
-          model,
-          messages: [{ role: 'user', content: prompt }],
-          max_tokens: 3000,
-          temperature: 0.2,
-        }),
+      const stream = await openrouter.chat.send({
+        model,
+        messages: [{ role: 'user', content: prompt }],
+        stream: true,
+        max_tokens: 3000,
+        temperature: 0.2,
       });
 
-      const text = await response.text();
-
-      if (!response.ok) {
-        lastError = `${model}: HTTP ${response.status} - ${text.slice(0, 200)}`;
-        console.warn(lastError);
-        continue;
+      let raw = '';
+      for await (const chunk of stream) {
+        const content = chunk.choices?.[0]?.delta?.content;
+        if (content) raw += content;
       }
 
-      const data = JSON.parse(text);
-      const raw: string = data.choices?.[0]?.message?.content || '';
       if (!raw) { lastError = `${model}: empty response`; continue; }
 
       const start = raw.indexOf('{');
