@@ -1,11 +1,7 @@
 // ── AI Resume Tailoring ──────────────────────────────────────────────────────
-// Uses OpenRouter SDK - key from env var (VITE_OPENROUTER_API_KEY) with fallback
-// Add key to .env file locally (never commit .env to git)
-// OR add to Vercel dashboard Environment Variables for production
+// Simple fetch to OpenRouter API (same pattern as RapidAPI in JobSearchPage)
+// Key: env var first, then hardcoded fallback
 
-import { OpenRouter } from '@openrouter/sdk';
-
-// Key priority: 1) Env var, 2) Hardcoded fallback (for development only)
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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';
 
 const MODELS = [
@@ -91,30 +87,39 @@ export async function tailorResumeWithAI(
   jdText: string
 ): Promise<TailoredResume> {
   if (!OPENROUTER_API_KEY) {
-    throw new Error('OpenRouter API key not configured. Add VITE_OPENROUTER_API_KEY to .env or Vercel env vars.');
+    throw new Error('OpenRouter API key not configured.');
   }
 
-  // Initialize OpenRouter SDK
-  const openrouter = new OpenRouter({ apiKey: OPENROUTER_API_KEY });
   const prompt = buildPrompt(resumeText, jdText);
   let lastError = 'All models failed';
 
   for (const model of MODELS) {
     try {
-      const stream = await openrouter.chat.send({
-        model,
-        messages: [{ role: 'user', content: prompt }],
-        stream: true,
-        max_tokens: 3000,
-        temperature: 0.2,
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://helplyai.co',
+          'X-Title': 'HelplyAI Resume Builder',
+        },
+        body: JSON.stringify({
+          model,
+          messages: [{ role: 'user', content: prompt }],
+          max_tokens: 3000,
+          temperature: 0.2,
+        }),
       });
 
-      let raw = '';
-      for await (const chunk of stream) {
-        const content = chunk.choices?.[0]?.delta?.content;
-        if (content) raw += content;
+      const data = await response.json();
+
+      if (!response.ok) {
+        lastError = `${model}: HTTP ${response.status} - ${JSON.stringify(data).slice(0, 200)}`;
+        console.warn(lastError);
+        continue;
       }
 
+      const raw: string = data.choices?.[0]?.message?.content || '';
       if (!raw) { lastError = `${model}: empty response`; continue; }
 
       const start = raw.indexOf('{');
