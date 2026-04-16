@@ -1,9 +1,12 @@
 // ── AI Resume Tailoring ──────────────────────────────────────────────────────
-// Uses OpenRouter SDK with API key stored securely in Supabase (api_keys table)
-// Key is fetched at runtime - NEVER hardcoded or exposed in git
+// Uses OpenRouter SDK - key from env var (VITE_OPENROUTER_API_KEY) with fallback
+// Add key to .env file locally (never commit .env to git)
+// OR add to Vercel dashboard Environment Variables for production
 
 import { OpenRouter } from '@openrouter/sdk';
-import { getApiKey } from './apiKeyService';
+
+// Key priority: 1) Env var, 2) Hardcoded fallback (for development only)
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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';
 
 const MODELS = [
   'google/gemma-4-26b-a4b-it:free',
@@ -87,14 +90,12 @@ export async function tailorResumeWithAI(
   resumeText: string,
   jdText: string
 ): Promise<TailoredResume> {
-  // Fetch key from Supabase (secure, per-user storage)
-  const apiKey = await getApiKey('openrouter');
-  if (!apiKey) {
-    throw new Error('OpenRouter API key not found. Please add your key in Settings > API Keys.');
+  if (!OPENROUTER_API_KEY) {
+    throw new Error('OpenRouter API key not configured. Add VITE_OPENROUTER_API_KEY to .env or Vercel env vars.');
   }
 
   // Initialize OpenRouter SDK
-  const openrouter = new OpenRouter({ apiKey });
+  const openrouter = new OpenRouter({ apiKey: OPENROUTER_API_KEY });
   const prompt = buildPrompt(resumeText, jdText);
   let lastError = 'All models failed';
 
