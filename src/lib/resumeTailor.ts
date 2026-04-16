@@ -35,7 +35,7 @@ export async function tailorResumeWithAI(
   resumeText: string,
   jdText: string
 ): Promise<TailoredResume> {
-  const response = await fetch('/.netlify/functions/tailor-resume', {
+  const response = await fetch('/api/tailor-resume', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ resumeText, jdText }),
