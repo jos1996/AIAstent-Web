@@ -1,283 +1,115 @@
 import { useState, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
-import { X, Download, ChevronLeft, Sparkles, CheckCircle2, Edit3, Eye, Loader2 } from 'lucide-react';
+import { ChevronLeft, Sparkles, CheckCircle2, Download, Eye, X, Loader2, Edit3 } from 'lucide-react';
 import { tailorResumeWithAI } from '../lib/resumeTailor';
 import type { TailoredResume } from '../lib/resumeTailor';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
-type TemplateId = 'modern' | 'professional' | 'minimal' | 'compact' | 'creative';
-type Step = 'jd' | 'generating' | 'templates' | 'edit';
+type TemplateId = 'executive' | 'modern' | 'clean';
+type Step = 'jd' | 'generating' | 'templates' | 'preview' | 'edit';
 
-const TEMPLATES: { id: TemplateId; name: string; desc: string; color: string }[] = [
-  { id: 'modern',       name: 'Modern',       desc: 'Two-column sidebar layout',       color: '#1d4ed8' },
-  { id: 'professional', name: 'Professional', desc: 'Classic corporate style',          color: '#1e3a5f' },
-  { id: 'minimal',      name: 'Minimal',      desc: 'Clean whitespace, ATS-safe',       color: '#111827' },
-  { id: 'compact',      name: 'Compact',      desc: 'Dense, fits more in one page',     color: '#374151' },
-  { id: 'creative',     name: 'Creative',     desc: 'Bold header with colour accents',  color: '#7c3aed' },
+const TEMPLATES = [
+  { id: 'executive' as TemplateId, name: 'Executive', desc: 'Navy header · gold accents · bordered', accent: '#1e3a5f' },
+  { id: 'modern'    as TemplateId, name: 'Modern',    desc: 'Two-column sidebar · skill bars',       accent: '#2563eb' },
+  { id: 'clean'     as TemplateId, name: 'Clean',     desc: 'Single-column · serif · max ATS score', accent: '#111827' },
 ];
 
-// ── Shared section heading ────────────────────────────────────────────────────
-function Sec({ title, accent = '#111', children, s }: { title: string; accent?: string; children: React.ReactNode; s: (n: number) => number }) {
-  return (
-    <div style={{ marginBottom: s(14) }}>
-      <div style={{ fontSize: s(9.5), fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: s(1.5), color: accent, borderBottom: `${s(1.5)}px solid ${accent}22`, paddingBottom: s(3), marginBottom: s(8) }}>{title}</div>
-      {children}
-    </div>
-  );
-}
+const sc = (n: number, s: number) => n * s;
 
-// ── TEMPLATE 1: Modern (two-column) ──────────────────────────────────────────
-function ModernTemplate({ r, scale = 1 }: { r: TailoredResume; scale?: number }) {
-  const s = (n: number) => n * scale;
-  const accent = '#1d4ed8';
-  return (
-    <div style={{ fontFamily: 'Arial,sans-serif', display: 'flex', background: '#fff', width: '100%', minHeight: s(842) }}>
-      <div style={{ width: '32%', background: '#1e3a5f', color: '#fff', padding: `${s(28)}px ${s(20)}px`, flexShrink: 0 }}>
-        <div style={{ fontSize: s(16), fontWeight: 800, lineHeight: 1.2, marginBottom: s(4) }}>{r.name || 'Your Name'}</div>
-        <div style={{ fontSize: s(10), color: '#93c5fd', fontWeight: 600, marginBottom: s(18) }}>{r.targetRole}</div>
-        <div style={{ fontSize: s(8.5), color: '#bfdbfe', lineHeight: 2, marginBottom: s(20) }}>
-          {r.email && <div>{r.email}</div>}
-          {r.phone && <div>{r.phone}</div>}
-          {r.location && <div>{r.location}</div>}
-          {r.linkedin && <div>{r.linkedin}</div>}
-        </div>
-        {r.skills.length > 0 && (
-          <div style={{ marginBottom: s(20) }}>
-            <div style={{ fontSize: s(9), fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: s(1.5), color: '#93c5fd', marginBottom: s(10) }}>Skills</div>
-            {r.skills.map((sk, i) => (
-              <div key={i} style={{ fontSize: s(9), color: '#e2e8f0', marginBottom: s(5), display: 'flex', alignItems: 'center', gap: s(6) }}>
-                <div style={{ width: s(5), height: s(5), borderRadius: '50%', background: accent, flexShrink: 0 }} />{sk}
-              </div>
-            ))}
-          </div>
-        )}
-        {r.certifications.length > 0 && (
-          <div>
-            <div style={{ fontSize: s(9), fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: s(1.5), color: '#93c5fd', marginBottom: s(8) }}>Certifications</div>
-            {r.certifications.map((c, i) => <div key={i} style={{ fontSize: s(8.5), color: '#e2e8f0', marginBottom: s(4) }}>{c}</div>)}
-          </div>
-        )}
-      </div>
-      <div style={{ flex: 1, padding: `${s(28)}px ${s(24)}px` }}>
-        {r.summary && <Sec title="Profile" accent={accent} s={s}><div style={{ fontSize: s(10), color: '#374151', lineHeight: 1.65 }}>{r.summary}</div></Sec>}
-        {r.experience.length > 0 && (
-          <Sec title="Experience" accent={accent} s={s}>
-            {r.experience.map((e, i) => (
-              <div key={i} style={{ marginBottom: s(12) }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <span style={{ fontWeight: 700, fontSize: s(10.5) }}>{e.title}</span>
-                  <span style={{ fontSize: s(9), color: '#6b7280', background: '#f3f4f6', padding: `${s(1)}px ${s(6)}px`, borderRadius: s(4) }}>{e.duration}</span>
-                </div>
-                <div style={{ fontSize: s(9.5), color: accent, fontWeight: 600, marginBottom: s(4) }}>{e.company}</div>
-                <ul style={{ margin: 0, paddingLeft: s(14) }}>
-                  {e.bullets.map((b, j) => <li key={j} style={{ fontSize: s(9.5), color: '#374151', marginBottom: s(2) }}>{b}</li>)}
-                </ul>
-              </div>
-            ))}
-          </Sec>
-        )}
-        {r.education.length > 0 && (
-          <Sec title="Education" accent={accent} s={s}>
-            {r.education.map((e, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: s(5) }}>
-                <div><strong>{e.degree}</strong> — <span style={{ color: '#6b7280' }}>{e.school}</span></div>
-                <span style={{ fontSize: s(9.5), color: '#6b7280' }}>{e.year}</span>
-              </div>
-            ))}
-          </Sec>
-        )}
-        {r.projects.length > 0 && (
-          <Sec title="Projects" accent={accent} s={s}>
-            {r.projects.map((p, i) => (
-              <div key={i} style={{ marginBottom: s(8) }}>
-                <span style={{ fontWeight: 700, fontSize: s(10) }}>{p.name}</span>
-                <span style={{ fontSize: s(9), color: accent }}> · {p.tech}</span>
-                <div style={{ fontSize: s(9.5), color: '#374151' }}>{p.description}</div>
-              </div>
-            ))}
-          </Sec>
-        )}
-      </div>
-    </div>
+// ── Executive Template ───────────────────────────────────────────────────────
+function ExecutiveTemplate({ r, s = 1 }: { r: TailoredResume; s?: number }) {
+  const navy = '#1e3a5f', gold = '#b8972a';
+  const ST = ({ t }: { t: string }) => (
+    <div style={{ fontSize: sc(8, s), fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: sc(1.2, s), color: navy, borderBottom: `${sc(1.5, s)}px solid ${navy}`, paddingBottom: sc(2, s), marginTop: sc(11, s), marginBottom: sc(6, s) }}>{t}</div>
   );
-}
-
-// ── TEMPLATE 2: Professional ──────────────────────────────────────────────────
-function ProfessionalTemplate({ r, scale = 1 }: { r: TailoredResume; scale?: number }) {
-  const s = (n: number) => n * scale;
-  const accent = '#1e3a5f';
   return (
-    <div style={{ fontFamily: '"Times New Roman",Times,serif', fontSize: s(10.5), color: '#111', background: '#fff', padding: `${s(40)}px ${s(44)}px`, width: '100%', boxSizing: 'border-box' }}>
-      <div style={{ textAlign: 'center', marginBottom: s(18) }}>
-        <div style={{ fontSize: s(24), fontWeight: 700, color: accent, letterSpacing: s(0.5) }}>{r.name || 'Your Name'}</div>
-        <div style={{ fontSize: s(11.5), fontWeight: 600, color: '#555', marginTop: s(3) }}>{r.targetRole}</div>
-        <div style={{ height: s(2), background: accent, margin: `${s(12)}px 0` }} />
-        <div style={{ fontSize: s(9.5), color: '#666', display: 'flex', justifyContent: 'center', flexWrap: 'wrap' as const, gap: s(18) }}>
+    <div id="resume-render" style={{ fontFamily: 'Georgia,"Times New Roman",serif', background: '#fff', width: '100%', boxSizing: 'border-box' as const }}>
+      <div style={{ background: navy, padding: `${sc(26, s)}px ${sc(34, s)}px ${sc(20, s)}px`, color: '#fff' }}>
+        <div style={{ fontSize: sc(22, s), fontWeight: 700, letterSpacing: sc(0.3, s) }}>{r.name || 'Your Name'}</div>
+        <div style={{ fontSize: sc(11, s), color: gold, fontWeight: 600, marginTop: sc(3, s) }}>{r.targetRole}</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: sc(14, s), marginTop: sc(8, s), fontSize: sc(8.5, s), color: 'rgba(255,255,255,0.82)' }}>
           {r.email && <span>✉ {r.email}</span>}
-          {r.phone && <span>☎ {r.phone}</span>}
+          {r.phone && <span>✆ {r.phone}</span>}
           {r.location && <span>⊛ {r.location}</span>}
-          {r.linkedin && <span>⊞ {r.linkedin}</span>}
+          {r.linkedin && <span>in {r.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//,'')}</span>}
+          {r.website && <span>⊕ {r.website}</span>}
         </div>
       </div>
-      {r.summary && <Sec title="Professional Summary" accent={accent} s={s}><div style={{ fontSize: s(10.5), color: '#333', lineHeight: 1.7 }}>{r.summary}</div></Sec>}
-      {r.skills.length > 0 && (
-        <Sec title="Core Competencies" accent={accent} s={s}>
-          <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: s(6) }}>
-            {r.skills.map((sk, i) => <span key={i} style={{ padding: `${s(3)}px ${s(10)}px`, border: `${s(1)}px solid ${accent}`, borderRadius: s(3), fontSize: s(9.5), color: accent }}>{sk}</span>)}
+      <div style={{ padding: `${sc(6, s)}px ${sc(34, s)}px ${sc(20, s)}px` }}>
+        {r.matchKeywords.length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: sc(4, s), padding: `${sc(7, s)}px 0`, borderBottom: `${sc(1, s)}px solid #e5e7eb` }}>
+            {r.matchKeywords.map((kw, i) => <span key={i} style={{ padding: `${sc(2, s)}px ${sc(7, s)}px`, background: '#fffbeb', border: `${sc(1, s)}px solid ${gold}`, borderRadius: sc(3, s), fontSize: sc(7.5, s), color: navy, fontWeight: 600 }}>{kw}</span>)}
           </div>
-        </Sec>
-      )}
-      {r.experience.length > 0 && (
-        <Sec title="Professional Experience" accent={accent} s={s}>
-          {r.experience.map((e, i) => (
-            <div key={i} style={{ marginBottom: s(14), paddingLeft: s(10), borderLeft: `${s(3)}px solid ${accent}` }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: s(11) }}>{e.title}</div>
-                  <div style={{ fontSize: s(10), color: '#555', fontStyle: 'italic' }}>{e.company}</div>
-                </div>
-                <div style={{ fontSize: s(9.5), color: '#666', textAlign: 'right' as const }}>{e.duration}</div>
-              </div>
-              <ul style={{ margin: `${s(5)}px 0 0`, paddingLeft: s(18) }}>
-                {e.bullets.map((b, j) => <li key={j} style={{ fontSize: s(10.5), color: '#333', marginBottom: s(2) }}>{b}</li>)}
-              </ul>
-            </div>
-          ))}
-        </Sec>
-      )}
-      {r.education.length > 0 && (
-        <Sec title="Education" accent={accent} s={s}>
-          {r.education.map((e, i) => (
-            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: s(5) }}>
-              <div><strong>{e.degree}</strong> — {e.school}</div>
-              <span style={{ fontSize: s(10), color: '#666' }}>{e.year}</span>
-            </div>
-          ))}
-        </Sec>
-      )}
-      {r.projects.length > 0 && (
-        <Sec title="Key Projects" accent={accent} s={s}>
-          {r.projects.map((p, i) => (
-            <div key={i} style={{ marginBottom: s(8) }}>
-              <strong>{p.name}</strong> <span style={{ fontSize: s(10), color: '#666' }}>({p.tech})</span>
-              <div style={{ fontSize: s(10.5), color: '#333' }}>{p.description}</div>
-            </div>
-          ))}
-        </Sec>
-      )}
+        )}
+        {r.summary && (<><ST t="Professional Summary" /><div style={{ fontSize: sc(9.5, s), color: '#333', lineHeight: 1.65 }}>{r.summary}</div></>)}
+        {r.skills.length > 0 && (<><ST t="Core Competencies" /><div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: sc(5, s) }}>{r.skills.map((sk, i) => <span key={i} style={{ padding: `${sc(3, s)}px ${sc(9, s)}px`, border: `${sc(1, s)}px solid ${navy}`, borderRadius: sc(3, s), fontSize: sc(8.5, s), color: navy }}>{sk}</span>)}</div></>)}
+        {r.experience.length > 0 && (<><ST t="Professional Experience" />{r.experience.map((e, i) => (<div key={i} style={{ marginBottom: sc(10, s), paddingLeft: sc(10, s), borderLeft: `${sc(3, s)}px solid ${gold}` }}><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}><div><span style={{ fontWeight: 700, fontSize: sc(10, s) }}>{e.title}</span><span style={{ fontSize: sc(9, s), color: navy, fontWeight: 600 }}> · {e.company}</span>{e.location && <span style={{ fontSize: sc(8, s), color: '#888' }}> · {e.location}</span>}</div><span style={{ fontSize: sc(8.5, s), color: '#777', whiteSpace: 'nowrap' as const, marginLeft: sc(6, s) }}>{e.duration}</span></div><ul style={{ margin: `${sc(3, s)}px 0 0`, paddingLeft: sc(14, s) }}>{e.bullets.filter(b => b.trim()).map((b, j) => <li key={j} style={{ fontSize: sc(9, s), color: '#333', marginBottom: sc(2, s), lineHeight: 1.5 }}>{b}</li>)}</ul></div>))}</>)}
+        <div style={{ display: 'flex', gap: sc(24, s) }}>
+          {r.education.length > 0 && (<div style={{ flex: 1 }}><ST t="Education" />{r.education.map((e, i) => (<div key={i} style={{ marginBottom: sc(5, s) }}><div style={{ fontWeight: 700, fontSize: sc(9.5, s) }}>{e.degree}</div><div style={{ fontSize: sc(9, s), color: '#555' }}>{e.school}{e.year ? ` · ${e.year}` : ''}{e.gpa ? ` · GPA ${e.gpa}` : ''}</div></div>))}</div>)}
+          {r.certifications.length > 0 && (<div style={{ flex: 1 }}><ST t="Certifications" />{r.certifications.map((c, i) => <div key={i} style={{ fontSize: sc(9, s), color: '#333', marginBottom: sc(3, s) }}>• {c}</div>)}</div>)}
+        </div>
+        {r.projects.length > 0 && (<><ST t="Key Projects" />{r.projects.map((p, i) => (<div key={i} style={{ marginBottom: sc(5, s), display: 'flex', gap: sc(6, s) }}><span style={{ fontWeight: 700, fontSize: sc(9, s), minWidth: sc(80, s) }}>{p.name}</span><span style={{ fontSize: sc(9, s), color: '#444' }}>{p.description} <span style={{ color: navy }}>({p.tech})</span></span></div>))}</>)}
+      </div>
     </div>
   );
 }
 
-// ── TEMPLATE 3: Minimal ───────────────────────────────────────────────────────
-function MinimalTemplate({ r, scale = 1 }: { r: TailoredResume; scale?: number }) {
-  const s = (n: number) => n * scale;
+// ── Modern Template ──────────────────────────────────────────────────────────
+function ModernTemplate({ r, s = 1 }: { r: TailoredResume; s?: number }) {
+  const blue = '#2563eb';
+  const SH = ({ t }: { t: string }) => <div style={{ fontSize: sc(8, s), fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: sc(1.1, s), color: blue, borderBottom: `${sc(2, s)}px solid ${blue}`, paddingBottom: sc(2, s), marginBottom: sc(7, s), marginTop: sc(10, s) }}>{t}</div>;
   return (
-    <div style={{ fontFamily: 'Georgia,serif', fontSize: s(10.5), color: '#111', lineHeight: 1.55, padding: `${s(36)}px ${s(40)}px`, background: '#fff', width: '100%', boxSizing: 'border-box' }}>
-      <div style={{ textAlign: 'center', borderBottom: `${s(2)}px solid #111`, paddingBottom: s(12), marginBottom: s(16) }}>
-        <div style={{ fontSize: s(22), fontWeight: 800, letterSpacing: s(2), textTransform: 'uppercase' as const }}>{r.name || 'Your Name'}</div>
-        {r.targetRole && <div style={{ fontSize: s(11), color: '#555', marginTop: s(3), fontStyle: 'italic' }}>{r.targetRole}</div>}
-        <div style={{ fontSize: s(9.5), color: '#666', marginTop: s(6), display: 'flex', justifyContent: 'center', flexWrap: 'wrap' as const, gap: s(14) }}>
+    <div id="resume-render" style={{ fontFamily: 'Arial,Helvetica,sans-serif', display: 'flex', background: '#fff', width: '100%', boxSizing: 'border-box' as const }}>
+      <div style={{ width: sc(205, s), background: '#1e293b', color: '#fff', padding: `${sc(26, s)}px ${sc(16, s)}px`, flexShrink: 0, display: 'flex', flexDirection: 'column' as const, gap: sc(12, s) }}>
+        <div><div style={{ fontSize: sc(15, s), fontWeight: 800, lineHeight: 1.2 }}>{r.name || 'Your Name'}</div><div style={{ fontSize: sc(9, s), color: '#93c5fd', fontWeight: 600, marginTop: sc(3, s) }}>{r.targetRole}</div></div>
+        <div style={{ fontSize: sc(8, s), lineHeight: 2, color: '#cbd5e1' }}>
+          {r.email && <div>✉ {r.email}</div>}
+          {r.phone && <div>✆ {r.phone}</div>}
+          {r.location && <div>⊛ {r.location}</div>}
+          {r.linkedin && <div style={{ wordBreak: 'break-all' as const }}>in {r.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//,'')}</div>}
+          {r.website && <div style={{ wordBreak: 'break-all' as const }}>⊕ {r.website}</div>}
+        </div>
+        {r.skills.length > 0 && (<div><div style={{ fontSize: sc(7.5, s), fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: sc(1, s), color: '#93c5fd', marginBottom: sc(7, s) }}>Skills</div>{r.skills.map((sk, i) => (<div key={i} style={{ marginBottom: sc(5, s) }}><div style={{ fontSize: sc(8, s), color: '#e2e8f0', marginBottom: sc(2, s) }}>{sk}</div><div style={{ height: sc(3, s), background: '#334155', borderRadius: sc(2, s), overflow: 'hidden' as const }}><div style={{ height: '100%', width: `${65 + (i % 5) * 7}%`, background: 'linear-gradient(90deg,#3b82f6,#93c5fd)', borderRadius: sc(2, s) }} /></div></div>))}</div>)}
+        {r.certifications.length > 0 && (<div><div style={{ fontSize: sc(7.5, s), fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: sc(1, s), color: '#93c5fd', marginBottom: sc(5, s) }}>Certifications</div>{r.certifications.map((c, i) => <div key={i} style={{ fontSize: sc(7.5, s), color: '#cbd5e1', marginBottom: sc(4, s), lineHeight: 1.4 }}>• {c}</div>)}</div>)}
+        {r.matchKeywords.length > 0 && (<div><div style={{ fontSize: sc(7.5, s), fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: sc(1, s), color: '#93c5fd', marginBottom: sc(5, s) }}>ATS Keywords</div><div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: sc(3, s) }}>{r.matchKeywords.map((kw, i) => <span key={i} style={{ fontSize: sc(7, s), background: 'rgba(147,197,253,0.15)', color: '#bfdbfe', padding: `${sc(2, s)}px ${sc(5, s)}px`, borderRadius: sc(3, s) }}>{kw}</span>)}</div></div>)}
+      </div>
+      <div style={{ flex: 1, padding: `${sc(26, s)}px ${sc(22, s)}px ${sc(18, s)}px` }}>
+        {r.summary && (<><SH t="Profile" /><div style={{ fontSize: sc(9.5, s), color: '#374151', lineHeight: 1.65, marginBottom: sc(2, s) }}>{r.summary}</div></>)}
+        {r.experience.length > 0 && (<><SH t="Experience" />{r.experience.map((e, i) => (<div key={i} style={{ marginBottom: sc(10, s) }}><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}><div><span style={{ fontWeight: 700, fontSize: sc(10, s) }}>{e.title}</span><span style={{ fontSize: sc(9, s), color: blue, fontWeight: 600 }}> · {e.company}</span></div><span style={{ fontSize: sc(7.5, s), color: '#6b7280', background: '#f3f4f6', padding: `${sc(1, s)}px ${sc(5, s)}px`, borderRadius: sc(3, s), whiteSpace: 'nowrap' as const }}>{e.duration}</span></div>{e.location && <div style={{ fontSize: sc(8, s), color: '#9ca3af', marginTop: sc(1, s) }}>📍 {e.location}</div>}<ul style={{ margin: `${sc(3, s)}px 0 0`, paddingLeft: sc(13, s) }}>{e.bullets.filter(b => b.trim()).map((b, j) => <li key={j} style={{ fontSize: sc(9, s), color: '#374151', marginBottom: sc(2, s), lineHeight: 1.5 }}>{b}</li>)}</ul></div>))}</>)}
+        {r.education.length > 0 && (<><SH t="Education" />{r.education.map((e, i) => (<div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: sc(5, s) }}><div><div style={{ fontWeight: 700, fontSize: sc(9.5, s) }}>{e.degree}</div><div style={{ fontSize: sc(8.5, s), color: '#6b7280' }}>{e.school}{e.gpa ? ` · GPA ${e.gpa}` : ''}</div></div><span style={{ fontSize: sc(8.5, s), color: '#6b7280' }}>{e.year}</span></div>))}</>)}
+        {r.projects.length > 0 && (<><SH t="Projects" />{r.projects.map((p, i) => (<div key={i} style={{ marginBottom: sc(5, s) }}><span style={{ fontWeight: 700, fontSize: sc(9.5, s) }}>{p.name}</span><span style={{ fontSize: sc(8.5, s), color: blue }}> · {p.tech}</span><div style={{ fontSize: sc(9, s), color: '#374151' }}>{p.description}</div></div>))}</>)}
+      </div>
+    </div>
+  );
+}
+
+// ── Clean Template ───────────────────────────────────────────────────────────
+function CleanTemplate({ r, s = 1 }: { r: TailoredResume; s?: number }) {
+  const ST = ({ t }: { t: string }) => <div style={{ fontSize: sc(8, s), fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: sc(1.5, s), color: '#111', borderBottom: `${sc(1, s)}px solid #111`, paddingBottom: sc(2, s), marginTop: sc(10, s), marginBottom: sc(5, s) }}>{t}</div>;
+  return (
+    <div id="resume-render" style={{ fontFamily: 'Georgia,"Times New Roman",serif', fontSize: sc(9.5, s), color: '#111', background: '#fff', padding: `${sc(38, s)}px ${sc(46, s)}px ${sc(20, s)}px`, width: '100%', boxSizing: 'border-box' as const }}>
+      <div style={{ textAlign: 'center' as const, marginBottom: sc(12, s) }}>
+        <div style={{ fontSize: sc(22, s), fontWeight: 700, letterSpacing: sc(1.5, s), textTransform: 'uppercase' as const }}>{r.name || 'Your Name'}</div>
+        <div style={{ fontSize: sc(10, s), color: '#555', marginTop: sc(3, s), fontStyle: 'italic' }}>{r.targetRole}</div>
+        <div style={{ height: sc(2, s), background: '#111', margin: `${sc(9, s)}px 0 ${sc(6, s)}px` }} />
+        <div style={{ fontSize: sc(8.5, s), color: '#555', display: 'flex', justifyContent: 'center', flexWrap: 'wrap' as const, gap: sc(16, s) }}>
           {r.email && <span>{r.email}</span>}
           {r.phone && <span>{r.phone}</span>}
           {r.location && <span>{r.location}</span>}
           {r.linkedin && <span>{r.linkedin}</span>}
+          {r.website && <span>{r.website}</span>}
         </div>
       </div>
-      {r.summary && <Sec title="Summary" s={s}><div style={{ fontSize: s(10), color: '#333' }}>{r.summary}</div></Sec>}
-      {r.skills.length > 0 && <Sec title="Skills" s={s}><div style={{ fontSize: s(10), color: '#333' }}>{r.skills.join('  ·  ')}</div></Sec>}
-      {r.experience.length > 0 && (
-        <Sec title="Experience" s={s}>
-          {r.experience.map((e, i) => (
-            <div key={i} style={{ marginBottom: s(10) }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontWeight: 700, fontSize: s(10.5) }}>{e.title}</span>
-                <span style={{ fontSize: s(9.5), color: '#666' }}>{e.duration}</span>
-              </div>
-              <div style={{ fontSize: s(10), color: '#555', fontStyle: 'italic', marginBottom: s(3) }}>{e.company}</div>
-              <ul style={{ margin: 0, paddingLeft: s(16) }}>
-                {e.bullets.map((b, j) => <li key={j} style={{ fontSize: s(10), color: '#333', marginBottom: s(2) }}>{b}</li>)}
-              </ul>
-            </div>
-          ))}
-        </Sec>
-      )}
-      {r.education.length > 0 && (
-        <Sec title="Education" s={s}>
-          {r.education.map((e, i) => (
-            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: s(4) }}>
-              <span><strong>{e.degree}</strong> — {e.school}</span>
-              <span style={{ fontSize: s(9.5), color: '#666' }}>{e.year}</span>
-            </div>
-          ))}
-        </Sec>
-      )}
-      {r.projects.length > 0 && (
-        <Sec title="Projects" s={s}>
-          {r.projects.map((p, i) => (
-            <div key={i} style={{ marginBottom: s(7) }}>
-              <strong>{p.name}</strong> <span style={{ color: '#666', fontSize: s(9.5) }}>— {p.tech}</span>
-              <div style={{ fontSize: s(10), color: '#333' }}>{p.description}</div>
-            </div>
-          ))}
-        </Sec>
-      )}
-    </div>
-  );
-}
-
-// ── TEMPLATE 4: Compact ───────────────────────────────────────────────────────
-function CompactTemplate({ r, scale = 1 }: { r: TailoredResume; scale?: number }) {
-  const s = (n: number) => n * scale;
-  return (
-    <div style={{ fontFamily: 'Arial,sans-serif', fontSize: s(9.5), color: '#111', background: '#fff', padding: `${s(26)}px ${s(30)}px`, width: '100%', boxSizing: 'border-box' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: s(10), paddingBottom: s(8), borderBottom: `${s(2)}px solid #374151` }}>
-        <div>
-          <div style={{ fontSize: s(18), fontWeight: 800 }}>{r.name || 'Your Name'}</div>
-          <div style={{ fontSize: s(10), fontWeight: 600, color: '#374151' }}>{r.targetRole}</div>
-        </div>
-        <div style={{ fontSize: s(8.5), color: '#555', textAlign: 'right' as const, lineHeight: 1.9 }}>
-          {r.email && <div>{r.email}</div>}
-          {r.phone && <div>{r.phone}</div>}
-          {r.location && <div>{r.location}</div>}
-          {r.linkedin && <div>{r.linkedin}</div>}
-        </div>
-      </div>
-      {r.summary && <div style={{ fontSize: s(9.5), color: '#333', lineHeight: 1.5, marginBottom: s(9) }}>{r.summary}</div>}
-      {r.skills.length > 0 && (
-        <div style={{ marginBottom: s(9) }}>
-          <span style={{ fontSize: s(8.5), fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: s(1), color: '#374151' }}>Skills: </span>
-          <span style={{ fontSize: s(9.5), color: '#333' }}>{r.skills.join(' · ')}</span>
-        </div>
-      )}
-      {r.experience.length > 0 && (
-        <div style={{ marginBottom: s(9) }}>
-          <div style={{ fontSize: s(8.5), fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: s(1), color: '#374151', marginBottom: s(5) }}>Experience</div>
-          {r.experience.map((e, i) => (
-            <div key={i} style={{ marginBottom: s(7) }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontWeight: 700, fontSize: s(9.5) }}>{e.title} — {e.company}</span>
-                <span style={{ fontSize: s(8.5), color: '#666' }}>{e.duration}</span>
-              </div>
-              <ul style={{ margin: `${s(3)}px 0 0`, paddingLeft: s(13) }}>
-                {e.bullets.slice(0, 3).map((b, j) => <li key={j} style={{ fontSize: s(9), color: '#333', marginBottom: s(1) }}>{b}</li>)}
-              </ul>
-            </div>
-          ))}
-        </div>
-      )}
-      <div style={{ display: 'flex', gap: s(20) }}>
-        {r.education.length > 0 && (
+      {r.summary && (<><ST t="Summary" /><div style={{ fontSize: sc(9.5, s), color: '#333', lineHeight: 1.7 }}>{r.summary}</div></>)}
+      {r.skills.length > 0 && (<><ST t="Skills" /><div style={{ fontSize: sc(9.5, s), color: '#333', lineHeight: 1.8 }}>{r.skills.join(' · ')}</div></>)}
+      {r.experience.length > 0 && (<><ST t="Experience" />{r.experience.map((e, i) => (<div key={i} style={{ marginBottom: sc(9, s) }}><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}><span style={{ fontWeight: 700, fontSize: sc(10, s) }}>{e.title} — {e.company}</span><span style={{ fontSize: sc(8.5, s), color: '#666' }}>{e.duration}</span></div>{e.location && <div style={{ fontSize: sc(8.5, s), color: '#888', marginTop: sc(1, s) }}>{e.location}</div>}<ul style={{ margin: `${sc(4, s)}px 0 0`, paddingLeft: sc(16, s) }}>{e.bullets.filter(b => b.trim()).map((b, j) => <li key={j} style={{ fontSize: sc(9.5, s), color: '#333', marginBottom: sc(2, s), lineHeight: 1.5 }}>{b}</li>)}</ul></div>))}</>)}
+      <div style={{ display: 'flex', gap: sc(28, s) }}>
+        {r.education.length > 0 && (<div style={{ flex: 1 }}><ST t="Education" />{r.education.map((e, i) => (<div key={i} style={{ marginBottom: sc(6, s) }}><div style={{ fontWeight: 700, fontSize: sc(10, s) }}>{e.degree}</div><div style={{ fontSize: sc(9, s), color: '#555' }}>{e.school}{e.year ? ` — ${e.year}` : ''}{e.gpa ? ` · GPA ${e.gpa}` : ''}</div></div>))}</div>)}
+        {(r.certifications.length > 0 || r.projects.length > 0) && (
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: s(8.5), fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: s(1), color: '#374151', marginBottom: s(4) }}>Education</div>
-            {r.education.map((e, i) => <div key={i} style={{ fontSize: s(9), marginBottom: s(3) }}><strong>{e.degree}</strong> — {e.school} <span style={{ color: '#666' }}>({e.year})</span></div>)}
-          </div>
-        )}
-        {r.certifications.length > 0 && (
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: s(8.5), fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: s(1), color: '#374151', marginBottom: s(4) }}>Certifications</div>
-            {r.certifications.map((c, i) => <div key={i} style={{ fontSize: s(9), marginBottom: s(2) }}>{c}</div>)}
+            {r.certifications.length > 0 && (<><ST t="Certifications" />{r.certifications.map((c, i) => <div key={i} style={{ fontSize: sc(9.5, s), marginBottom: sc(3, s) }}>• {c}</div>)}</>)}
+            {r.projects.length > 0 && (<><ST t="Projects" />{r.projects.map((p, i) => <div key={i} style={{ fontSize: sc(9, s), marginBottom: sc(4, s) }}><strong>{p.name}</strong> ({p.tech}) — {p.description}</div>)}</>)}
           </div>
         )}
       </div>
@@ -285,341 +117,203 @@ function CompactTemplate({ r, scale = 1 }: { r: TailoredResume; scale?: number }
   );
 }
 
-// ── TEMPLATE 5: Creative ──────────────────────────────────────────────────────
-function CreativeTemplate({ r, scale = 1 }: { r: TailoredResume; scale?: number }) {
-  const s = (n: number) => n * scale;
-  const accent = '#7c3aed';
-  return (
-    <div style={{ fontFamily: 'Arial,sans-serif', fontSize: s(10.5), color: '#111', background: '#fff', width: '100%' }}>
-      <div style={{ background: `linear-gradient(135deg, ${accent}, #4f46e5)`, color: '#fff', padding: `${s(28)}px ${s(36)}px` }}>
-        <div style={{ fontSize: s(26), fontWeight: 800, letterSpacing: s(-0.5) }}>{r.name || 'Your Name'}</div>
-        <div style={{ fontSize: s(12), color: '#ddd6fe', fontWeight: 500, marginTop: s(4) }}>{r.targetRole}</div>
-        <div style={{ fontSize: s(9.5), color: '#c4b5fd', marginTop: s(10), display: 'flex', flexWrap: 'wrap' as const, gap: s(16) }}>
-          {r.email && <span>{r.email}</span>}
-          {r.phone && <span>{r.phone}</span>}
-          {r.location && <span>{r.location}</span>}
-          {r.linkedin && <span>{r.linkedin}</span>}
-        </div>
-      </div>
-      <div style={{ padding: `${s(24)}px ${s(36)}px` }}>
-        {r.summary && <Sec title="About Me" accent={accent} s={s}><div style={{ fontSize: s(10.5), color: '#374151', lineHeight: 1.65 }}>{r.summary}</div></Sec>}
-        {r.skills.length > 0 && (
-          <Sec title="Skills" accent={accent} s={s}>
-            <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: s(5) }}>
-              {r.skills.map((sk, i) => <span key={i} style={{ padding: `${s(4)}px ${s(10)}px`, background: '#f3e8ff', color: accent, borderRadius: s(100), fontSize: s(9.5), fontWeight: 600 }}>{sk}</span>)}
-            </div>
-          </Sec>
-        )}
-        {r.experience.length > 0 && (
-          <Sec title="Experience" accent={accent} s={s}>
-            {r.experience.map((e, i) => (
-              <div key={i} style={{ marginBottom: s(12), paddingLeft: s(12), borderLeft: `${s(3)}px solid ${accent}` }}>
-                <div style={{ fontWeight: 700, fontSize: s(11) }}>{e.title}</div>
-                <div style={{ fontSize: s(10), color: accent, marginBottom: s(4) }}>{e.company} · {e.duration}</div>
-                <ul style={{ margin: 0, paddingLeft: s(14) }}>
-                  {e.bullets.map((b, j) => <li key={j} style={{ fontSize: s(10), color: '#374151', marginBottom: s(2) }}>{b}</li>)}
-                </ul>
-              </div>
-            ))}
-          </Sec>
-        )}
-        <div style={{ display: 'flex', gap: s(24) }}>
-          {r.education.length > 0 && (
-            <div style={{ flex: 1 }}>
-              <Sec title="Education" accent={accent} s={s}>
-                {r.education.map((e, i) => (
-                  <div key={i} style={{ marginBottom: s(6) }}>
-                    <div style={{ fontWeight: 700, fontSize: s(10.5) }}>{e.degree}</div>
-                    <div style={{ fontSize: s(10), color: '#6b7280' }}>{e.school} · {e.year}</div>
-                  </div>
-                ))}
-              </Sec>
-            </div>
-          )}
-          {r.projects.length > 0 && (
-            <div style={{ flex: 1 }}>
-              <Sec title="Projects" accent={accent} s={s}>
-                {r.projects.map((p, i) => (
-                  <div key={i} style={{ marginBottom: s(6) }}>
-                    <div style={{ fontWeight: 700, fontSize: s(10.5) }}>{p.name}</div>
-                    <div style={{ fontSize: s(10), color: '#6b7280' }}>{p.tech}</div>
-                  </div>
-                ))}
-              </Sec>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+function ResumeTemplate({ resume, templateId, s = 1 }: { resume: TailoredResume; templateId: TemplateId; s?: number }) {
+  if (templateId === 'executive') return <ExecutiveTemplate r={resume} s={s} />;
+  if (templateId === 'modern')    return <ModernTemplate r={resume} s={s} />;
+  return <CleanTemplate r={resume} s={s} />;
 }
 
-function ResumeTemplate({ resume, templateId, scale = 1 }: { resume: TailoredResume; templateId: TemplateId; scale?: number }) {
-  switch (templateId) {
-    case 'modern':       return <ModernTemplate r={resume} scale={scale} />;
-    case 'professional': return <ProfessionalTemplate r={resume} scale={scale} />;
-    case 'minimal':      return <MinimalTemplate r={resume} scale={scale} />;
-    case 'compact':      return <CompactTemplate r={resume} scale={scale} />;
-    case 'creative':     return <CreativeTemplate r={resume} scale={scale} />;
-  }
-}
-
-// ── PDF Download ──────────────────────────────────────────────────────────────
-async function downloadPDF(resume: TailoredResume, templateId: TemplateId, setStatus: (s: string) => void) {
-  setStatus('rendering');
+// ── PDF download ─────────────────────────────────────────────────────────────
+async function downloadPDF(resume: TailoredResume, templateId: TemplateId, name: string, setDl: (v: boolean) => void) {
+  setDl(true);
   try {
-    const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
-      import('jspdf'),
-      import('html2canvas'),
-    ]);
-
-    const container = document.createElement('div');
-    container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;background:#fff;z-index:-999;';
-    document.body.appendChild(container);
-
-    const root = createRoot(container);
-    root.render(createElement(ResumeTemplate, { resume, templateId, scale: 1 }));
-    await new Promise(r => setTimeout(r, 800));
-
-    const canvas = await html2canvas(container, { scale: 2, useCORS: true, backgroundColor: '#fff', logging: false });
+    const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([import('jspdf'), import('html2canvas')]);
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;background:#fff;z-index:-9999;';
+    document.body.appendChild(wrap);
+    const root = createRoot(wrap);
+    root.render(createElement(ResumeTemplate, { resume, templateId, s: 1 }));
+    await new Promise(r => setTimeout(r, 900));
+    const canvas = await html2canvas(wrap, { scale: 2, useCORS: true, backgroundColor: '#fff', logging: false });
     root.unmount();
-    document.body.removeChild(container);
-
+    document.body.removeChild(wrap);
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    const pdfW = pdf.internal.pageSize.getWidth();
-    const pdfH = pdf.internal.pageSize.getHeight();
-    const ratio = pdfW / canvas.width;
+    const W = pdf.internal.pageSize.getWidth();
+    const H = pdf.internal.pageSize.getHeight();
+    const ratio = W / canvas.width;
     const imgH = canvas.height * ratio;
-
-    if (imgH <= pdfH) {
-      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, pdfW, imgH);
+    if (imgH <= H) {
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, W, imgH);
     } else {
       let y = 0;
       while (y < canvas.height) {
-        const sliceH = Math.min(pdfH / ratio, canvas.height - y);
-        const sc = document.createElement('canvas');
-        sc.width = canvas.width; sc.height = sliceH;
-        sc.getContext('2d')!.drawImage(canvas, 0, y, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
+        const sh = Math.min(H / ratio, canvas.height - y);
+        const sc2 = document.createElement('canvas');
+        sc2.width = canvas.width; sc2.height = sh;
+        sc2.getContext('2d')!.drawImage(canvas, 0, y, canvas.width, sh, 0, 0, canvas.width, sh);
         if (y > 0) pdf.addPage();
-        pdf.addImage(sc.toDataURL('image/png'), 'PNG', 0, 0, pdfW, sliceH * ratio);
-        y += sliceH;
+        pdf.addImage(sc2.toDataURL('image/png'), 'PNG', 0, 0, W, sh * ratio);
+        y += sh;
       }
     }
-
-    const fileName = `${(resume.name || 'Resume').replace(/\s+/g, '_')}_${templateId}.pdf`;
-    pdf.save(fileName);
+    pdf.save(`${name.replace(/\s+/g, '_')}_${templateId}_resume.pdf`);
   } finally {
-    setStatus('idle');
+    setDl(false);
   }
 }
 
-// ── Props ─────────────────────────────────────────────────────────────────────
-interface Props {
-  resumeText: string;
-  onClose: () => void;
-}
-
-// ── Main Component ────────────────────────────────────────────────────────────
-export default function ResumeBuilderPage({ resumeText, onClose }: Props) {
+// ── Main component ────────────────────────────────────────────────────────────
+export default function ResumeBuilderPage({ resumeText, onClose }: { resumeText: string; onClose: () => void }) {
   const { user } = useAuth();
   const [step, setStep] = useState<Step>('jd');
   const [jdText, setJdText] = useState('');
   const [tailored, setTailored] = useState<TailoredResume | null>(null);
   const [error, setError] = useState('');
-  const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>('modern');
-  const [previewTemplate, setPreviewTemplate] = useState<TemplateId | null>(null);
-  const [pdfStatus, setPdfStatus] = useState('idle');
-  const [saving, setSaving] = useState(false);
+  const [selected, setSelected] = useState<TemplateId>('executive');
+  const [preview, setPreview] = useState<TemplateId | null>(null);
+  const [downloading, setDownloading] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);
   const [editData, setEditData] = useState<TailoredResume | null>(null);
 
-  const handleGenerate = async () => {
-    if (!jdText.trim() || jdText.length < 50) return;
-    setStep('generating');
-    setError('');
+  const generate = async () => {
+    if (jdText.length < 50) return;
+    setStep('generating'); setError('');
     try {
       const result = await tailorResumeWithAI(resumeText, jdText);
       setTailored(result);
       setEditData(JSON.parse(JSON.stringify(result)));
-
-      // Save to Supabase
       if (user) {
-        setSaving(true);
-        try {
-          const { data } = await supabase.from('tailored_resumes').insert({
-            user_id: user.id,
-            resume_text: resumeText,
-            jd_text: jdText,
-            tailored_data: result,
-            target_role: result.targetRole,
-            template_id: selectedTemplate,
-          }).select('id').single();
-          if (data?.id) setSavedId(data.id);
-        } catch (e) {
-          console.warn('Save to DB failed (non-critical):', e);
-        }
-        setSaving(false);
+        const { data } = await supabase.from('tailored_resumes').insert({ user_id: user.id, resume_text: resumeText, jd_text: jdText, tailored_data: result, target_role: result.targetRole, template_id: selected }).select('id').single();
+        if (data?.id) setSavedId(data.id);
       }
-
       setStep('templates');
-    } catch (e: any) {
-      setError(e.message || 'Failed to generate. Please try again.');
-      setStep('jd');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      setError(msg); setStep('jd');
     }
   };
 
-  const updateSavedTemplate = async (tid: TemplateId) => {
-    setSelectedTemplate(tid);
-    if (savedId) {
-      await supabase.from('tailored_resumes').update({ template_id: tid }).eq('id', savedId);
-    }
+  const pickTemplate = async (id: TemplateId) => {
+    setSelected(id);
+    if (savedId) await supabase.from('tailored_resumes').update({ template_id: id }).eq('id', savedId);
   };
 
   const saveEdits = async () => {
     if (!editData) return;
     setTailored(editData);
-    if (savedId) {
-      await supabase.from('tailored_resumes').update({ tailored_data: editData }).eq('id', savedId);
-    }
+    if (savedId) await supabase.from('tailored_resumes').update({ tailored_data: editData }).eq('id', savedId);
     setStep('templates');
   };
 
-  // ── Step: Paste JD ──
+  const dl = (t: TemplateId) => downloadPDF(tailored!, t, tailored?.name || 'Resume', setDownloading);
+
+  // ── JD input ──
   if (step === 'jd') return (
-    <div style={{ maxWidth: 640, margin: '0 auto' }}>
+    <div style={{ maxWidth: 640, margin: '0 auto', padding: '0 8px' }}>
       <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#6b7280', fontSize: 13, cursor: 'pointer', marginBottom: 24, padding: 0 }}>
         <ChevronLeft size={16} /> Back to Job Search
       </button>
-
-      <div style={{ textAlign: 'center', marginBottom: 32 }}>
-        <div style={{ width: 60, height: 60, borderRadius: 18, background: 'linear-gradient(135deg,#7c3aed,#4f46e5)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-          <Sparkles size={28} color="#fff" />
+      <div style={{ textAlign: 'center', marginBottom: 28 }}>
+        <div style={{ width: 58, height: 58, borderRadius: 16, background: 'linear-gradient(135deg,#7c3aed,#4f46e5)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+          <Sparkles size={26} color="#fff" />
         </div>
-        <h1 style={{ fontSize: 26, fontWeight: 800, color: '#111827', margin: '0 0 8px' }}>AI Resume Builder</h1>
-        <p style={{ color: '#6b7280', fontSize: 14, margin: 0 }}>Paste a Job Description — AI rewrites your resume to match it and generates beautiful PDF templates</p>
+        <h1 style={{ fontSize: 24, fontWeight: 800, color: '#111827', margin: '0 0 6px' }}>AI Resume Builder</h1>
+        <p style={{ color: '#6b7280', fontSize: 13, margin: 0 }}>Paste a Job Description — AI tailors your resume and generates 3 beautiful PDF templates</p>
       </div>
-
-      {error && (
-        <div style={{ padding: '12px 16px', borderRadius: 10, background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', fontSize: 13, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <X size={15} style={{ flexShrink: 0 }} /> {error}
-        </div>
-      )}
-
-      <div style={{ background: '#f0fdf4', borderRadius: 12, border: '1px solid #bbf7d0', padding: '14px 16px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 10 }}>
-        <CheckCircle2 size={16} color="#16a34a" style={{ flexShrink: 0 }} />
-        <div>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#166534' }}>Resume loaded</div>
-          <div style={{ fontSize: 11, color: '#15803d', marginTop: 2 }}>{resumeText.slice(0, 90).trim()}...</div>
-        </div>
+      {error && <div style={{ padding: '10px 14px', borderRadius: 10, background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', fontSize: 13, marginBottom: 14, display: 'flex', gap: 8 }}><X size={14} style={{ flexShrink: 0, marginTop: 1 }} />{error}</div>}
+      <div style={{ background: '#f0fdf4', borderRadius: 10, border: '1px solid #bbf7d0', padding: '12px 14px', marginBottom: 18, display: 'flex', gap: 10 }}>
+        <CheckCircle2 size={15} color="#16a34a" style={{ flexShrink: 0, marginTop: 1 }} />
+        <div><div style={{ fontSize: 12, fontWeight: 700, color: '#166534' }}>Resume loaded</div><div style={{ fontSize: 11, color: '#15803d', marginTop: 2 }}>{resumeText.slice(0, 100).trim()}...</div></div>
       </div>
-
-      <div style={{ marginBottom: 24 }}>
-        <label style={{ fontSize: 14, fontWeight: 700, color: '#111827', display: 'block', marginBottom: 10 }}>Paste the Job Description</label>
-        <textarea
-          placeholder="Paste the full job description here...&#10;&#10;Example:&#10;We are looking for a Senior Product Manager...&#10;Requirements: 5+ years experience, strong data skills..."
-          value={jdText}
-          onChange={e => setJdText(e.target.value)}
-          style={{ width: '100%', height: 240, padding: 14, borderRadius: 12, border: '2px solid #e5e7eb', fontSize: 13, color: '#111827', outline: 'none', resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.6, boxSizing: 'border-box' }}
-          onFocus={e => e.currentTarget.style.borderColor = '#7c3aed'}
-          onBlur={e => e.currentTarget.style.borderColor = '#e5e7eb'}
-        />
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6 }}>
-          <span style={{ fontSize: 11, color: '#9ca3af' }}>{jdText.length} characters {jdText.length < 50 && jdText.length > 0 ? '(paste more text)' : ''}</span>
-          {jdText && <button onClick={() => setJdText('')} style={{ fontSize: 11, color: '#9ca3af', background: 'none', border: 'none', cursor: 'pointer' }}>Clear</button>}
-        </div>
+      <label style={{ fontSize: 14, fontWeight: 700, color: '#111827', display: 'block', marginBottom: 8 }}>Paste the Job Description</label>
+      <textarea
+        placeholder={"Paste the full job description here...\n\nExample:\nWe are looking for a Senior Product Manager with 5+ years experience..."}
+        value={jdText} onChange={e => setJdText(e.target.value)}
+        style={{ width: '100%', height: 220, padding: 12, borderRadius: 10, border: '2px solid #e5e7eb', fontSize: 13, color: '#111827', outline: 'none', resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.6, boxSizing: 'border-box' as const }}
+        onFocus={e => (e.currentTarget.style.borderColor = '#7c3aed')}
+        onBlur={e => (e.currentTarget.style.borderColor = '#e5e7eb')}
+      />
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4, marginBottom: 18 }}>
+        <span style={{ fontSize: 11, color: '#9ca3af' }}>{jdText.length} chars {jdText.length > 0 && jdText.length < 50 ? '(paste more text)' : ''}</span>
+        {jdText && <button onClick={() => setJdText('')} style={{ fontSize: 11, color: '#9ca3af', background: 'none', border: 'none', cursor: 'pointer' }}>Clear</button>}
       </div>
-
-      <button
-        onClick={handleGenerate}
-        disabled={!jdText.trim() || jdText.length < 50}
-        style={{ width: '100%', padding: '14px', borderRadius: 12, background: jdText.length >= 50 ? 'linear-gradient(135deg,#7c3aed,#4f46e5)' : '#e5e7eb', border: 'none', color: jdText.length >= 50 ? '#fff' : '#9ca3af', fontSize: 15, fontWeight: 700, cursor: jdText.length >= 50 ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
-      >
-        <Sparkles size={18} /> Generate Tailored Resume
+      <button onClick={generate} disabled={jdText.length < 50}
+        style={{ width: '100%', padding: 14, borderRadius: 12, background: jdText.length >= 50 ? 'linear-gradient(135deg,#7c3aed,#4f46e5)' : '#e5e7eb', border: 'none', color: jdText.length >= 50 ? '#fff' : '#9ca3af', fontSize: 15, fontWeight: 700, cursor: jdText.length >= 50 ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+        <Sparkles size={17} /> Generate Tailored Resume
       </button>
-
-      <div style={{ marginTop: 16, display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' as const }}>
-        {TEMPLATES.map(t => (
-          <span key={t.id} style={{ padding: '3px 10px', borderRadius: 100, background: t.color + '12', color: t.color, border: '1px solid ' + t.color + '30', fontSize: 11, fontWeight: 600 }}>{t.name}</span>
-        ))}
+      <div style={{ marginTop: 14, display: 'flex', gap: 8, justifyContent: 'center' }}>
+        {TEMPLATES.map(t => <span key={t.id} style={{ padding: '3px 10px', borderRadius: 100, background: t.accent + '12', color: t.accent, border: '1px solid ' + t.accent + '30', fontSize: 11, fontWeight: 600 }}>{t.name}</span>)}
       </div>
     </div>
   );
 
-  // ── Step: Generating ──
+  // ── Generating ──
   if (step === 'generating') return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 20px', textAlign: 'center' }}>
-      <div style={{ position: 'relative', width: 80, height: 80, marginBottom: 28 }}>
-        <div style={{ position: 'absolute', inset: 0, border: '4px solid #e5e7eb', borderRadius: '50%' }} />
-        <div style={{ position: 'absolute', inset: 0, border: '4px solid #7c3aed', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-        <div style={{ position: 'absolute', inset: '50%', transform: 'translate(-50%,-50%)', width: 42, height: 42, background: 'linear-gradient(135deg,#7c3aed,#4f46e5)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Sparkles size={20} color="#fff" />
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      <div style={{ position: 'relative', width: 72, height: 72, marginBottom: 24 }}>
+        <div style={{ position: 'absolute', inset: 0, border: '3px solid #e5e7eb', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', inset: 0, border: '3px solid #7c3aed', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+        <div style={{ position: 'absolute', inset: '50%', transform: 'translate(-50%,-50%)', width: 38, height: 38, background: 'linear-gradient(135deg,#7c3aed,#4f46e5)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Sparkles size={18} color="#fff" />
         </div>
       </div>
-      <h2 style={{ fontSize: 22, fontWeight: 800, color: '#111827', margin: '0 0 10px' }}>Tailoring Your Resume...</h2>
-      <p style={{ color: '#6b7280', fontSize: 14, maxWidth: 420, margin: '0 0 28px' }}>AI is reading the job description, matching your experience, and rewriting your resume for maximum ATS score.</p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%', maxWidth: 400 }}>
-        {['Analysing job description & extracting keywords', 'Mapping your skills to JD requirements', 'Rewriting summary, bullets & skill order', 'Optimising for ATS compatibility'].map((msg, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#f9fafb', borderRadius: 10, border: '1px solid #e5e7eb' }}>
-            <Loader2 size={14} color="#7c3aed" style={{ animation: 'spin 1s linear infinite', flexShrink: 0, animationDelay: `${i * 0.3}s` }} />
-            <span style={{ fontSize: 12, color: '#374151' }}>{msg}</span>
-          </div>
-        ))}
-      </div>
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      <h2 style={{ fontSize: 20, fontWeight: 800, color: '#111827', margin: '0 0 8px' }}>Tailoring Your Resume…</h2>
+      <p style={{ color: '#6b7280', fontSize: 13, maxWidth: 400, margin: '0 0 24px', lineHeight: 1.6 }}>AI is reading the job description, matching your experience, rewriting bullets with JD keywords, and optimising for ATS.</p>
+      {['Extracting JD requirements & keywords', 'Mapping your skills to job requirements', 'Rewriting summary and experience bullets', 'Optimising ATS score and layout'].map((msg, i) => (
+        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 14px', background: '#f9fafb', borderRadius: 10, border: '1px solid #e5e7eb', marginBottom: 6, width: '100%', maxWidth: 400 }}>
+          <Loader2 size={13} color="#7c3aed" style={{ animation: 'spin 1s linear infinite', flexShrink: 0 }} />
+          <span style={{ fontSize: 12, color: '#374151' }}>{msg}</span>
+        </div>
+      ))}
     </div>
   );
 
-  // ── Step: Template Selection ──
+  // ── Template selection ──
   if (step === 'templates' && tailored) return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap' as const, gap: 12 }}>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, flexWrap: 'wrap' as const, gap: 10 }}>
         <div>
-          <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#6b7280', fontSize: 13, cursor: 'pointer', padding: '0 0 8px', marginLeft: -2 }}>
-            <ChevronLeft size={16} /> Back to Job Search
+          <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', color: '#6b7280', fontSize: 12, cursor: 'pointer', padding: '0 0 6px' }}>
+            <ChevronLeft size={14} /> Back to Job Search
           </button>
-          <h1 style={{ fontSize: 22, fontWeight: 800, color: '#111827', margin: 0 }}>Choose a Template</h1>
-          <p style={{ color: '#6b7280', fontSize: 13, margin: '4px 0 0' }}>
-            Tailored for: <strong style={{ color: '#111827' }}>{tailored.targetRole}</strong>
-            {saving && <span style={{ marginLeft: 8, fontSize: 11, color: '#9ca3af' }}>saving...</span>}
-            {savedId && !saving && <span style={{ marginLeft: 8, fontSize: 11, color: '#16a34a' }}>✓ Saved</span>}
-          </p>
+          <h1 style={{ fontSize: 20, fontWeight: 800, color: '#111827', margin: 0 }}>Your Tailored Resumes</h1>
+          <p style={{ color: '#6b7280', fontSize: 12, margin: '3px 0 0' }}>Tailored for: <strong style={{ color: '#111827' }}>{tailored.targetRole}</strong></p>
         </div>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' as const }}>
-          {tailored.matchKeywords.slice(0, 6).map((kw, i) => (
-            <span key={i} style={{ padding: '3px 10px', borderRadius: 100, background: '#dcfce7', color: '#166534', fontSize: 11, fontWeight: 600 }}>{kw}</span>
-          ))}
+        <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 5 }}>
+          {tailored.matchKeywords.slice(0, 8).map((kw, i) => <span key={i} style={{ padding: '3px 9px', borderRadius: 100, background: '#dcfce7', color: '#166534', fontSize: 11, fontWeight: 600 }}>{kw}</span>)}
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 16, marginBottom: 100 }}>
+      {/* 3 template cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 18, marginBottom: 100 }}>
         {TEMPLATES.map(t => (
-          <div key={t.id}
-            onClick={() => updateSavedTemplate(t.id)}
-            style={{ borderRadius: 14, border: `2px solid ${selectedTemplate === t.id ? t.color : '#e5e7eb'}`, overflow: 'hidden', cursor: 'pointer', transition: 'all 0.2s', boxShadow: selectedTemplate === t.id ? `0 4px 20px ${t.color}30` : '0 1px 3px rgba(0,0,0,0.05)' }}>
+          <div key={t.id} onClick={() => pickTemplate(t.id)}
+            style={{ borderRadius: 14, border: `2px solid ${selected === t.id ? t.accent : '#e5e7eb'}`, overflow: 'hidden', cursor: 'pointer', transition: 'all 0.2s', boxShadow: selected === t.id ? `0 4px 20px ${t.accent}28` : '0 1px 4px rgba(0,0,0,0.06)' }}>
             {/* Live mini preview */}
-            <div style={{ height: 210, overflow: 'hidden', background: '#f9fafb', position: 'relative', pointerEvents: 'none' }}>
-              <div style={{ transform: 'scale(0.38)', transformOrigin: 'top left', width: '263%', height: '263%' }}>
-                <ResumeTemplate resume={tailored} templateId={t.id} scale={1} />
+            <div style={{ height: 230, overflow: 'hidden', background: '#f9fafb', position: 'relative', pointerEvents: 'none' }}>
+              <div style={{ transform: 'scale(0.37)', transformOrigin: 'top left', width: '270%', height: '270%' }}>
+                <ResumeTemplate resume={tailored} templateId={t.id} s={1} />
               </div>
-              {selectedTemplate === t.id && (
-                <div style={{ position: 'absolute', top: 8, right: 8, width: 22, height: 22, borderRadius: '50%', background: t.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {selected === t.id && (
+                <div style={{ position: 'absolute', top: 8, right: 8, width: 22, height: 22, borderRadius: '50%', background: t.accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <CheckCircle2 size={13} color="#fff" />
                 </div>
               )}
             </div>
-            <div style={{ padding: '12px 14px', background: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '11px 14px', background: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{t.name}</div>
                 <div style={{ fontSize: 11, color: '#6b7280' }}>{t.desc}</div>
               </div>
               <div style={{ display: 'flex', gap: 6 }}>
-                <button onClick={e => { e.stopPropagation(); setPreviewTemplate(t.id); }}
-                  style={{ padding: '6px 10px', borderRadius: 7, background: '#f3f4f6', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#374151', fontWeight: 600 }}>
+                <button onClick={e => { e.stopPropagation(); setPreview(t.id); }}
+                  style={{ padding: '6px 10px', borderRadius: 7, background: '#f3f4f6', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: '#374151' }}>
                   <Eye size={11} /> View
                 </button>
-                <button onClick={e => { e.stopPropagation(); downloadPDF(tailored, t.id, setPdfStatus); }}
-                  disabled={pdfStatus === 'rendering'}
-                  style={{ padding: '6px 10px', borderRadius: 7, background: t.color, border: 'none', cursor: pdfStatus === 'rendering' ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#fff', fontWeight: 600, opacity: pdfStatus === 'rendering' ? 0.6 : 1 }}>
+                <button onClick={e => { e.stopPropagation(); dl(t.id); }} disabled={downloading}
+                  style={{ padding: '6px 10px', borderRadius: 7, background: t.accent, border: 'none', cursor: downloading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: '#fff', opacity: downloading ? 0.6 : 1 }}>
                   <Download size={11} /> PDF
                 </button>
               </div>
@@ -628,124 +322,118 @@ export default function ResumeBuilderPage({ resumeText, onClose }: Props) {
         ))}
       </div>
 
-      {/* Sticky action bar */}
-      <div style={{ position: 'sticky', bottom: 16, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: '14px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 8px 30px rgba(0,0,0,0.12)', zIndex: 10 }}>
+      {/* Sticky bottom bar */}
+      <div style={{ position: 'sticky', bottom: 16, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: '12px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 8px 32px rgba(0,0,0,0.12)', zIndex: 10, flexWrap: 'wrap' as const, gap: 10 }}>
         <div>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>
-            <span style={{ width: 10, height: 10, borderRadius: '50%', background: TEMPLATES.find(t => t.id === selectedTemplate)?.color, display: 'inline-block', marginRight: 8 }} />
-            {TEMPLATES.find(t => t.id === selectedTemplate)?.name} selected
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', display: 'flex', alignItems: 'center', gap: 7 }}>
+            <span style={{ width: 10, height: 10, borderRadius: '50%', background: TEMPLATES.find(t => t.id === selected)?.accent, display: 'inline-block' }} />
+            {TEMPLATES.find(t => t.id === selected)?.name} selected
           </div>
-          <div style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>ATS-optimised · Tailored for {tailored.targetRole}</div>
+          <div style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>ATS-optimised · 1 page · Tailored for {tailored.targetRole}</div>
         </div>
-        <div style={{ display: 'flex', gap: 10 }}>
+        <div style={{ display: 'flex', gap: 8 }}>
           <button onClick={() => { setEditData(JSON.parse(JSON.stringify(tailored))); setStep('edit'); }}
-            style={{ padding: '10px 18px', borderRadius: 10, background: '#f9fafb', border: '1px solid #e5e7eb', color: '#111827', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Edit3 size={14} /> Edit
+            style={{ padding: '10px 16px', borderRadius: 10, background: '#f9fafb', border: '1px solid #e5e7eb', color: '#111827', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Edit3 size={13} /> Edit
           </button>
-          <button onClick={() => downloadPDF(tailored, selectedTemplate, setPdfStatus)} disabled={pdfStatus === 'rendering'}
-            style={{ padding: '10px 22px', borderRadius: 10, background: pdfStatus === 'rendering' ? '#9ca3af' : '#111827', border: 'none', color: '#fff', fontSize: 13, fontWeight: 700, cursor: pdfStatus === 'rendering' ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
-            {pdfStatus === 'rendering' ? <><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> Generating...</> : <><Download size={14} /> Download PDF</>}
+          <button onClick={() => dl(selected)} disabled={downloading}
+            style={{ padding: '10px 20px', borderRadius: 10, background: downloading ? '#9ca3af' : '#111827', border: 'none', color: '#fff', fontSize: 13, fontWeight: 700, cursor: downloading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+            {downloading ? <><Loader2 size={13} style={{ animation: 'spin 1s linear infinite' }} /> Generating…</> : <><Download size={13} /> Download PDF</>}
           </button>
         </div>
       </div>
 
       {/* Full preview modal */}
-      {previewTemplate && (
-        <div onClick={() => setPreviewTemplate(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', zIndex: 1000, padding: '40px 20px', overflowY: 'auto' }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: 16, maxWidth: 794, width: '100%', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
-            <div style={{ padding: '12px 18px', borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f9fafb', position: 'sticky', top: 0, zIndex: 1 }}>
-              <span style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>Preview — {TEMPLATES.find(t => t.id === previewTemplate)?.name}</span>
+      {preview && (
+        <div onClick={() => setPreview(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.78)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', zIndex: 2000, padding: '32px 16px', overflowY: 'auto' }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: 16, maxWidth: 794, width: '100%', overflow: 'hidden', boxShadow: '0 24px 64px rgba(0,0,0,0.5)' }}>
+            <div style={{ padding: '10px 16px', borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f9fafb', position: 'sticky', top: 0, zIndex: 1 }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{TEMPLATES.find(t => t.id === preview)?.name} Preview</span>
               <div style={{ display: 'flex', gap: 8 }}>
-                <button onClick={() => downloadPDF(tailored, previewTemplate, setPdfStatus)} disabled={pdfStatus === 'rendering'}
-                  style={{ padding: '8px 16px', borderRadius: 8, background: '#111827', border: 'none', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5 }}>
+                <button onClick={() => dl(preview)} disabled={downloading}
+                  style={{ padding: '7px 14px', borderRadius: 8, background: '#111827', border: 'none', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5 }}>
                   <Download size={12} /> Download PDF
                 </button>
-                <button onClick={() => setPreviewTemplate(null)} style={{ padding: 8, borderRadius: 8, background: '#f3f4f6', border: 'none', cursor: 'pointer' }}>
-                  <X size={16} color="#6b7280" />
+                <button onClick={() => setPreview(null)} style={{ padding: 7, borderRadius: 8, background: '#f3f4f6', border: 'none', cursor: 'pointer' }}>
+                  <X size={15} color="#6b7280" />
                 </button>
               </div>
             </div>
-            <ResumeTemplate resume={tailored} templateId={previewTemplate} scale={1} />
+            <ResumeTemplate resume={tailored} templateId={preview} s={1} />
           </div>
         </div>
       )}
     </div>
   );
 
-  // ── Step: Edit ──
+  // ── Edit ──
   if (step === 'edit' && editData) return (
-    <div style={{ maxWidth: 820, margin: '0 auto' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+    <div style={{ maxWidth: 800, margin: '0 auto' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap' as const, gap: 10 }}>
         <div>
-          <button onClick={() => setStep('templates')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#6b7280', fontSize: 13, cursor: 'pointer', padding: '0 0 8px' }}>
-            <ChevronLeft size={16} /> Back to Templates
+          <button onClick={() => setStep('templates')} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', color: '#6b7280', fontSize: 12, cursor: 'pointer', padding: '0 0 6px' }}>
+            <ChevronLeft size={14} /> Back to Templates
           </button>
-          <h1 style={{ fontSize: 20, fontWeight: 800, color: '#111827', margin: 0 }}>Edit Resume</h1>
-          <p style={{ color: '#6b7280', fontSize: 12, margin: '4px 0 0' }}>Changes auto-apply to all templates</p>
+          <h1 style={{ fontSize: 18, fontWeight: 800, color: '#111827', margin: 0 }}>Edit Resume</h1>
         </div>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button onClick={() => setStep('templates')} style={{ padding: '10px 16px', borderRadius: 10, background: '#f9fafb', border: '1px solid #e5e7eb', color: '#6b7280', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
-          <button onClick={saveEdits} style={{ padding: '10px 20px', borderRadius: 10, background: '#111827', border: 'none', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <CheckCircle2 size={14} /> Save & Continue
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button onClick={() => setStep('templates')} style={{ padding: '9px 14px', borderRadius: 9, background: '#f9fafb', border: '1px solid #e5e7eb', color: '#6b7280', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+          <button onClick={saveEdits} style={{ padding: '9px 18px', borderRadius: 9, background: '#111827', border: 'none', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <CheckCircle2 size={13} /> Save Changes
           </button>
         </div>
       </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-        {/* Basic */}
-        <div style={{ padding: 20, borderRadius: 12, border: '1px solid #e5e7eb', background: '#fff' }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: 14 }}>Basic Information</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            {(['name', 'email', 'phone', 'location', 'linkedin', 'targetRole'] as const).map(f => (
-              <div key={f}>
+      <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 12 }}>
+        {/* Basic info */}
+        <div style={{ padding: 18, borderRadius: 12, border: '1px solid #e5e7eb', background: '#fff' }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: 12 }}>Basic Information</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            {(['name','email','phone','location','linkedin','website','targetRole'] as const).map(f => (
+              <div key={f} style={f === 'targetRole' ? { gridColumn: '1/-1' } : {}}>
                 <label style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: 4, textTransform: 'capitalize' as const }}>{f === 'targetRole' ? 'Target Role' : f}</label>
-                <input value={editData[f] as string} onChange={e => setEditData({ ...editData, [f]: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 13, color: '#111827', outline: 'none', boxSizing: 'border-box' as const }}
-                  onFocus={e => e.currentTarget.style.borderColor = '#111827'} onBlur={e => e.currentTarget.style.borderColor = '#e5e7eb'} />
+                <input value={(editData as Record<string, unknown>)[f] as string || ''} onChange={e => setEditData({ ...editData, [f]: e.target.value })}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 12, color: '#111827', outline: 'none', boxSizing: 'border-box' as const }}
+                  onFocus={e => (e.currentTarget.style.borderColor = '#111827')} onBlur={e => (e.currentTarget.style.borderColor = '#e5e7eb')} />
               </div>
             ))}
           </div>
         </div>
-
         {/* Summary */}
-        <div style={{ padding: 20, borderRadius: 12, border: '1px solid #e5e7eb', background: '#fff' }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: 14 }}>Professional Summary</div>
+        <div style={{ padding: 18, borderRadius: 12, border: '1px solid #e5e7eb', background: '#fff' }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: 10 }}>Professional Summary</div>
           <textarea value={editData.summary} onChange={e => setEditData({ ...editData, summary: e.target.value })}
-            style={{ width: '100%', height: 90, padding: 12, borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 13, color: '#111827', outline: 'none', resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.6, boxSizing: 'border-box' as const }}
-            onFocus={e => e.currentTarget.style.borderColor = '#111827'} onBlur={e => e.currentTarget.style.borderColor = '#e5e7eb'} />
+            style={{ width: '100%', height: 90, padding: 10, borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 12, color: '#111827', outline: 'none', resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.6, boxSizing: 'border-box' as const }}
+            onFocus={e => (e.currentTarget.style.borderColor = '#111827')} onBlur={e => (e.currentTarget.style.borderColor = '#e5e7eb')} />
         </div>
-
         {/* Skills */}
-        <div style={{ padding: 20, borderRadius: 12, border: '1px solid #e5e7eb', background: '#fff' }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: 14 }}>Skills <span style={{ fontWeight: 400, textTransform: 'none' as const }}>(comma-separated)</span></div>
-          <input value={editData.skills.join(', ')} onChange={e => setEditData({ ...editData, skills: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
-            style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 13, color: '#111827', outline: 'none', boxSizing: 'border-box' as const }}
-            onFocus={e => e.currentTarget.style.borderColor = '#111827'} onBlur={e => e.currentTarget.style.borderColor = '#e5e7eb'} />
+        <div style={{ padding: 18, borderRadius: 12, border: '1px solid #e5e7eb', background: '#fff' }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: 10 }}>Skills <span style={{ fontWeight: 400, textTransform: 'none' as const }}>(comma-separated)</span></div>
+          <input value={editData.skills.join(', ')} onChange={e => setEditData({ ...editData, skills: e.target.value.split(',').map(x => x.trim()).filter(Boolean) })}
+            style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 12, color: '#111827', outline: 'none', boxSizing: 'border-box' as const }}
+            onFocus={e => (e.currentTarget.style.borderColor = '#111827')} onBlur={e => (e.currentTarget.style.borderColor = '#e5e7eb')} />
         </div>
-
         {/* Experience */}
-        <div style={{ padding: 20, borderRadius: 12, border: '1px solid #e5e7eb', background: '#fff' }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: 14 }}>Work Experience</div>
+        <div style={{ padding: 18, borderRadius: 12, border: '1px solid #e5e7eb', background: '#fff' }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: 12 }}>Work Experience</div>
           {editData.experience.map((exp, i) => (
-            <div key={i} style={{ marginBottom: 16, paddingBottom: 16, borderBottom: i < editData.experience.length - 1 ? '1px solid #f3f4f6' : 'none' }}>
+            <div key={i} style={{ marginBottom: 14, paddingBottom: 14, borderBottom: i < editData.experience.length - 1 ? '1px solid #f3f4f6' : 'none' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 8 }}>
-                {(['title', 'company', 'duration'] as const).map(f => (
+                {(['title','company','duration'] as const).map(f => (
                   <div key={f}>
                     <label style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: 3, textTransform: 'capitalize' as const }}>{f}</label>
                     <input value={exp[f]} onChange={e => { const ex = [...editData.experience]; ex[i] = { ...ex[i], [f]: e.target.value }; setEditData({ ...editData, experience: ex }); }}
-                      style={{ width: '100%', padding: '7px 10px', borderRadius: 7, border: '1px solid #e5e7eb', fontSize: 12, outline: 'none', boxSizing: 'border-box' as const }} />
+                      style={{ width: '100%', padding: '6px 8px', borderRadius: 7, border: '1px solid #e5e7eb', fontSize: 11, outline: 'none', boxSizing: 'border-box' as const }} />
                   </div>
                 ))}
               </div>
-              <label style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: 3 }}>Bullet points (one per line)</label>
+              <label style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: 3 }}>Bullet Points (one per line)</label>
               <textarea value={exp.bullets.join('\n')} onChange={e => { const ex = [...editData.experience]; ex[i] = { ...ex[i], bullets: e.target.value.split('\n') }; setEditData({ ...editData, experience: ex }); }}
-                style={{ width: '100%', height: 80, padding: '7px 10px', borderRadius: 7, border: '1px solid #e5e7eb', fontSize: 12, outline: 'none', resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.5, boxSizing: 'border-box' as const }} />
+                style={{ width: '100%', height: 75, padding: '6px 8px', borderRadius: 7, border: '1px solid #e5e7eb', fontSize: 11, outline: 'none', resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.5, boxSizing: 'border-box' as const }} />
             </div>
           ))}
         </div>
       </div>
-
-      <div style={{ height: 40 }} />
+      <div style={{ height: 32 }} />
     </div>
   );
 
