@@ -1,15 +1,7 @@
 // ── AI Resume Tailoring ──────────────────────────────────────────────────────
-// Simple fetch to OpenRouter API (same pattern as RapidAPI in JobSearchPage)
-// Key: env var first, then hardcoded fallback
+// Uses Eden AI for resume generation (GPT-4o-mini)
 
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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';
-
-const MODELS = [
-  'google/gemma-4-26b-a4b-it:free',
-  'mistralai/mistral-7b-instruct:free',
-  'meta-llama/llama-3.1-8b-instruct:free',
-  'deepseek/deepseek-chat-v3-0324:free',
-];
+const EDEN_AI_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiODFlMzM1NzktMDgzMS00MmIxLWIzN2UtNGU5ODIzZmRjOWNjIiwidHlwZSI6ImFwaV90b2tlbiJ9.bMugmLgEFLlnaw-1meQv4uLF_95wXj0BRkzODP0rshw';
 
 export interface TailoredResume {
   name: string;
@@ -86,62 +78,49 @@ export async function tailorResumeWithAI(
   resumeText: string,
   jdText: string
 ): Promise<TailoredResume> {
-  if (!OPENROUTER_API_KEY) {
-    throw new Error('OpenRouter API key not configured.');
-  }
-
   const prompt = buildPrompt(resumeText, jdText);
-  let lastError = 'All models failed';
 
-  for (const model of MODELS) {
-    try {
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': 'https://helplyai.co',
-          'X-Title': 'HelplyAI Resume Builder',
-        },
-        body: JSON.stringify({
-          model,
-          messages: [{ role: 'user', content: prompt }],
-          max_tokens: 3000,
-          temperature: 0.2,
-        }),
-      });
+  try {
+    const response = await fetch('https://api.edenai.run/v3/llm/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${EDEN_AI_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'openai/gpt-4o-mini',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 3000,
+        temperature: 0.2,
+      }),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (!response.ok) {
-        lastError = `${model}: HTTP ${response.status} - ${JSON.stringify(data).slice(0, 200)}`;
-        console.warn(lastError);
-        continue;
-      }
-
-      const raw: string = data.choices?.[0]?.message?.content || '';
-      if (!raw) { lastError = `${model}: empty response`; continue; }
-
-      const start = raw.indexOf('{');
-      const end = raw.lastIndexOf('}');
-      if (start === -1 || end === -1) { lastError = `${model}: no JSON found`; continue; }
-
-      const parsed = JSON.parse(raw.slice(start, end + 1)) as TailoredResume;
-      parsed.skills = parsed.skills || [];
-      parsed.experience = parsed.experience || [];
-      parsed.education = parsed.education || [];
-      parsed.projects = parsed.projects || [];
-      parsed.certifications = parsed.certifications || [];
-      parsed.matchKeywords = parsed.matchKeywords || [];
-      parsed.website = parsed.website || '';
-      parsed.linkedin = parsed.linkedin || '';
-      return parsed;
-
-    } catch (err) {
-      lastError = `${model}: ${String(err)}`;
-      console.warn(lastError);
+    if (!response.ok) {
+      throw new Error(`Eden AI error: HTTP ${response.status} - ${JSON.stringify(data).slice(0, 200)}`);
     }
-  }
 
-  throw new Error(`Resume generation failed - ${lastError}`);
+    const raw: string = data.choices?.[0]?.message?.content || '';
+    if (!raw) throw new Error('Empty response from Eden AI');
+
+    const start = raw.indexOf('{');
+    const end = raw.lastIndexOf('}');
+    if (start === -1 || end === -1) throw new Error('No JSON found in response');
+
+    const parsed = JSON.parse(raw.slice(start, end + 1)) as TailoredResume;
+    parsed.skills = parsed.skills || [];
+    parsed.experience = parsed.experience || [];
+    parsed.education = parsed.education || [];
+    parsed.projects = parsed.projects || [];
+    parsed.certifications = parsed.certifications || [];
+    parsed.matchKeywords = parsed.matchKeywords || [];
+    parsed.website = parsed.website || '';
+    parsed.linkedin = parsed.linkedin || '';
+    return parsed;
+
+  } catch (err) {
+    console.error('Resume tailoring failed:', err);
+    throw new Error(`Resume generation failed: ${String(err)}`);
+  }
 }
