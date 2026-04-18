@@ -24,7 +24,7 @@ function ExecutiveTemplate({ r, s = 1 }: { r: TailoredResume; s?: number }) {
     <div style={{ fontSize: sc(8, s), fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: sc(1.2, s), color: navy, borderBottom: `${sc(1.5, s)}px solid ${navy}`, paddingBottom: sc(3, s), marginTop: sc(10, s), marginBottom: sc(6, s) }}>{t}</div>
   );
   return (
-    <div id="resume-render" style={{ fontFamily: 'Georgia,"Times New Roman",serif', background: '#fff', width: '100%', boxSizing: 'border-box' as const, lineHeight: 1.4 }}>
+    <div id="resume-render" style={{ fontFamily: 'Arial,Helvetica,sans-serif', background: '#fff', width: '100%', boxSizing: 'border-box' as const, lineHeight: 1.4 }}>
       <div style={{ background: navy, padding: `${sc(24, s)}px ${sc(32, s)}px`, color: '#fff' }}>
         <div style={{ fontSize: sc(20, s), fontWeight: 700, letterSpacing: sc(0.5, s) }}>{r.name || 'Your Name'}</div>
         <div style={{ fontSize: sc(10, s), color: gold, fontWeight: 600, marginTop: sc(4, s), textTransform: 'uppercase' as const, letterSpacing: sc(1, s) }}>{r.targetRole}</div>
@@ -88,7 +88,7 @@ function ModernTemplate({ r, s = 1 }: { r: TailoredResume; s?: number }) {
 function CleanTemplate({ r, s = 1 }: { r: TailoredResume; s?: number }) {
   const ST = ({ t }: { t: string }) => <div style={{ fontSize: sc(8, s), fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: sc(1.5, s), color: '#111', borderBottom: `${sc(1, s)}px solid #111`, paddingBottom: sc(2, s), marginTop: sc(10, s), marginBottom: sc(5, s) }}>{t}</div>;
   return (
-    <div id="resume-render" style={{ fontFamily: 'Georgia,"Times New Roman",serif', fontSize: sc(9.5, s), color: '#111', background: '#fff', padding: `${sc(38, s)}px ${sc(46, s)}px ${sc(20, s)}px`, width: '100%', boxSizing: 'border-box' as const }}>
+    <div id="resume-render" style={{ fontFamily: 'Arial,Helvetica,sans-serif', fontSize: sc(9.5, s), color: '#111', background: '#fff', padding: `${sc(38, s)}px ${sc(46, s)}px ${sc(20, s)}px`, width: '100%', boxSizing: 'border-box' as const }}>
       <div style={{ textAlign: 'center' as const, marginBottom: sc(12, s) }}>
         <div style={{ fontSize: sc(22, s), fontWeight: 700, letterSpacing: sc(1.5, s), textTransform: 'uppercase' as const }}>{r.name || 'Your Name'}</div>
         <div style={{ fontSize: sc(10, s), color: '#555', marginTop: sc(3, s), fontStyle: 'italic' }}>{r.targetRole}</div>
@@ -128,34 +128,64 @@ async function downloadPDF(resume: TailoredResume, templateId: TemplateId, name:
   setDl(true);
   try {
     const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([import('jspdf'), import('html2canvas')]);
+    
+    // Create hidden container with A4 dimensions (794px at 96dpi)
     const wrap = document.createElement('div');
-    wrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;background:#fff;z-index:-9999;';
+    wrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;min-height:1123px;background:#fff;z-index:-9999;overflow:hidden;';
     document.body.appendChild(wrap);
+    
     const root = createRoot(wrap);
     root.render(createElement(ResumeTemplate, { resume, templateId, s: 1 }));
-    await new Promise(r => setTimeout(r, 900));
-    const canvas = await html2canvas(wrap, { scale: 2, useCORS: true, backgroundColor: '#fff', logging: false });
+    await new Promise(r => setTimeout(r, 1200)); // Longer wait for fonts
+    
+    // High-quality rendering with scale 3 for sharper text
+    const canvas = await html2canvas(wrap, { 
+      scale: 3, // Higher scale for sharper fonts
+      useCORS: true, 
+      backgroundColor: '#fff',
+      logging: false,
+      allowTaint: true,
+      letterRendering: true, // Better font rendering
+      font: 'Arial', // Ensure web-safe font
+      onclone: (clonedDoc) => {
+        // Force fonts to be loaded in cloned document
+        clonedDoc.fonts.ready;
+      }
+    });
+    
     root.unmount();
     document.body.removeChild(wrap);
+    
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     const W = pdf.internal.pageSize.getWidth();
     const H = pdf.internal.pageSize.getHeight();
     const ratio = W / canvas.width;
     const imgH = canvas.height * ratio;
+    
+    // Use JPEG with high quality for smaller file size, good quality
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    
     if (imgH <= H) {
-      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, W, imgH);
+      pdf.addImage(imgData, 'JPEG', 0, 0, W, imgH);
     } else {
+      // Multi-page handling
       let y = 0;
+      const pageHeightPx = H / ratio;
       while (y < canvas.height) {
-        const sh = Math.min(H / ratio, canvas.height - y);
-        const sc2 = document.createElement('canvas');
-        sc2.width = canvas.width; sc2.height = sh;
-        sc2.getContext('2d')!.drawImage(canvas, 0, y, canvas.width, sh, 0, 0, canvas.width, sh);
+        const sliceHeight = Math.min(pageHeightPx, canvas.height - y);
+        const sliceCanvas = document.createElement('canvas');
+        sliceCanvas.width = canvas.width;
+        sliceCanvas.height = sliceHeight;
+        const ctx = sliceCanvas.getContext('2d')!;
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+        ctx.drawImage(canvas, 0, y, canvas.width, sliceHeight, 0, 0, canvas.width, sliceHeight);
         if (y > 0) pdf.addPage();
-        pdf.addImage(sc2.toDataURL('image/png'), 'PNG', 0, 0, W, sh * ratio);
-        y += sh;
+        pdf.addImage(sliceCanvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, W, sliceHeight * ratio);
+        y += sliceHeight;
       }
     }
+    
     pdf.save(`${name.replace(/\s+/g, '_')}_${templateId}_resume.pdf`);
   } finally {
     setDl(false);
