@@ -36,27 +36,27 @@ export interface TailoredResume {
   matchKeywords: string[];
 }
 
-const buildPrompt = (resumeText: string, jdText: string) => `You are an expert ATS resume writer. Analyse the resume and job description and produce a TAILORED resume JSON.
+const buildPrompt = (resumeText: string, jdText: string) => `You are an expert ATS resume writer. Create a COMPREHENSIVE tailored resume that includes ALL original resume data PLUS enhancements from the JD.
 
-STRICT RULES:
-1. Extract ALL real data from the resume - name, email, phone, location, linkedin
-2. Rewrite the summary (3 sentences) using exact keywords from the JD
-3. Keep ALL experience entries - rewrite bullets to show measurable impact using JD keywords
-4. Keep ALL education entries exactly as in the resume
-5. Reorder skills: JD-matching skills first (max 14 total)
-6. Keep ALL projects and certifications from the resume
-7. Extract the exact target job title from the JD
-8. Pick top 8 keywords from the JD that match the resume
-9. Do NOT invent any company, date, degree or credential
-10. Keep bullets concise - max 2 lines each, max 3 bullets per role
+CRITICAL RULES:
+1. Extract EVERYTHING from the resume - all jobs, all bullets, all skills, all projects, all certifications
+2. KEEP ALL original experience entries with their full bullet points (4-6 bullets per role is fine)
+3. ENHANCE each bullet with JD keywords where relevant - but keep the original achievement
+4. ADD new skills from JD that match your experience (merge resume skills + JD skills)
+5. Rewrite summary to incorporate JD keywords AND your full experience
+6. Keep ALL education, ALL certifications, ALL projects from original resume
+7. Add JD-relevant achievements/bullets if they align with your experience (don't invent, but highlight relevant aspects)
+8. Extract exact target job title from JD
+9. Include 10-12 JD keywords that match the resume
+10. MAXIMIZE content - more detail is better for ATS
 
-RESUME:
-${resumeText.slice(0, 4000)}
+FULL RESUME (parse everything):
+${resumeText.slice(0, 8000)}
 
-JOB DESCRIPTION:
-${jdText.slice(0, 2500)}
+FULL JOB DESCRIPTION:
+${jdText.slice(0, 4000)}
 
-Return ONLY this JSON - no markdown, no explanation:
+Return COMPLETE JSON with ALL data:
 {
   "name": "full name",
   "email": "email",
@@ -65,13 +65,13 @@ Return ONLY this JSON - no markdown, no explanation:
   "linkedin": "linkedin url or empty string",
   "website": "portfolio url or empty string",
   "targetRole": "exact job title from JD",
-  "summary": "3 sentence tailored summary with JD keywords",
-  "skills": ["skill1","skill2"],
-  "experience": [{"title":"Job Title","company":"Company","duration":"Mon Year - Mon Year","location":"City","bullets":["bullet1","bullet2","bullet3"]}],
+  "summary": "comprehensive 3-4 sentence summary with JD keywords",
+  "skills": ["skill1","skill2","skill3"],
+  "experience": [{"title":"Job Title","company":"Company","duration":"Mon Year - Mon Year","location":"City","bullets":["bullet1","bullet2","bullet3","bullet4","bullet5"]}],
   "education": [{"degree":"Degree","school":"University","year":"Year","gpa":""}],
-  "projects": [{"name":"Project","description":"one line","tech":"Stack","link":""}],
-  "certifications": ["cert1"],
-  "matchKeywords": ["kw1","kw2","kw3","kw4","kw5","kw6","kw7","kw8"]
+  "projects": [{"name":"Project","description":"detailed description","tech":"Stack","link":""}],
+  "certifications": ["cert1","cert2"],
+  "matchKeywords": ["kw1","kw2","kw3","kw4","kw5","kw6","kw7","kw8","kw9","kw10"]
 }`;
 
 export async function tailorResumeWithAI(
