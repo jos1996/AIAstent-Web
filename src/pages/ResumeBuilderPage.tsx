@@ -21,35 +21,35 @@ const sc = (n: number, s: number) => n * s;
 function ExecutiveTemplate({ r, s = 1 }: { r: TailoredResume; s?: number }) {
   const navy = '#1e3a5f', gold = '#b8972a';
   const ST = ({ t }: { t: string }) => (
-    <div style={{ fontSize: sc(8, s), fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: sc(1.2, s), color: navy, borderBottom: `${sc(1.5, s)}px solid ${navy}`, paddingBottom: sc(2, s), marginTop: sc(11, s), marginBottom: sc(6, s) }}>{t}</div>
+    <div style={{ fontSize: sc(8, s), fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: sc(1.2, s), color: navy, borderBottom: `${sc(1.5, s)}px solid ${navy}`, paddingBottom: sc(3, s), marginTop: sc(10, s), marginBottom: sc(6, s) }}>{t}</div>
   );
   return (
-    <div id="resume-render" style={{ fontFamily: 'Georgia,"Times New Roman",serif', background: '#fff', width: '100%', boxSizing: 'border-box' as const }}>
-      <div style={{ background: navy, padding: `${sc(26, s)}px ${sc(34, s)}px ${sc(20, s)}px`, color: '#fff' }}>
-        <div style={{ fontSize: sc(22, s), fontWeight: 700, letterSpacing: sc(0.3, s) }}>{r.name || 'Your Name'}</div>
-        <div style={{ fontSize: sc(11, s), color: gold, fontWeight: 600, marginTop: sc(3, s) }}>{r.targetRole}</div>
-        <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: sc(14, s), marginTop: sc(8, s), fontSize: sc(8.5, s), color: 'rgba(255,255,255,0.82)' }}>
-          {r.email && <span>✉ {r.email}</span>}
-          {r.phone && <span>✆ {r.phone}</span>}
-          {r.location && <span>⊛ {r.location}</span>}
-          {r.linkedin && <span>in {r.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//,'')}</span>}
-          {r.website && <span>⊕ {r.website}</span>}
+    <div id="resume-render" style={{ fontFamily: 'Georgia,"Times New Roman",serif', background: '#fff', width: '100%', boxSizing: 'border-box' as const, lineHeight: 1.4 }}>
+      <div style={{ background: navy, padding: `${sc(24, s)}px ${sc(32, s)}px`, color: '#fff' }}>
+        <div style={{ fontSize: sc(20, s), fontWeight: 700, letterSpacing: sc(0.5, s) }}>{r.name || 'Your Name'}</div>
+        <div style={{ fontSize: sc(10, s), color: gold, fontWeight: 600, marginTop: sc(4, s), textTransform: 'uppercase' as const, letterSpacing: sc(1, s) }}>{r.targetRole}</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: sc(12, s), marginTop: sc(10, s), fontSize: sc(8, s), color: 'rgba(255,255,255,0.9)' }}>
+          {r.email && <span>{r.email}</span>}
+          {r.phone && <span>{r.phone}</span>}
+          {r.location && <span>{r.location}</span>}
+          {r.linkedin && <span>{r.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//,'')}</span>}
+          {r.website && <span>{r.website}</span>}
         </div>
       </div>
-      <div style={{ padding: `${sc(6, s)}px ${sc(34, s)}px ${sc(20, s)}px` }}>
+      <div style={{ padding: `${sc(8, s)}px ${sc(32, s)}px ${sc(16, s)}px` }}>
         {r.matchKeywords.length > 0 && (
-          <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: sc(4, s), padding: `${sc(7, s)}px 0`, borderBottom: `${sc(1, s)}px solid #e5e7eb` }}>
-            {r.matchKeywords.map((kw, i) => <span key={i} style={{ padding: `${sc(2, s)}px ${sc(7, s)}px`, background: '#fffbeb', border: `${sc(1, s)}px solid ${gold}`, borderRadius: sc(3, s), fontSize: sc(7.5, s), color: navy, fontWeight: 600 }}>{kw}</span>)}
+          <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: sc(4, s), padding: `${sc(6, s)}px 0 ${sc(10, s)}px`, borderBottom: `${sc(1, s)}px solid #e5e7eb`, marginBottom: sc(6, s) }}>
+            {r.matchKeywords.map((kw, i) => <span key={i} style={{ padding: `${sc(2, s)}px ${sc(6, s)}px`, background: '#fffbeb', border: `${sc(1, s)}px solid ${gold}`, borderRadius: sc(3, s), fontSize: sc(7.5, s), color: navy, fontWeight: 600 }}>{kw}</span>)}
           </div>
         )}
-        {r.summary && (<><ST t="Professional Summary" /><div style={{ fontSize: sc(9.5, s), color: '#333', lineHeight: 1.65 }}>{r.summary}</div></>)}
-        {r.skills.length > 0 && (<><ST t="Core Competencies" /><div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: sc(5, s) }}>{r.skills.map((sk, i) => <span key={i} style={{ padding: `${sc(3, s)}px ${sc(9, s)}px`, border: `${sc(1, s)}px solid ${navy}`, borderRadius: sc(3, s), fontSize: sc(8.5, s), color: navy }}>{sk}</span>)}</div></>)}
-        {r.experience.length > 0 && (<><ST t="Professional Experience" />{r.experience.map((e, i) => (<div key={i} style={{ marginBottom: sc(10, s), paddingLeft: sc(10, s), borderLeft: `${sc(3, s)}px solid ${gold}` }}><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}><div><span style={{ fontWeight: 700, fontSize: sc(10, s) }}>{e.title}</span><span style={{ fontSize: sc(9, s), color: navy, fontWeight: 600 }}> · {e.company}</span>{e.location && <span style={{ fontSize: sc(8, s), color: '#888' }}> · {e.location}</span>}</div><span style={{ fontSize: sc(8.5, s), color: '#777', whiteSpace: 'nowrap' as const, marginLeft: sc(6, s) }}>{e.duration}</span></div><ul style={{ margin: `${sc(3, s)}px 0 0`, paddingLeft: sc(14, s) }}>{e.bullets.filter(b => b.trim()).map((b, j) => <li key={j} style={{ fontSize: sc(9, s), color: '#333', marginBottom: sc(2, s), lineHeight: 1.5 }}>{b}</li>)}</ul></div>))}</>)}
-        <div style={{ display: 'flex', gap: sc(24, s) }}>
-          {r.education.length > 0 && (<div style={{ flex: 1 }}><ST t="Education" />{r.education.map((e, i) => (<div key={i} style={{ marginBottom: sc(5, s) }}><div style={{ fontWeight: 700, fontSize: sc(9.5, s) }}>{e.degree}</div><div style={{ fontSize: sc(9, s), color: '#555' }}>{e.school}{e.year ? ` · ${e.year}` : ''}{e.gpa ? ` · GPA ${e.gpa}` : ''}</div></div>))}</div>)}
-          {r.certifications.length > 0 && (<div style={{ flex: 1 }}><ST t="Certifications" />{r.certifications.map((c, i) => <div key={i} style={{ fontSize: sc(9, s), color: '#333', marginBottom: sc(3, s) }}>• {c}</div>)}</div>)}
+        {r.summary && (<><ST t="Professional Summary" /><div style={{ fontSize: sc(9, s), color: '#333', lineHeight: 1.6, textAlign: 'justify' as const }}>{r.summary}</div></>)}
+        {r.skills.length > 0 && (<><ST t="Core Competencies" /><div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: sc(4, s) }}>{r.skills.map((sk, i) => <span key={i} style={{ padding: `${sc(2, s)}px ${sc(8, s)}px`, border: `${sc(1, s)}px solid ${navy}`, borderRadius: sc(3, s), fontSize: sc(8, s), color: navy, marginBottom: sc(3, s) }}>{sk}</span>)}</div></>)}
+        {r.experience.length > 0 && (<><ST t="Professional Experience" />{r.experience.map((e, i) => (<div key={i} style={{ marginBottom: sc(10, s), paddingLeft: sc(10, s), borderLeft: `${sc(2.5, s)}px solid ${gold}` }}><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: sc(2, s) }}><div style={{ flex: 1 }}><span style={{ fontWeight: 700, fontSize: sc(9.5, s), color: '#111' }}>{e.title}</span><span style={{ fontSize: sc(9, s), color: navy, fontWeight: 600 }}> · {e.company}</span>{e.location && <span style={{ fontSize: sc(8, s), color: '#666' }}> · {e.location}</span>}</div><span style={{ fontSize: sc(8, s), color: '#555', whiteSpace: 'nowrap' as const, marginLeft: sc(8, s) }}>{e.duration}</span></div><ul style={{ margin: `${sc(4, s)}px 0 0`, paddingLeft: sc(14, s) }}>{e.bullets.filter(b => b.trim()).map((b, j) => <li key={j} style={{ fontSize: sc(8.5, s), color: '#333', marginBottom: sc(3, s), lineHeight: 1.5 }}>{b}</li>)}</ul></div>))}</>)}
+        <div style={{ display: 'flex', gap: sc(20, s), alignItems: 'flex-start' }}>
+          {r.education.length > 0 && (<div style={{ flex: '1 1 50%' }}><ST t="Education" />{r.education.map((e, i) => (<div key={i} style={{ marginBottom: sc(6, s) }}><div style={{ fontWeight: 700, fontSize: sc(9, s), color: '#111' }}>{e.degree}</div><div style={{ fontSize: sc(8.5, s), color: '#555' }}>{e.school}{e.year ? ` · ${e.year}` : ''}{e.gpa ? ` · GPA: ${e.gpa}` : ''}</div></div>))}</div>)}
+          {r.certifications.length > 0 && (<div style={{ flex: '1 1 50%' }}><ST t="Certifications" />{r.certifications.map((c, i) => <div key={i} style={{ fontSize: sc(8.5, s), color: '#333', marginBottom: sc(3, s), lineHeight: 1.4 }}>• {c}</div>)}</div>)}
         </div>
-        {r.projects.length > 0 && (<><ST t="Key Projects" />{r.projects.map((p, i) => (<div key={i} style={{ marginBottom: sc(5, s), display: 'flex', gap: sc(6, s) }}><span style={{ fontWeight: 700, fontSize: sc(9, s), minWidth: sc(80, s) }}>{p.name}</span><span style={{ fontSize: sc(9, s), color: '#444' }}>{p.description} <span style={{ color: navy }}>({p.tech})</span></span></div>))}</>)}
+        {r.projects.length > 0 && (<><ST t="Key Projects" /><div style={{ display: 'flex', flexDirection: 'column' as const, gap: sc(4, s) }}>{r.projects.map((p, i) => (<div key={i} style={{ marginBottom: sc(4, s) }}><span style={{ fontWeight: 700, fontSize: sc(8.5, s), color: navy }}>{p.name}</span><span style={{ fontSize: sc(8.5, s), color: '#444' }}> — {p.description} <span style={{ color: '#666' }}>({p.tech})</span></span></div>))}</div></>)}
       </div>
     </div>
   );
@@ -76,7 +76,7 @@ function ModernTemplate({ r, s = 1 }: { r: TailoredResume; s?: number }) {
       </div>
       <div style={{ flex: 1, padding: `${sc(26, s)}px ${sc(22, s)}px ${sc(18, s)}px` }}>
         {r.summary && (<><SH t="Profile" /><div style={{ fontSize: sc(9.5, s), color: '#374151', lineHeight: 1.65, marginBottom: sc(2, s) }}>{r.summary}</div></>)}
-        {r.experience.length > 0 && (<><SH t="Experience" />{r.experience.map((e, i) => (<div key={i} style={{ marginBottom: sc(10, s) }}><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}><div><span style={{ fontWeight: 700, fontSize: sc(10, s) }}>{e.title}</span><span style={{ fontSize: sc(9, s), color: blue, fontWeight: 600 }}> · {e.company}</span></div><span style={{ fontSize: sc(7.5, s), color: '#6b7280', background: '#f3f4f6', padding: `${sc(1, s)}px ${sc(5, s)}px`, borderRadius: sc(3, s), whiteSpace: 'nowrap' as const }}>{e.duration}</span></div>{e.location && <div style={{ fontSize: sc(8, s), color: '#9ca3af', marginTop: sc(1, s) }}>📍 {e.location}</div>}<ul style={{ margin: `${sc(3, s)}px 0 0`, paddingLeft: sc(13, s) }}>{e.bullets.filter(b => b.trim()).map((b, j) => <li key={j} style={{ fontSize: sc(9, s), color: '#374151', marginBottom: sc(2, s), lineHeight: 1.5 }}>{b}</li>)}</ul></div>))}</>)}
+        {r.experience.length > 0 && (<><SH t="Experience" />{r.experience.map((e, i) => (<div key={i} style={{ marginBottom: sc(12, s) }}><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: sc(3, s) }}><div style={{ flex: 1 }}><span style={{ fontWeight: 700, fontSize: sc(9.5, s), color: '#111' }}>{e.title}</span><span style={{ fontSize: sc(9, s), color: blue, fontWeight: 600 }}> · {e.company}</span></div><span style={{ fontSize: sc(8, s), color: '#6b7280', whiteSpace: 'nowrap' as const, marginLeft: sc(8, s) }}>{e.duration}</span></div>{e.location && <div style={{ fontSize: sc(8, s), color: '#666', marginBottom: sc(2, s) }}>{e.location}</div>}<ul style={{ margin: `${sc(4, s)}px 0 0`, paddingLeft: sc(14, s) }}>{e.bullets.filter(b => b.trim()).map((b, j) => <li key={j} style={{ fontSize: sc(8.5, s), color: '#374151', marginBottom: sc(3, s), lineHeight: 1.5 }}>{b}</li>)}</ul></div>))}</>)}
         {r.education.length > 0 && (<><SH t="Education" />{r.education.map((e, i) => (<div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: sc(5, s) }}><div><div style={{ fontWeight: 700, fontSize: sc(9.5, s) }}>{e.degree}</div><div style={{ fontSize: sc(8.5, s), color: '#6b7280' }}>{e.school}{e.gpa ? ` · GPA ${e.gpa}` : ''}</div></div><span style={{ fontSize: sc(8.5, s), color: '#6b7280' }}>{e.year}</span></div>))}</>)}
         {r.projects.length > 0 && (<><SH t="Projects" />{r.projects.map((p, i) => (<div key={i} style={{ marginBottom: sc(5, s) }}><span style={{ fontWeight: 700, fontSize: sc(9.5, s) }}>{p.name}</span><span style={{ fontSize: sc(8.5, s), color: blue }}> · {p.tech}</span><div style={{ fontSize: sc(9, s), color: '#374151' }}>{p.description}</div></div>))}</>)}
       </div>
@@ -103,13 +103,13 @@ function CleanTemplate({ r, s = 1 }: { r: TailoredResume; s?: number }) {
       </div>
       {r.summary && (<><ST t="Summary" /><div style={{ fontSize: sc(9.5, s), color: '#333', lineHeight: 1.7 }}>{r.summary}</div></>)}
       {r.skills.length > 0 && (<><ST t="Skills" /><div style={{ fontSize: sc(9.5, s), color: '#333', lineHeight: 1.8 }}>{r.skills.join(' · ')}</div></>)}
-      {r.experience.length > 0 && (<><ST t="Experience" />{r.experience.map((e, i) => (<div key={i} style={{ marginBottom: sc(9, s) }}><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}><span style={{ fontWeight: 700, fontSize: sc(10, s) }}>{e.title} — {e.company}</span><span style={{ fontSize: sc(8.5, s), color: '#666' }}>{e.duration}</span></div>{e.location && <div style={{ fontSize: sc(8.5, s), color: '#888', marginTop: sc(1, s) }}>{e.location}</div>}<ul style={{ margin: `${sc(4, s)}px 0 0`, paddingLeft: sc(16, s) }}>{e.bullets.filter(b => b.trim()).map((b, j) => <li key={j} style={{ fontSize: sc(9.5, s), color: '#333', marginBottom: sc(2, s), lineHeight: 1.5 }}>{b}</li>)}</ul></div>))}</>)}
-      <div style={{ display: 'flex', gap: sc(28, s) }}>
-        {r.education.length > 0 && (<div style={{ flex: 1 }}><ST t="Education" />{r.education.map((e, i) => (<div key={i} style={{ marginBottom: sc(6, s) }}><div style={{ fontWeight: 700, fontSize: sc(10, s) }}>{e.degree}</div><div style={{ fontSize: sc(9, s), color: '#555' }}>{e.school}{e.year ? ` — ${e.year}` : ''}{e.gpa ? ` · GPA ${e.gpa}` : ''}</div></div>))}</div>)}
+      {r.experience.length > 0 && (<><ST t="Experience" />{r.experience.map((e, i) => (<div key={i} style={{ marginBottom: sc(12, s) }}><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: sc(2, s) }}><div style={{ flex: 1 }}><span style={{ fontWeight: 700, fontSize: sc(10, s), color: '#111' }}>{e.title}</span><span style={{ fontWeight: 400 }}> — {e.company}</span></div><span style={{ fontSize: sc(8.5, s), color: '#666', whiteSpace: 'nowrap' as const, marginLeft: sc(8, s) }}>{e.duration}</span></div>{e.location && <div style={{ fontSize: sc(8.5, s), color: '#888', marginBottom: sc(3, s), fontStyle: 'italic' }}>{e.location}</div>}<ul style={{ margin: `${sc(3, s)}px 0 0`, paddingLeft: sc(18, s) }}>{e.bullets.filter(b => b.trim()).map((b, j) => <li key={j} style={{ fontSize: sc(9, s), color: '#333', marginBottom: sc(3, s), lineHeight: 1.5 }}>{b}</li>)}</ul></div>))}</>)}
+      <div style={{ display: 'flex', gap: sc(24, s), alignItems: 'flex-start' }}>
+        {r.education.length > 0 && (<div style={{ flex: '1 1 50%' }}><ST t="Education" />{r.education.map((e, i) => (<div key={i} style={{ marginBottom: sc(8, s) }}><div style={{ fontWeight: 700, fontSize: sc(9.5, s), color: '#111' }}>{e.degree}</div><div style={{ fontSize: sc(9, s), color: '#555', marginTop: sc(2, s) }}>{e.school}{e.year ? ` · ${e.year}` : ''}{e.gpa ? ` · GPA: ${e.gpa}` : ''}</div></div>))}</div>)}
         {(r.certifications.length > 0 || r.projects.length > 0) && (
-          <div style={{ flex: 1 }}>
-            {r.certifications.length > 0 && (<><ST t="Certifications" />{r.certifications.map((c, i) => <div key={i} style={{ fontSize: sc(9.5, s), marginBottom: sc(3, s) }}>• {c}</div>)}</>)}
-            {r.projects.length > 0 && (<><ST t="Projects" />{r.projects.map((p, i) => <div key={i} style={{ fontSize: sc(9, s), marginBottom: sc(4, s) }}><strong>{p.name}</strong> ({p.tech}) — {p.description}</div>)}</>)}
+          <div style={{ flex: '1 1 50%' }}>
+            {r.certifications.length > 0 && (<><ST t="Certifications" />{r.certifications.map((c, i) => <div key={i} style={{ fontSize: sc(9, s), marginBottom: sc(4, s), lineHeight: 1.4 }}>• {c}</div>)}</>)}
+            {r.projects.length > 0 && (<><ST t="Projects" />{r.projects.map((p, i) => <div key={i} style={{ fontSize: sc(9, s), marginBottom: sc(5, s), lineHeight: 1.4 }}><strong style={{ color: '#111' }}>{p.name}</strong> <span style={{ color: '#666' }}>({p.tech})</span> — {p.description}</div>)}</>)}
           </div>
         )}
       </div>
