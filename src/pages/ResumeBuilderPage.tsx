@@ -1,6 +1,6 @@
 import { useState, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
-import { ChevronLeft, Sparkles, CheckCircle2, Download, Eye, X, Loader2, Edit3 } from 'lucide-react';
+import { ChevronLeft, FileText, CheckCircle2, Download, Eye, X, Loader2, Edit3, Wand2 } from 'lucide-react';
 import { tailorResumeWithAI } from '../lib/resumeTailor';
 import type { TailoredResume } from '../lib/resumeTailor';
 import { supabase } from '../lib/supabase';
@@ -57,8 +57,8 @@ function ExecutiveTemplate({ r, s = 1 }: { r: TailoredResume; s?: number }) {
 
 // ── Modern Template ──────────────────────────────────────────────────────────
 function ModernTemplate({ r, s = 1 }: { r: TailoredResume; s?: number }) {
-  const blue = '#2563eb';
-  const SH = ({ t }: { t: string }) => <div style={{ fontSize: sc(8, s), fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: sc(1.1, s), color: blue, borderBottom: `${sc(2, s)}px solid ${blue}`, paddingBottom: sc(2, s), marginBottom: sc(7, s), marginTop: sc(10, s) }}>{t}</div>;
+  const accent = '#000';
+  const SH = ({ t }: { t: string }) => <div style={{ fontSize: sc(10, s), fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: sc(2, s), color: accent, borderBottom: `${sc(2, s)}px solid ${accent}`, paddingBottom: sc(6, s), marginBottom: sc(12, s), marginTop: sc(16, s), fontFamily: 'Georgia, serif' }}>{t}</div>;
   return (
     <div id="resume-render" style={{ fontFamily: 'Arial,Helvetica,sans-serif', display: 'flex', background: '#fff', width: '100%', boxSizing: 'border-box' as const, minHeight: '100%' }}>
       <div style={{ width: sc(190, s), background: '#1e293b', color: '#fff', padding: `${sc(24, s)}px ${sc(16, s)}px`, flexShrink: 0, display: 'flex', flexDirection: 'column' as const, gap: sc(12, s) }}>
@@ -74,11 +74,11 @@ function ModernTemplate({ r, s = 1 }: { r: TailoredResume; s?: number }) {
         {r.certifications.length > 0 && (<div><div style={{ fontSize: sc(7.5, s), fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: sc(1, s), color: '#93c5fd', marginBottom: sc(5, s) }}>Certifications</div>{r.certifications.map((c, i) => <div key={i} style={{ fontSize: sc(7.5, s), color: '#cbd5e1', marginBottom: sc(4, s), lineHeight: 1.4 }}>• {c}</div>)}</div>)}
         {r.matchKeywords.length > 0 && (<div><div style={{ fontSize: sc(7.5, s), fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: sc(1, s), color: '#93c5fd', marginBottom: sc(5, s) }}>ATS Keywords</div><div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: sc(3, s) }}>{r.matchKeywords.map((kw, i) => <span key={i} style={{ fontSize: sc(7, s), background: 'rgba(147,197,253,0.15)', color: '#bfdbfe', padding: `${sc(2, s)}px ${sc(5, s)}px`, borderRadius: sc(3, s) }}>{kw}</span>)}</div></div>)}
       </div>
-      <div style={{ flex: 1, padding: `${sc(24, s)}px ${sc(20, s)}px ${sc(20, s)}px`, minWidth: 0, maxWidth: `calc(100% - ${sc(190, s)}px)` }}>
-        {r.summary && (<><SH t="Profile" /><div style={{ fontSize: sc(9.5, s), color: '#374151', lineHeight: 1.65, marginBottom: sc(2, s) }}>{r.summary}</div></>)}
-        {r.experience.length > 0 && (<><SH t="Experience" />{r.experience.map((e, i) => (<div key={i} style={{ marginBottom: sc(14, s), pageBreakInside: 'avoid' as const }}><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: sc(4, s), flexWrap: 'wrap' as const, gap: sc(4, s) }}><div style={{ flex: '1 1 70%', minWidth: 0 }}><div style={{ fontWeight: 700, fontSize: sc(10, s), color: '#111', lineHeight: 1.3, wordBreak: 'break-word' as const }}>{e.title}</div><div style={{ fontSize: sc(9, s), color: blue, fontWeight: 600, marginTop: sc(2, s) }}>{e.company}</div></div><div style={{ fontSize: sc(8, s), color: '#6b7280', whiteSpace: 'nowrap' as const, textAlign: 'right' as const }}>{e.duration}</div></div>{e.location && <div style={{ fontSize: sc(8, s), color: '#666', marginBottom: sc(4, s), fontStyle: 'italic' }}>{e.location}</div>}<ul style={{ margin: `${sc(6, s)}px 0 0`, paddingLeft: sc(18, s) }}>{e.bullets.filter(b => b.trim()).map((b, j) => <li key={j} style={{ fontSize: sc(9, s), color: '#374151', marginBottom: sc(4, s), lineHeight: 1.6, wordBreak: 'break-word' as const }}>{b}</li>)}</ul></div>))}</>)}
-        {r.education.length > 0 && (<><SH t="Education" />{r.education.map((e, i) => (<div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: sc(5, s) }}><div><div style={{ fontWeight: 700, fontSize: sc(9.5, s) }}>{e.degree}</div><div style={{ fontSize: sc(8.5, s), color: '#6b7280' }}>{e.school}{e.gpa ? ` · GPA ${e.gpa}` : ''}</div></div><span style={{ fontSize: sc(8.5, s), color: '#6b7280' }}>{e.year}</span></div>))}</>)}
-        {r.projects.length > 0 && (<><SH t="Projects" />{r.projects.map((p, i) => (<div key={i} style={{ marginBottom: sc(5, s) }}><span style={{ fontWeight: 700, fontSize: sc(9.5, s) }}>{p.name}</span><span style={{ fontSize: sc(8.5, s), color: blue }}> · {p.tech}</span><div style={{ fontSize: sc(9, s), color: '#374151' }}>{p.description}</div></div>))}</>)}
+      <div style={{ flex: 1, padding: `${sc(28, s)}px ${sc(24, s)}px ${sc(24, s)}px`, minWidth: 0, maxWidth: `calc(100% - ${sc(190, s)}px)` }}>
+        {r.summary && (<><SH t="Profile" /><div style={{ fontSize: sc(10, s), color: '#333', lineHeight: 1.7, marginBottom: sc(4, s), fontFamily: 'Georgia, serif' }}>{r.summary}</div></>)}
+        {r.experience.length > 0 && (<><SH t="Experience" />{r.experience.map((e, i) => (<div key={i} style={{ marginBottom: sc(16, s), pageBreakInside: 'avoid' as const }}><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: sc(4, s), flexWrap: 'wrap' as const, gap: sc(4, s) }}><div style={{ flex: '1 1 70%', minWidth: 0 }}><div style={{ fontWeight: 700, fontSize: sc(11, s), color: '#000', lineHeight: 1.3, wordBreak: 'break-word' as const, fontFamily: 'Georgia, serif' }}>{e.title}</div><div style={{ fontSize: sc(10, s), color: '#555', fontWeight: 500, marginTop: sc(3, s) }}>{e.company}</div></div><div style={{ fontSize: sc(9, s), color: '#888', whiteSpace: 'nowrap' as const, textAlign: 'right' as const, fontStyle: 'italic' }}>{e.duration}</div></div>{e.location && <div style={{ fontSize: sc(9, s), color: '#777', marginBottom: sc(6, s), fontStyle: 'italic' }}>{e.location}</div>}<ul style={{ margin: `${sc(6, s)}px 0 0`, paddingLeft: sc(20, s) }}>{e.bullets.filter(b => b.trim()).map((b, j) => <li key={j} style={{ fontSize: sc(10, s), color: '#444', marginBottom: sc(5, s), lineHeight: 1.6, wordBreak: 'break-word' as const }}>{b}</li>)}</ul></div>))}</>)}
+        {r.education.length > 0 && (<><SH t="Education" />{r.education.map((e, i) => (<div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: sc(8, s), alignItems: 'flex-start' }}><div style={{ flex: 1 }}><div style={{ fontWeight: 700, fontSize: sc(10, s), color: '#000', fontFamily: 'Georgia, serif' }}>{e.degree}</div><div style={{ fontSize: sc(9, s), color: '#666', marginTop: sc(2, s) }}>{e.school}{e.gpa ? ` · GPA ${e.gpa}` : ''}</div></div><span style={{ fontSize: sc(9, s), color: '#888', whiteSpace: 'nowrap' }}>{e.year}</span></div>))}</>)}
+        {r.projects.length > 0 && (<><SH t="Projects" />{r.projects.map((p, i) => (<div key={i} style={{ marginBottom: sc(10, s) }}><div style={{ fontWeight: 700, fontSize: sc(10, s), color: '#000', fontFamily: 'Georgia, serif', marginBottom: sc(3, s) }}>{p.name} <span style={{ fontWeight: 400, color: '#666' }}>· {p.tech}</span></div><div style={{ fontSize: sc(10, s), color: '#555', lineHeight: 1.5 }}>{p.description}</div></div>))}</>)}
       </div>
     </div>
   );
@@ -86,14 +86,14 @@ function ModernTemplate({ r, s = 1 }: { r: TailoredResume; s?: number }) {
 
 // ── Clean Template ───────────────────────────────────────────────────────────
 function CleanTemplate({ r, s = 1 }: { r: TailoredResume; s?: number }) {
-  const ST = ({ t }: { t: string }) => <div style={{ fontSize: sc(9, s), fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: sc(1.5, s), color: '#111', borderBottom: `${sc(2, s)}px solid #111`, paddingBottom: sc(4, s), marginTop: sc(12, s), marginBottom: sc(8, s) }}>{t}</div>;
+  const ST = ({ t }: { t: string }) => <div style={{ fontSize: sc(10, s), fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: sc(2, s), color: '#000', borderBottom: `${sc(2, s)}px solid #000`, paddingBottom: sc(6, s), marginTop: sc(14, s), marginBottom: sc(10, s), fontFamily: 'Georgia, serif' }}>{t}</div>;
   return (
-    <div id="resume-render" style={{ fontFamily: 'Arial,Helvetica,sans-serif', fontSize: sc(10, s), color: '#111', background: '#fff', padding: `${sc(40, s)}px ${sc(50, s)}px ${sc(30, s)}px`, width: '100%', boxSizing: 'border-box' as const, minHeight: '100%' }}>
-      <div style={{ textAlign: 'center' as const, marginBottom: sc(16, s) }}>
-        <div style={{ fontSize: sc(26, s), fontWeight: 700, letterSpacing: sc(2, s), textTransform: 'uppercase' as const }}>{r.name || 'Your Name'}</div>
-        <div style={{ fontSize: sc(12, s), color: '#444', marginTop: sc(6, s), fontWeight: 500 }}>{r.targetRole}</div>
-        <div style={{ height: sc(3, s), background: '#111', margin: `${sc(12, s)}px 0 ${sc(10, s)}px`, maxWidth: sc(400, s), marginLeft: 'auto', marginRight: 'auto' }} />
-        <div style={{ fontSize: sc(9.5, s), color: '#555', display: 'flex', justifyContent: 'center', flexWrap: 'wrap' as const, gap: sc(20, s) }}>
+    <div id="resume-render" style={{ fontFamily: 'Arial,Helvetica,sans-serif', fontSize: sc(10.5, s), color: '#111', background: '#fff', padding: `${sc(48, s)}px ${sc(56, s)}px ${sc(40, s)}px`, width: '100%', boxSizing: 'border-box' as const, minHeight: '100%', lineHeight: 1.6 }}>
+      <div style={{ textAlign: 'center' as const, marginBottom: sc(20, s) }}>
+        <div style={{ fontSize: sc(28, s), fontWeight: 700, letterSpacing: sc(3, s), textTransform: 'uppercase' as const, fontFamily: 'Georgia, serif', color: '#000' }}>{r.name || 'Your Name'}</div>
+        <div style={{ fontSize: sc(13, s), color: '#444', marginTop: sc(8, s), fontWeight: 500, fontStyle: 'italic' }}>{r.targetRole}</div>
+        <div style={{ height: sc(2, s), background: '#000', margin: `${sc(14, s)}px 0 ${sc(12, s)}px`, maxWidth: sc(360, s), marginLeft: 'auto', marginRight: 'auto' }} />
+        <div style={{ fontSize: sc(10, s), color: '#555', display: 'flex', justifyContent: 'center', flexWrap: 'wrap' as const, gap: sc(24, s) }}>
           {r.email && <span>📧 {r.email}</span>}
           {r.phone && <span>📱 {r.phone}</span>}
           {r.location && <span>📍 {r.location}</span>}
@@ -101,15 +101,15 @@ function CleanTemplate({ r, s = 1 }: { r: TailoredResume; s?: number }) {
           {r.website && <span>🌐 {r.website}</span>}
         </div>
       </div>
-      {r.summary && (<><ST t="Summary" /><div style={{ fontSize: sc(9.5, s), color: '#333', lineHeight: 1.7 }}>{r.summary}</div></>)}
-      {r.skills.length > 0 && (<><ST t="Skills" /><div style={{ fontSize: sc(9.5, s), color: '#333', lineHeight: 1.8 }}>{r.skills.join(' · ')}</div></>)}
-      {r.experience.length > 0 && (<><ST t="Experience" />{r.experience.map((e, i) => (<div key={i} style={{ marginBottom: sc(12, s) }}><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: sc(2, s) }}><div style={{ flex: 1 }}><span style={{ fontWeight: 700, fontSize: sc(10, s), color: '#111' }}>{e.title}</span><span style={{ fontWeight: 400 }}> — {e.company}</span></div><span style={{ fontSize: sc(8.5, s), color: '#666', whiteSpace: 'nowrap' as const, marginLeft: sc(8, s) }}>{e.duration}</span></div>{e.location && <div style={{ fontSize: sc(8.5, s), color: '#888', marginBottom: sc(3, s), fontStyle: 'italic' }}>{e.location}</div>}<ul style={{ margin: `${sc(3, s)}px 0 0`, paddingLeft: sc(18, s) }}>{e.bullets.filter(b => b.trim()).map((b, j) => <li key={j} style={{ fontSize: sc(9, s), color: '#333', marginBottom: sc(3, s), lineHeight: 1.5 }}>{b}</li>)}</ul></div>))}</>)}
-      <div style={{ display: 'flex', gap: sc(24, s), alignItems: 'flex-start' }}>
-        {r.education.length > 0 && (<div style={{ flex: '1 1 50%' }}><ST t="Education" />{r.education.map((e, i) => (<div key={i} style={{ marginBottom: sc(8, s) }}><div style={{ fontWeight: 700, fontSize: sc(9.5, s), color: '#111' }}>{e.degree}</div><div style={{ fontSize: sc(9, s), color: '#555', marginTop: sc(2, s) }}>{e.school}{e.year ? ` · ${e.year}` : ''}{e.gpa ? ` · GPA: ${e.gpa}` : ''}</div></div>))}</div>)}
+      {r.summary && (<><ST t="Summary" /><div style={{ fontSize: sc(10.5, s), color: '#333', lineHeight: 1.8, fontFamily: 'Georgia, serif' }}>{r.summary}</div></>)}
+      {r.skills.length > 0 && (<><ST t="Skills" /><div style={{ fontSize: sc(10.5, s), color: '#333', lineHeight: 1.9 }}>{r.skills.join(' · ')}</div></>)}
+      {r.experience.length > 0 && (<><ST t="Experience" />{r.experience.map((e, i) => (<div key={i} style={{ marginBottom: sc(16, s), pageBreakInside: 'avoid' as const }}><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: sc(4, s), flexWrap: 'wrap' as const, gap: sc(6, s) }}><div style={{ flex: 1, minWidth: 0 }}><div style={{ fontWeight: 700, fontSize: sc(11, s), color: '#000', fontFamily: 'Georgia, serif', lineHeight: 1.3 }}>{e.title}</div><div style={{ fontSize: sc(10, s), color: '#555', marginTop: sc(2, s) }}>{e.company}</div></div><div style={{ fontSize: sc(9, s), color: '#888', whiteSpace: 'nowrap' as const, fontStyle: 'italic' }}>{e.duration}</div></div>{e.location && <div style={{ fontSize: sc(9, s), color: '#777', marginBottom: sc(5, s), fontStyle: 'italic' }}>{e.location}</div>}<ul style={{ margin: `${sc(5, s)}px 0 0`, paddingLeft: sc(22, s) }}>{e.bullets.filter(b => b.trim()).map((b, j) => <li key={j} style={{ fontSize: sc(10, s), color: '#444', marginBottom: sc(5, s), lineHeight: 1.6, wordBreak: 'break-word' as const }}>{b}</li>)}</ul></div>))}</>)}
+      <div style={{ display: 'flex', gap: sc(32, s), alignItems: 'flex-start' }}>
+        {r.education.length > 0 && (<div style={{ flex: '1 1 50%' }}><ST t="Education" />{r.education.map((e, i) => (<div key={i} style={{ marginBottom: sc(10, s) }}><div style={{ fontWeight: 700, fontSize: sc(10.5, s), color: '#000', fontFamily: 'Georgia, serif' }}>{e.degree}</div><div style={{ fontSize: sc(9.5, s), color: '#555', marginTop: sc(3, s) }}>{e.school}{e.year ? ` · ${e.year}` : ''}{e.gpa ? ` · GPA: ${e.gpa}` : ''}</div></div>))}</div>)}
         {(r.certifications.length > 0 || r.projects.length > 0) && (
           <div style={{ flex: '1 1 50%' }}>
-            {r.certifications.length > 0 && (<><ST t="Certifications" />{r.certifications.map((c, i) => <div key={i} style={{ fontSize: sc(9, s), marginBottom: sc(4, s), lineHeight: 1.4 }}>• {c}</div>)}</>)}
-            {r.projects.length > 0 && (<><ST t="Projects" />{r.projects.map((p, i) => <div key={i} style={{ fontSize: sc(9, s), marginBottom: sc(5, s), lineHeight: 1.4 }}><strong style={{ color: '#111' }}>{p.name}</strong> <span style={{ color: '#666' }}>({p.tech})</span> — {p.description}</div>)}</>)}
+            {r.certifications.length > 0 && (<><ST t="Certifications" />{r.certifications.map((c, i) => <div key={i} style={{ fontSize: sc(10, s), marginBottom: sc(6, s), lineHeight: 1.5, color: '#444' }}>• {c}</div>)}</>)}
+            {r.projects.length > 0 && (<><ST t="Projects" />{r.projects.map((p, i) => <div key={i} style={{ fontSize: sc(10, s), marginBottom: sc(8, s), lineHeight: 1.5, color: '#444' }}><strong style={{ color: '#000', fontFamily: 'Georgia, serif' }}>{p.name}</strong> <span style={{ color: '#666' }}>({p.tech})</span> — {p.description}</div>)}</>)}
           </div>
         )}
       </div>
@@ -243,33 +243,33 @@ export default function ResumeBuilderPage({ resumeText, onClose }: { resumeText:
       <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#6b7280', fontSize: 13, cursor: 'pointer', marginBottom: 24, padding: 0 }}>
         <ChevronLeft size={16} /> Back to Job Search
       </button>
-      <div style={{ textAlign: 'center', marginBottom: 28 }}>
-        <div style={{ width: 58, height: 58, borderRadius: 16, background: 'linear-gradient(135deg,#7c3aed,#4f46e5)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
-          <Sparkles size={26} color="#fff" />
+      <div style={{ textAlign: 'center', marginBottom: 32 }}>
+        <div style={{ width: 64, height: 64, borderRadius: '50%', border: '2px solid #000', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', background: '#fff' }}>
+          <FileText size={28} color="#000" strokeWidth={1.5} />
         </div>
-        <h1 style={{ fontSize: 24, fontWeight: 800, color: '#111827', margin: '0 0 6px' }}>AI Resume Builder</h1>
-        <p style={{ color: '#6b7280', fontSize: 13, margin: 0 }}>Paste a Job Description — AI tailors your resume and generates 3 beautiful PDF templates</p>
+        <h1 style={{ fontSize: 28, fontWeight: 700, color: '#000', margin: '0 0 8px', letterSpacing: '-0.02em' }}>Resume Builder</h1>
+        <p style={{ color: '#666', fontSize: 14, margin: 0, fontWeight: 400 }}>Paste a job description — AI tailors your resume with JD keywords</p>
       </div>
-      {error && <div style={{ padding: '10px 14px', borderRadius: 10, background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', fontSize: 13, marginBottom: 14, display: 'flex', gap: 8 }}><X size={14} style={{ flexShrink: 0, marginTop: 1 }} />{error}</div>}
-      <div style={{ background: '#f0fdf4', borderRadius: 10, border: '1px solid #bbf7d0', padding: '12px 14px', marginBottom: 18, display: 'flex', gap: 10 }}>
-        <CheckCircle2 size={15} color="#16a34a" style={{ flexShrink: 0, marginTop: 1 }} />
-        <div><div style={{ fontSize: 12, fontWeight: 700, color: '#166534' }}>Resume loaded</div><div style={{ fontSize: 11, color: '#15803d', marginTop: 2 }}>{resumeText.slice(0, 100).trim()}...</div></div>
+      {error && <div style={{ padding: '12px 16px', borderRadius: 8, background: '#fff', border: '1px solid #000', color: '#000', fontSize: 13, marginBottom: 16, display: 'flex', gap: 10 }}><X size={16} style={{ flexShrink: 0, marginTop: 1 }} />{error}</div>}
+      <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e5e5e5', padding: '14px 16px', marginBottom: 20, display: 'flex', gap: 12 }}>
+        <CheckCircle2 size={18} color="#000" style={{ flexShrink: 0, marginTop: 1 }} />
+        <div><div style={{ fontSize: 13, fontWeight: 600, color: '#000' }}>Resume loaded</div><div style={{ fontSize: 12, color: '#666', marginTop: 3, lineHeight: 1.4 }}>{resumeText.slice(0, 120).trim()}...</div></div>
       </div>
-      <label style={{ fontSize: 14, fontWeight: 700, color: '#111827', display: 'block', marginBottom: 8 }}>Paste the Job Description</label>
+      <label style={{ fontSize: 14, fontWeight: 600, color: '#000', display: 'block', marginBottom: 10 }}>Paste the Job Description</label>
       <textarea
         placeholder={"Paste the full job description here...\n\nExample:\nWe are looking for a Senior Product Manager with 5+ years experience..."}
         value={jdText} onChange={e => setJdText(e.target.value)}
-        style={{ width: '100%', height: 220, padding: 12, borderRadius: 10, border: '2px solid #e5e7eb', fontSize: 13, color: '#111827', outline: 'none', resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.6, boxSizing: 'border-box' as const }}
-        onFocus={e => (e.currentTarget.style.borderColor = '#7c3aed')}
-        onBlur={e => (e.currentTarget.style.borderColor = '#e5e7eb')}
+        style={{ width: '100%', height: 240, padding: 16, borderRadius: 8, border: '2px solid #e5e5e5', fontSize: 14, color: '#000', outline: 'none', resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.6, boxSizing: 'border-box' as const, background: '#fafafa' }}
+        onFocus={e => (e.currentTarget.style.borderColor = '#000')}
+        onBlur={e => (e.currentTarget.style.borderColor = '#e5e5e5')}
       />
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4, marginBottom: 18 }}>
         <span style={{ fontSize: 11, color: '#9ca3af' }}>{jdText.length} chars {jdText.length > 0 && jdText.length < 50 ? '(paste more text)' : ''}</span>
         {jdText && <button onClick={() => setJdText('')} style={{ fontSize: 11, color: '#9ca3af', background: 'none', border: 'none', cursor: 'pointer' }}>Clear</button>}
       </div>
       <button onClick={generate} disabled={jdText.length < 50}
-        style={{ width: '100%', padding: 14, borderRadius: 12, background: jdText.length >= 50 ? 'linear-gradient(135deg,#7c3aed,#4f46e5)' : '#e5e7eb', border: 'none', color: jdText.length >= 50 ? '#fff' : '#9ca3af', fontSize: 15, fontWeight: 700, cursor: jdText.length >= 50 ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-        <Sparkles size={17} /> Generate Tailored Resume
+        style={{ width: '100%', padding: 16, borderRadius: 8, background: jdText.length >= 50 ? '#000' : '#f0f0f0', border: '2px solid ' + (jdText.length >= 50 ? '#000' : '#e5e5e5'), color: jdText.length >= 50 ? '#fff' : '#999', fontSize: 15, fontWeight: 600, cursor: jdText.length >= 50 ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, transition: 'all 0.2s' }}>
+        <Wand2 size={18} /> Generate Tailored Resume
       </button>
       <div style={{ marginTop: 14, display: 'flex', gap: 8, justifyContent: 'center' }}>
         {TEMPLATES.map(t => <span key={t.id} style={{ padding: '3px 10px', borderRadius: 100, background: t.accent + '12', color: t.accent, border: '1px solid ' + t.accent + '30', fontSize: 11, fontWeight: 600 }}>{t.name}</span>)}
@@ -282,18 +282,18 @@ export default function ResumeBuilderPage({ resumeText, onClose }: { resumeText:
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 20px', textAlign: 'center' }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ position: 'relative', width: 72, height: 72, marginBottom: 24 }}>
-        <div style={{ position: 'absolute', inset: 0, border: '3px solid #e5e7eb', borderRadius: '50%' }} />
-        <div style={{ position: 'absolute', inset: 0, border: '3px solid #7c3aed', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-        <div style={{ position: 'absolute', inset: '50%', transform: 'translate(-50%,-50%)', width: 38, height: 38, background: 'linear-gradient(135deg,#7c3aed,#4f46e5)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Sparkles size={18} color="#fff" />
+        <div style={{ position: 'absolute', inset: 0, border: '2px solid #e5e5e5', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', inset: 0, border: '2px solid #000', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+        <div style={{ position: 'absolute', inset: '50%', transform: 'translate(-50%,-50%)', width: 36, height: 36, background: '#000', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Wand2 size={16} color="#fff" />
         </div>
       </div>
-      <h2 style={{ fontSize: 20, fontWeight: 800, color: '#111827', margin: '0 0 8px' }}>Tailoring Your Resume…</h2>
-      <p style={{ color: '#6b7280', fontSize: 13, maxWidth: 400, margin: '0 0 24px', lineHeight: 1.6 }}>AI is reading the job description, matching your experience, rewriting bullets with JD keywords, and optimising for ATS.</p>
+      <h2 style={{ fontSize: 20, fontWeight: 600, color: '#000', margin: '0 0 8px' }}>Tailoring Your Resume…</h2>
+      <p style={{ color: '#666', fontSize: 14, maxWidth: 400, margin: '0 0 24px', lineHeight: 1.6 }}>AI is reading the job description, matching your experience, rewriting bullets with JD keywords, and optimising for ATS.</p>
       {['Extracting JD requirements & keywords', 'Mapping your skills to job requirements', 'Rewriting summary and experience bullets', 'Optimising ATS score and layout'].map((msg, i) => (
-        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 14px', background: '#f9fafb', borderRadius: 10, border: '1px solid #e5e7eb', marginBottom: 6, width: '100%', maxWidth: 400 }}>
-          <Loader2 size={13} color="#7c3aed" style={{ animation: 'spin 1s linear infinite', flexShrink: 0 }} />
-          <span style={{ fontSize: 12, color: '#374151' }}>{msg}</span>
+        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#fff', borderRadius: 8, border: '1px solid #e5e5e5', marginBottom: 6, width: '100%', maxWidth: 400 }}>
+          <Loader2 size={14} color="#000" style={{ animation: 'spin 1s linear infinite', flexShrink: 0 }} />
+          <span style={{ fontSize: 13, color: '#333' }}>{msg}</span>
         </div>
       ))}
     </div>

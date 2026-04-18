@@ -36,27 +36,36 @@ export interface TailoredResume {
   matchKeywords: string[];
 }
 
-const buildPrompt = (resumeText: string, jdText: string) => `You are an expert ATS resume writer. Create a COMPREHENSIVE tailored resume that includes ALL original resume data PLUS enhancements from the JD.
+const buildPrompt = (resumeText: string, jdText: string) => `You are an expert ATS resume writer. Your goal is to achieve 60-80% JD keyword density while keeping ALL original resume achievements.
 
-CRITICAL RULES:
-1. Extract EVERYTHING from the resume - all jobs, all bullets, all skills, all projects, all certifications
-2. KEEP ALL original experience entries with their full bullet points (4-6 bullets per role is fine)
-3. ENHANCE each bullet with JD keywords where relevant - but keep the original achievement
-4. ADD new skills from JD that match your experience (merge resume skills + JD skills)
-5. Rewrite summary to incorporate JD keywords AND your full experience
-6. Keep ALL education, ALL certifications, ALL projects from original resume
-7. Add JD-relevant achievements/bullets if they align with your experience (don't invent, but highlight relevant aspects)
-8. Extract exact target job title from JD
-9. Include 10-12 JD keywords that match the resume
-10. MAXIMIZE content - more detail is better for ATS
+STEP 1 - EXTRACT ALL JD KEYWORDS:
+Extract every technical term, skill, tool, methodology, and requirement from the JD. Look for: skills, tools, frameworks, methodologies, domain terms, action verbs.
+
+STEP 2 - KEYWORD INTEGRATION (60-80% MATCH):
+- Rewrite EVERY bullet to include 1-3 relevant JD keywords naturally
+- Summary must have 5-8 JD keywords
+- Skills must include 70% from JD + 30% from resume
+- Use exact terminology from JD (e.g., if JD says "cross-border payments", use that exact phrase)
+
+STEP 3 - CONTENT PRESERVATION:
+- Keep ALL original jobs, all bullets, all projects, all education, all certifications
+- Do not remove any achievements - only enhance with keywords
+- Keep original metrics and numbers
+- Add 1-2 new bullets per role if JD has relevant requirements you can address
+
+KEYWORD DENSITY REQUIREMENTS:
+- Summary: 5-8 JD keywords in 3-4 sentences
+- Each bullet: 1-3 JD keywords
+- Skills: 70% from JD (12-16 total skills)
+- matchKeywords: 12-15 top JD terms that appear in resume
 
 FULL RESUME (parse everything):
 ${resumeText.slice(0, 8000)}
 
-FULL JOB DESCRIPTION:
+FULL JOB DESCRIPTION (extract all keywords from):
 ${jdText.slice(0, 4000)}
 
-Return COMPLETE JSON with ALL data:
+Return JSON with HIGH keyword density:
 {
   "name": "full name",
   "email": "email",
@@ -65,13 +74,13 @@ Return COMPLETE JSON with ALL data:
   "linkedin": "linkedin url or empty string",
   "website": "portfolio url or empty string",
   "targetRole": "exact job title from JD",
-  "summary": "comprehensive 3-4 sentence summary with JD keywords",
-  "skills": ["skill1","skill2","skill3"],
-  "experience": [{"title":"Job Title","company":"Company","duration":"Mon Year - Mon Year","location":"City","bullets":["bullet1","bullet2","bullet3","bullet4","bullet5"]}],
+  "summary": "keyword-rich summary with 5-8 JD terms integrated naturally",
+  "skills": ["jd-skill1","jd-skill2","jd-skill3","resume-skill1","jd-skill4"],
+  "experience": [{"title":"Job Title","company":"Company","duration":"Mon Year - Mon Year","location":"City","bullets":["bullet with 1-3 JD keywords","another bullet with JD terms","keyword-rich achievement"]}],
   "education": [{"degree":"Degree","school":"University","year":"Year","gpa":""}],
-  "projects": [{"name":"Project","description":"detailed description","tech":"Stack","link":""}],
+  "projects": [{"name":"Project","description":"description with JD keywords","tech":"Stack","link":""}],
   "certifications": ["cert1","cert2"],
-  "matchKeywords": ["kw1","kw2","kw3","kw4","kw5","kw6","kw7","kw8","kw9","kw10"]
+  "matchKeywords": ["kw1","kw2","kw3","kw4","kw5","kw6","kw7","kw8","kw9","kw10","kw11","kw12"]
 }`;
 
 export async function tailorResumeWithAI(
