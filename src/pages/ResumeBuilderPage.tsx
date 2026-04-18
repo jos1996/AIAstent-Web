@@ -86,19 +86,19 @@ function ModernTemplate({ r, s = 1 }: { r: TailoredResume; s?: number }) {
 
 // ── Clean Template ───────────────────────────────────────────────────────────
 function CleanTemplate({ r, s = 1 }: { r: TailoredResume; s?: number }) {
-  const ST = ({ t }: { t: string }) => <div style={{ fontSize: sc(8, s), fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: sc(1.5, s), color: '#111', borderBottom: `${sc(1, s)}px solid #111`, paddingBottom: sc(2, s), marginTop: sc(10, s), marginBottom: sc(5, s) }}>{t}</div>;
+  const ST = ({ t }: { t: string }) => <div style={{ fontSize: sc(9, s), fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: sc(1.5, s), color: '#111', borderBottom: `${sc(2, s)}px solid #111`, paddingBottom: sc(4, s), marginTop: sc(12, s), marginBottom: sc(8, s) }}>{t}</div>;
   return (
-    <div id="resume-render" style={{ fontFamily: 'Arial,Helvetica,sans-serif', fontSize: sc(9.5, s), color: '#111', background: '#fff', padding: `${sc(38, s)}px ${sc(46, s)}px ${sc(20, s)}px`, width: '100%', boxSizing: 'border-box' as const }}>
-      <div style={{ textAlign: 'center' as const, marginBottom: sc(12, s) }}>
-        <div style={{ fontSize: sc(22, s), fontWeight: 700, letterSpacing: sc(1.5, s), textTransform: 'uppercase' as const }}>{r.name || 'Your Name'}</div>
-        <div style={{ fontSize: sc(10, s), color: '#555', marginTop: sc(3, s), fontStyle: 'italic' }}>{r.targetRole}</div>
-        <div style={{ height: sc(2, s), background: '#111', margin: `${sc(9, s)}px 0 ${sc(6, s)}px` }} />
-        <div style={{ fontSize: sc(8.5, s), color: '#555', display: 'flex', justifyContent: 'center', flexWrap: 'wrap' as const, gap: sc(16, s) }}>
-          {r.email && <span>{r.email}</span>}
-          {r.phone && <span>{r.phone}</span>}
-          {r.location && <span>{r.location}</span>}
-          {r.linkedin && <span>{r.linkedin}</span>}
-          {r.website && <span>{r.website}</span>}
+    <div id="resume-render" style={{ fontFamily: 'Arial,Helvetica,sans-serif', fontSize: sc(10, s), color: '#111', background: '#fff', padding: `${sc(40, s)}px ${sc(50, s)}px ${sc(30, s)}px`, width: '100%', boxSizing: 'border-box' as const, minHeight: '100%' }}>
+      <div style={{ textAlign: 'center' as const, marginBottom: sc(16, s) }}>
+        <div style={{ fontSize: sc(26, s), fontWeight: 700, letterSpacing: sc(2, s), textTransform: 'uppercase' as const }}>{r.name || 'Your Name'}</div>
+        <div style={{ fontSize: sc(12, s), color: '#444', marginTop: sc(6, s), fontWeight: 500 }}>{r.targetRole}</div>
+        <div style={{ height: sc(3, s), background: '#111', margin: `${sc(12, s)}px 0 ${sc(10, s)}px`, maxWidth: sc(400, s), marginLeft: 'auto', marginRight: 'auto' }} />
+        <div style={{ fontSize: sc(9.5, s), color: '#555', display: 'flex', justifyContent: 'center', flexWrap: 'wrap' as const, gap: sc(20, s) }}>
+          {r.email && <span>📧 {r.email}</span>}
+          {r.phone && <span>📱 {r.phone}</span>}
+          {r.location && <span>📍 {r.location}</span>}
+          {r.linkedin && <span>💼 {r.linkedin}</span>}
+          {r.website && <span>🌐 {r.website}</span>}
         </div>
       </div>
       {r.summary && (<><ST t="Summary" /><div style={{ fontSize: sc(9.5, s), color: '#333', lineHeight: 1.7 }}>{r.summary}</div></>)}
