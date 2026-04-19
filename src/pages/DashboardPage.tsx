@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { DOWNLOAD_LINKS } from '../config/releases';
 import { trackDownload } from '../lib/analytics';
+import ResumeBuilderPage from './ResumeBuilderPage';
 
 interface ProfileData {
   full_name: string;
@@ -47,6 +48,9 @@ export default function DashboardPage() {
   const [savingSetup, setSavingSetup] = useState(false);
   const [useJD, setUseJD] = useState(true);
   const [useResume, setUseResume] = useState(true);
+  const [shortAnswers, setShortAnswers] = useState(false);
+  const [longAnswers, setLongAnswers] = useState(true);
+  const [showResumeBuilder, setShowResumeBuilder] = useState(false);
 
   // Use centralized download links from config/releases.ts
   const downloadLinks = DOWNLOAD_LINKS;
@@ -84,6 +88,8 @@ export default function DashboardPage() {
       setCompanyName(data.company_name || '');
       setUseJD(data.use_jd !== false);
       setUseResume(data.use_resume !== false);
+      setShortAnswers(data.short_answers === true);
+      setLongAnswers(data.long_answers !== false);
     }
   };
 
@@ -104,6 +110,8 @@ export default function DashboardPage() {
           company_name: companyName.trim(),
           use_jd: useJD,
           use_resume: useResume,
+          short_answers: shortAnswers,
+          long_answers: longAnswers,
           updated_at: new Date().toISOString(),
         }, { onConflict: 'user_id' });
       if (error) throw error;
@@ -204,6 +212,25 @@ export default function DashboardPage() {
     { value: 'generation', label: 'Generated' },
   ];
 
+  // Show Resume Builder view
+  if (showResumeBuilder) {
+    if (!resume.trim()) {
+      return (
+        <div style={{ maxWidth: 640, margin: '0 auto', padding: '40px 20px', textAlign: 'center' }}>
+          <div style={{ width: 64, height: 64, borderRadius: '50%', border: '2px solid #000', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', background: '#fff' }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+          </div>
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: '#000', margin: '0 0 8px' }}>Resume Required</h2>
+          <p style={{ color: '#666', fontSize: 14, margin: '0 0 24px' }}>Please paste your resume in the Resume / CV section on the dashboard first, then click Resume Builder.</p>
+          <button onClick={() => setShowResumeBuilder(false)} style={{ padding: '10px 24px', borderRadius: 8, background: '#000', border: 'none', color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+            Go Back to Dashboard
+          </button>
+        </div>
+      );
+    }
+    return <ResumeBuilderPage resumeText={resume} onClose={() => setShowResumeBuilder(false)} />;
+  }
+
   return (
     <div>
       {/* Action Buttons - Top Right */}
@@ -277,13 +304,13 @@ export default function DashboardPage() {
           }}
           style={{
             padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600,
-            background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
-            border: 'none', color: '#fff', cursor: 'pointer',
+            background: '#000',
+            border: '2px solid #000', color: '#fff', cursor: 'pointer',
             display: 'flex', alignItems: 'center', gap: 10,
-            transition: 'all 0.2s', boxShadow: '0 2px 8px rgba(37,99,235,0.2)',
+            transition: 'all 0.2s', boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
           }}
-          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(37,99,235,0.3)'; }}
-          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,99,235,0.2)'; }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)'; e.currentTarget.style.background = '#1a1a1a'; }}
+          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)'; e.currentTarget.style.background = '#000'; }}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
@@ -305,7 +332,7 @@ export default function DashboardPage() {
         ) : (
           <div style={{
             width: 56, height: 56, borderRadius: 14, flexShrink: 0,
-            background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
+            background: '#000',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             color: '#fff', fontSize: 20, fontWeight: 700,
           }}>
@@ -317,7 +344,7 @@ export default function DashboardPage() {
             Welcome back{profile?.display_name || profile?.full_name ? `, ${profile.display_name || profile.full_name}` : ''}!
           </div>
           <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-            {profile?.username && <span style={{ color: '#60a5fa', fontSize: 13 }}>@{profile.username}</span>}
+            {profile?.username && <span style={{ color: '#555', fontSize: 13 }}>@{profile.username}</span>}
             {profile?.location && <span style={{ color: '#6b7280', fontSize: 13 }}>{profile.location}</span>}
             {profile?.created_at && (
               <span style={{ color: '#4b5563', fontSize: 12 }}>
@@ -383,18 +410,9 @@ export default function DashboardPage() {
 
             {/* Job Description Section */}
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+              <div style={{ marginBottom: 6 }}>
                 <label style={{ color: '#374151', fontSize: 13, fontWeight: 500 }}>
                   Job Description
-                </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 12, color: useJD ? '#2563eb' : '#9ca3af' }}>
-                  <input
-                    type="checkbox"
-                    checked={useJD}
-                    onChange={(e) => setUseJD(e.target.checked)}
-                    style={{ width: 14, height: 14, accentColor: '#2563eb' }}
-                  />
-                  Use in answers
                 </label>
               </div>
               <textarea
@@ -417,18 +435,9 @@ export default function DashboardPage() {
 
             {/* Resume Section */}
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+              <div style={{ marginBottom: 6 }}>
                 <label style={{ color: '#374151', fontSize: 13, fontWeight: 500 }}>
                   Resume / CV
-                </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 12, color: useResume ? '#7c3aed' : '#9ca3af' }}>
-                  <input
-                    type="checkbox"
-                    checked={useResume}
-                    onChange={(e) => setUseResume(e.target.checked)}
-                    style={{ width: 14, height: 14, accentColor: '#7c3aed' }}
-                  />
-                  Use in answers
                 </label>
               </div>
               <textarea
@@ -449,19 +458,89 @@ export default function DashboardPage() {
               )}
             </div>
 
-            {/* Save Button */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
+            {/* Answer Mode Checkboxes */}
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                <label style={{ color: '#374151', fontSize: 13, fontWeight: 600 }}>
+                  Chatbot Answer Preferences
+                </label>
+                <span style={{ color: '#9ca3af', fontSize: 11 }}>Select how the chatbot should respond</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                <label style={{
+                  display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 8,
+                  border: `1.5px solid ${useJD ? '#000' : '#e5e7eb'}`, background: useJD ? '#f9f9f9' : '#fff',
+                  cursor: 'pointer', transition: 'all 0.15s',
+                }}>
+                  <input type="checkbox" checked={useJD} onChange={(e) => setUseJD(e.target.checked)} style={{ width: 16, height: 16, accentColor: '#000' }} />
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#111' }}>Based on JD</div>
+                    <div style={{ fontSize: 11, color: '#888' }}>Answer using job description context</div>
+                  </div>
+                </label>
+                <label style={{
+                  display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 8,
+                  border: `1.5px solid ${useResume ? '#000' : '#e5e7eb'}`, background: useResume ? '#f9f9f9' : '#fff',
+                  cursor: 'pointer', transition: 'all 0.15s',
+                }}>
+                  <input type="checkbox" checked={useResume} onChange={(e) => setUseResume(e.target.checked)} style={{ width: 16, height: 16, accentColor: '#000' }} />
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#111' }}>Based on Resume</div>
+                    <div style={{ fontSize: 11, color: '#888' }}>Answer using your resume context</div>
+                  </div>
+                </label>
+                <label style={{
+                  display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 8,
+                  border: `1.5px solid ${shortAnswers ? '#000' : '#e5e7eb'}`, background: shortAnswers ? '#f9f9f9' : '#fff',
+                  cursor: 'pointer', transition: 'all 0.15s',
+                }}>
+                  <input type="checkbox" checked={shortAnswers} onChange={(e) => { setShortAnswers(e.target.checked); if (e.target.checked) setLongAnswers(false); }} style={{ width: 16, height: 16, accentColor: '#000' }} />
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#111' }}>Short Answers</div>
+                    <div style={{ fontSize: 11, color: '#888' }}>Concise, to-the-point responses</div>
+                  </div>
+                </label>
+                <label style={{
+                  display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 8,
+                  border: `1.5px solid ${longAnswers ? '#000' : '#e5e7eb'}`, background: longAnswers ? '#f9f9f9' : '#fff',
+                  cursor: 'pointer', transition: 'all 0.15s',
+                }}>
+                  <input type="checkbox" checked={longAnswers} onChange={(e) => { setLongAnswers(e.target.checked); if (e.target.checked) setShortAnswers(false); }} style={{ width: 16, height: 16, accentColor: '#000' }} />
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#111' }}>Long Answers</div>
+                    <div style={{ fontSize: 11, color: '#888' }}>Detailed, comprehensive responses</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {/* Save & Resume Builder Buttons */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 8 }}>
               <button
                 onClick={saveInterviewContext}
                 disabled={savingSetup}
                 style={{
                   padding: '10px 24px', borderRadius: 8, fontSize: 14, fontWeight: 600,
-                  background: savingSetup ? '#9ca3af' : '#2563eb',
+                  background: savingSetup ? '#9ca3af' : '#000',
                   border: 'none', color: '#fff',
                   cursor: savingSetup ? 'not-allowed' : 'pointer',
                 }}
               >
                 {savingSetup ? 'Saving...' : 'Save'}
+              </button>
+              <button
+                onClick={() => setShowResumeBuilder(true)}
+                style={{
+                  padding: '10px 24px', borderRadius: 8, fontSize: 14, fontWeight: 600,
+                  background: '#fff', border: '2px solid #000', color: '#000',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+                  transition: 'all 0.15s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#000'; e.currentTarget.style.color = '#fff'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#000'; }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+                Resume Builder
               </button>
             </div>
           </div>
@@ -500,7 +579,7 @@ export default function DashboardPage() {
                 onClick={() => setFilterType(opt.value)}
                 style={{
                   padding: '5px 12px', borderRadius: 8, fontSize: 12, fontWeight: 500,
-                  background: filterType === opt.value ? '#2563eb' : '#f3f4f6',
+                  background: filterType === opt.value ? '#000' : '#f3f4f6',
                   border: 'none',
                   color: filterType === opt.value ? '#ffffff' : '#6b7280',
                   cursor: 'pointer', transition: 'all 0.15s',
@@ -532,8 +611,8 @@ export default function DashboardPage() {
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                     <span style={{
                       padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 500,
-                      background: item.type === 'chat' ? '#dbeafe' : item.type === 'interview' ? '#d1fae5' : '#ede9fe',
-                      color: item.type === 'chat' ? '#1e40af' : item.type === 'interview' ? '#065f46' : '#5b21b6',
+                      background: '#f3f4f6', border: '1px solid #e5e7eb',
+                      color: '#374151',
                     }}>{item.type.replace('_', ' ')}</span>
                     <span style={{ color: '#6b7280', fontSize: 11 }}>{item.mode}</span>
                   </div>

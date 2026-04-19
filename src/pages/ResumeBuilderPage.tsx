@@ -241,7 +241,7 @@ export default function ResumeBuilderPage({ resumeText, onClose }: { resumeText:
   if (step === 'jd') return (
     <div style={{ maxWidth: 640, margin: '0 auto', padding: '0 8px' }}>
       <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#6b7280', fontSize: 13, cursor: 'pointer', marginBottom: 24, padding: 0 }}>
-        <ChevronLeft size={16} /> Back to Job Search
+        <ChevronLeft size={16} /> Back to Dashboard
       </button>
       <div style={{ textAlign: 'center', marginBottom: 32 }}>
         <div style={{ width: 64, height: 64, borderRadius: '50%', border: '2px solid #000', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', background: '#fff' }}>
@@ -306,7 +306,7 @@ export default function ResumeBuilderPage({ resumeText, onClose }: { resumeText:
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, flexWrap: 'wrap' as const, gap: 10 }}>
         <div>
           <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', color: '#6b7280', fontSize: 12, cursor: 'pointer', padding: '0 0 6px' }}>
-            <ChevronLeft size={14} /> Back to Job Search
+            <ChevronLeft size={14} /> Back to Dashboard
           </button>
           <h1 style={{ fontSize: 20, fontWeight: 800, color: '#111827', margin: 0 }}>Your Tailored Resumes</h1>
           <p style={{ color: '#6b7280', fontSize: 12, margin: '3px 0 0' }}>Tailored for: <strong style={{ color: '#111827' }}>{tailored.targetRole}</strong></p>
