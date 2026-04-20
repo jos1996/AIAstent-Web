@@ -1,10 +1,13 @@
-import { useState, createElement } from 'react';
+import { useState, useEffect, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ChevronLeft, FileText, CheckCircle2, Download, Eye, X, Loader2, Edit3, Wand2 } from 'lucide-react';
 import { tailorResumeWithAI } from '../lib/resumeTailor';
 import type { TailoredResume } from '../lib/resumeTailor';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { usePlanLimits } from '../hooks/usePlanLimits';
+
+const FREE_RESUME_LIMIT = 5;
 
 type TemplateId = 'executive' | 'modern' | 'clean';
 type Step = 'jd' | 'generating' | 'templates' | 'preview' | 'edit';
@@ -195,6 +198,7 @@ async function downloadPDF(resume: TailoredResume, templateId: TemplateId, name:
 // ── Main component ────────────────────────────────────────────────────────────
 export default function ResumeBuilderPage({ resumeText, onClose }: { resumeText: string; onClose: () => void }) {
   const { user } = useAuth();
+  const { planState, loaded: planLoaded } = usePlanLimits();
   const [step, setStep] = useState<Step>('jd');
   const [jdText, setJdText] = useState('');
   const [tailored, setTailored] = useState<TailoredResume | null>(null);
@@ -204,9 +208,28 @@ export default function ResumeBuilderPage({ resumeText, onClose }: { resumeText:
   const [downloading, setDownloading] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);
   const [editData, setEditData] = useState<TailoredResume | null>(null);
+  const [resumeCount, setResumeCount] = useState(0);
+  const [countLoaded, setCountLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!user) { setCountLoaded(true); return; }
+    supabase
+      .from('tailored_resumes')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .then(({ count }) => {
+        setResumeCount(count || 0);
+        setCountLoaded(true);
+      });
+  }, [user]);
+
+  // Free users: max 5 resumes. Paid users (have purchased credits): unlimited.
+  const isSubscribed = planLoaded && !planState.isFreeUser;
+  const limitReached = !isSubscribed && countLoaded && resumeCount >= FREE_RESUME_LIMIT;
 
   const generate = async () => {
     if (jdText.length < 50) return;
+    if (limitReached) return;
     setStep('generating'); setError('');
     try {
       const result = await tailorResumeWithAI(resumeText, jdText);
@@ -214,7 +237,7 @@ export default function ResumeBuilderPage({ resumeText, onClose }: { resumeText:
       setEditData(JSON.parse(JSON.stringify(result)));
       if (user) {
         const { data } = await supabase.from('tailored_resumes').insert({ user_id: user.id, resume_text: resumeText, jd_text: jdText, tailored_data: result, target_role: result.targetRole, template_id: selected }).select('id').single();
-        if (data?.id) setSavedId(data.id);
+        if (data?.id) { setSavedId(data.id); setResumeCount(c => c + 1); }
       }
       setStep('templates');
     } catch (e: unknown) {
@@ -250,6 +273,21 @@ export default function ResumeBuilderPage({ resumeText, onClose }: { resumeText:
         <h1 style={{ fontSize: 28, fontWeight: 700, color: '#000', margin: '0 0 8px', letterSpacing: '-0.02em' }}>Resume Builder</h1>
         <p style={{ color: '#666', fontSize: 14, margin: 0, fontWeight: 400 }}>Paste a job description — AI tailors your resume with JD keywords</p>
       </div>
+      {/* Free user limit banner */}
+      {!isSubscribed && countLoaded && (
+        <div style={{ padding: '10px 14px', borderRadius: 8, background: resumeCount >= FREE_RESUME_LIMIT ? '#fff8f0' : '#f9fafb', border: `1px solid ${resumeCount >= FREE_RESUME_LIMIT ? '#f59e0b' : '#e5e5e5'}`, marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+          <span style={{ fontSize: 13, color: resumeCount >= FREE_RESUME_LIMIT ? '#92400e' : '#6b7280' }}>
+            {resumeCount >= FREE_RESUME_LIMIT
+              ? `🔒 Free limit reached — you've used all ${FREE_RESUME_LIMIT} free resumes.`
+              : `📄 ${resumeCount} / ${FREE_RESUME_LIMIT} free resumes used`}
+          </span>
+          {resumeCount >= FREE_RESUME_LIMIT && (
+            <a href="/settings/billing" style={{ fontSize: 12, fontWeight: 700, background: '#000', color: '#fff', padding: '5px 12px', borderRadius: 6, textDecoration: 'none', whiteSpace: 'nowrap' as const }}>
+              Upgrade →
+            </a>
+          )}
+        </div>
+      )}
       {error && <div style={{ padding: '12px 16px', borderRadius: 8, background: '#fff', border: '1px solid #000', color: '#000', fontSize: 13, marginBottom: 16, display: 'flex', gap: 10 }}><X size={16} style={{ flexShrink: 0, marginTop: 1 }} />{error}</div>}
       <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e5e5e5', padding: '14px 16px', marginBottom: 20, display: 'flex', gap: 12 }}>
         <CheckCircle2 size={18} color="#000" style={{ flexShrink: 0, marginTop: 1 }} />
@@ -267,9 +305,9 @@ export default function ResumeBuilderPage({ resumeText, onClose }: { resumeText:
         <span style={{ fontSize: 11, color: '#9ca3af' }}>{jdText.length} chars {jdText.length > 0 && jdText.length < 50 ? '(paste more text)' : ''}</span>
         {jdText && <button onClick={() => setJdText('')} style={{ fontSize: 11, color: '#9ca3af', background: 'none', border: 'none', cursor: 'pointer' }}>Clear</button>}
       </div>
-      <button onClick={generate} disabled={jdText.length < 50}
-        style={{ width: '100%', padding: 16, borderRadius: 8, background: jdText.length >= 50 ? '#000' : '#f0f0f0', border: '2px solid ' + (jdText.length >= 50 ? '#000' : '#e5e5e5'), color: jdText.length >= 50 ? '#fff' : '#999', fontSize: 15, fontWeight: 600, cursor: jdText.length >= 50 ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, transition: 'all 0.2s' }}>
-        <Wand2 size={18} /> Generate Tailored Resume
+      <button onClick={generate} disabled={jdText.length < 50 || limitReached}
+        style={{ width: '100%', padding: 16, borderRadius: 8, background: limitReached ? '#f0f0f0' : jdText.length >= 50 ? '#000' : '#f0f0f0', border: '2px solid ' + (limitReached ? '#e5e5e5' : jdText.length >= 50 ? '#000' : '#e5e5e5'), color: limitReached ? '#999' : jdText.length >= 50 ? '#fff' : '#999', fontSize: 15, fontWeight: 600, cursor: limitReached || jdText.length < 50 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, transition: 'all 0.2s' }}>
+        <Wand2 size={18} /> {limitReached ? '🔒 Upgrade to Generate More Resumes' : 'Generate Tailored Resume'}
       </button>
       <div style={{ marginTop: 14, display: 'flex', gap: 8, justifyContent: 'center' }}>
         {TEMPLATES.map(t => <span key={t.id} style={{ padding: '3px 10px', borderRadius: 100, background: t.accent + '12', color: t.accent, border: '1px solid ' + t.accent + '30', fontSize: 11, fontWeight: 600 }}>{t.name}</span>)}
