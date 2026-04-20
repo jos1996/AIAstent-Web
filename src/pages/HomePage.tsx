@@ -257,7 +257,7 @@ export default function HomePage() {
   const downloadLinks = DOWNLOAD_LINKS;
 
   const handleDirectDownload = (url: string) => {
-    const platform = url.includes('aarch64') ? 'mac_apple_silicon' : url.includes('x86_64') && url.includes('.dmg') ? 'mac_intel' : url.includes('.msi') ? 'windows_msi' : 'windows_nsis';
+    const platform = url.includes('Apple_Silicon') ? 'mac_apple_silicon' : url.includes('Intel') && url.includes('.dmg') ? 'mac_intel' : url.includes('MSI') ? 'windows_msi' : 'windows_nsis';
     trackDownload(platform);
     window.open(url, '_blank')
     setShowDownloadModal(false)
