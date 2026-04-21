@@ -1158,9 +1158,9 @@ export default function HomePage() {
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <span style={{ fontSize: 13, fontWeight: 700, color: '#888', letterSpacing: 2, textTransform: 'uppercase' }}>AI Resume Builder</span>
             <h2 style={{ fontSize: 'clamp(22px, 3vw, 36px)', fontWeight: 900, color: '#000', marginTop: 10, marginBottom: 0 }}>Custom Resume Builder based on Job Description</h2>
-            <p style={{ color: '#666', fontSize: 15, maxWidth: 650, margin: '10px auto 0' }}>Paste any job description — AI tailors your resume with JD keywords, optimises for ATS, and generates print-ready PDFs in seconds</p>
+            <p style={{ color: '#000', fontSize: 15, maxWidth: 650, margin: '10px auto 0' }}>Paste any job description — AI tailors your resume with JD keywords, optimises for ATS, and generates print-ready PDFs in seconds</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
             {/* Step 1: Paste JD */}
             <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(0,0,0,0.1)', boxShadow: '0 16px 48px rgba(0,0,0,0.08)', transition: 'all 0.35s', background: '#fff' }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 28px 64px rgba(0,0,0,0.15)'; }}
@@ -1177,8 +1177,8 @@ export default function HomePage() {
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
                 </div>
                 <div style={{ fontSize: 17, fontWeight: 700, color: '#000' }}>Resume Builder</div>
-                <div style={{ fontSize: 12, color: '#888', textAlign: 'center', lineHeight: 1.5, padding: '0 8px' }}>Paste a job description — AI tailors your resume with JD keywords</div>
-                <div style={{ width: '90%', padding: '10px 12px', background: '#fafafa', borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 11, color: '#aaa' }}>Paste the full job description here...</div>
+                <div style={{ fontSize: 12, color: '#000', textAlign: 'center', lineHeight: 1.5, padding: '0 8px' }}>Paste a job description — AI tailors your resume with JD keywords</div>
+                <div style={{ width: '90%', padding: '10px 12px', background: '#fafafa', borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 11, color: '#000' }}>Paste the full job description here...</div>
                 <div style={{ width: '90%', padding: '10px 0', background: '#000', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, textAlign: 'center' }}>Generate Tailored Resume</div>
               </div>
             </div>
@@ -1196,7 +1196,7 @@ export default function HomePage() {
               </div>
               <div style={{ padding: 16, minHeight: 240 }}>
                 <div style={{ fontSize: 15, fontWeight: 700, color: '#000', marginBottom: 4 }}>Your Tailored Resumes</div>
-                <div style={{ fontSize: 11, color: '#888', marginBottom: 14 }}>3 ATS-optimised templates • Tailored for your role</div>
+                <div style={{ fontSize: 11, color: '#000', marginBottom: 14 }}>3 ATS-optimised templates • Tailored for your role</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
                   {['Executive', 'Modern', 'Clean'].map((t, i) => (
                     <div key={t} style={{ borderRadius: 8, border: i === 0 ? '2px solid #000' : '1px solid #e5e7eb', padding: 8, textAlign: 'center', background: '#fafafa', cursor: 'default' }}>
@@ -1204,14 +1204,14 @@ export default function HomePage() {
                         {i === 0 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>}
                       </div>
                       <div style={{ fontSize: 10, fontWeight: 700, color: '#111' }}>{t}</div>
-                      <div style={{ fontSize: 9, color: '#888', marginTop: 2 }}>{i === 0 ? 'gold accents' : i === 1 ? 'sidebar' : 'serif'}</div>
+                      <div style={{ fontSize: 9, color: '#000', marginTop: 2 }}>{i === 0 ? 'gold accents' : i === 1 ? 'sidebar' : 'serif'}</div>
                     </div>
                   ))}
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14, padding: '8px 12px', background: '#f9fafb', borderRadius: 8, border: '1px solid #e5e7eb' }}>
                   <div>
                     <div style={{ fontSize: 11, fontWeight: 700, color: '#111' }}>Executive selected</div>
-                    <div style={{ fontSize: 9, color: '#888' }}>ATS-optimised • 1 page</div>
+                    <div style={{ fontSize: 9, color: '#000' }}>ATS-optimised • 1 page</div>
                   </div>
                   <span style={{ fontSize: 10, padding: '5px 12px', background: '#000', color: '#fff', borderRadius: 6, fontWeight: 600 }}>Download PDF</span>
                 </div>
@@ -1243,7 +1243,7 @@ export default function HomePage() {
                   <div style={{ fontSize: 8, color: '#444', lineHeight: 1.5, marginBottom: 8 }}>AI Product Manager with 3.7 years of experience in product management, focusing on healthcare and clinical research...</div>
                   <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 1.5, color: '#1e3a5f', marginBottom: 4, textTransform: 'uppercase' as const }}>Experience</div>
                   <div style={{ fontSize: 8, fontWeight: 700, color: '#111' }}>Product Manager / Product Owner</div>
-                  <div style={{ fontSize: 7, color: '#888', marginBottom: 4 }}>HUB Group • Sep 2024 – Present</div>
+                  <div style={{ fontSize: 7, color: '#000', marginBottom: 4 }}>HUB Group • Sep 2024 – Present</div>
                   <div style={{ fontSize: 7, color: '#555', lineHeight: 1.4 }}>• Built LTL Logistics platform from 0→1 and delivered MVP in 3 months, generating $1M revenue</div>
                   <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 1.5, color: '#1e3a5f', marginTop: 8, marginBottom: 4, textTransform: 'uppercase' as const }}>Core Competencies</div>
                   <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' as const }}>

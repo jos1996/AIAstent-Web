@@ -262,7 +262,7 @@ export default function ResumeBuilderPage({ resumeText, onClose }: { resumeText:
 
   // ── JD input ──
   if (step === 'jd') return (
-    <div style={{ maxWidth: 640, margin: '0 auto', padding: '0 8px' }}>
+    <div style={{ maxWidth: 640, margin: '0 auto', padding: '0 16px' }}>
       <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#6b7280', fontSize: 13, cursor: 'pointer', marginBottom: 24, padding: 0 }}>
         <ChevronLeft size={16} /> Back to Dashboard
       </button>
@@ -339,7 +339,7 @@ export default function ResumeBuilderPage({ resumeText, onClose }: { resumeText:
 
   // ── Template selection ──
   if (step === 'templates' && tailored) return (
-    <div>
+    <div style={{ padding: '0 12px' }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, flexWrap: 'wrap' as const, gap: 10 }}>
         <div>
@@ -355,7 +355,7 @@ export default function ResumeBuilderPage({ resumeText, onClose }: { resumeText:
       </div>
 
       {/* 3 template cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 18, marginBottom: 100 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 18, marginBottom: 100 }}>
         {TEMPLATES.map(t => (
           <div key={t.id} onClick={() => pickTemplate(t.id)}
             style={{ borderRadius: 14, border: `2px solid ${selected === t.id ? t.accent : '#e5e7eb'}`, overflow: 'hidden', cursor: 'pointer', transition: 'all 0.2s', boxShadow: selected === t.id ? `0 4px 20px ${t.accent}28` : '0 1px 4px rgba(0,0,0,0.06)' }}>
@@ -391,7 +391,7 @@ export default function ResumeBuilderPage({ resumeText, onClose }: { resumeText:
       </div>
 
       {/* Sticky bottom bar */}
-      <div style={{ position: 'sticky', bottom: 16, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: '12px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 8px 32px rgba(0,0,0,0.12)', zIndex: 10, flexWrap: 'wrap' as const, gap: 10 }}>
+      <div style={{ position: 'sticky', bottom: 8, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 8px 32px rgba(0,0,0,0.12)', zIndex: 10, flexWrap: 'wrap' as const, gap: 10, margin: '0 -4px' }}>
         <div>
           <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', display: 'flex', alignItems: 'center', gap: 7 }}>
             <span style={{ width: 10, height: 10, borderRadius: '50%', background: TEMPLATES.find(t => t.id === selected)?.accent, display: 'inline-block' }} />
