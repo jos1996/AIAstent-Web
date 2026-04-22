@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { DOWNLOAD_LINKS } from '../config/releases';
@@ -33,10 +33,22 @@ interface HistoryItem {
 export default function DashboardPage() {
   const { user } = useAuth();
   const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [stats, setStats] = useState<Stats>({ totalChats: 0, totalScreenAnalyses: 0, totalInterviews: 0, totalGenerations: 0 });
-  const [recentActivity, setRecentActivity] = useState<HistoryItem[]>([]);
+  const [allHistory, setAllHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState<string>('all');
+
+  // Derived stats and filtered activity — computed locally, no extra API calls
+  const stats: Stats = useMemo(() => ({
+    totalChats: allHistory.filter(h => h.type === 'chat').length,
+    totalScreenAnalyses: allHistory.filter(h => h.type === 'screen_analysis').length,
+    totalInterviews: allHistory.filter(h => h.type === 'interview').length,
+    totalGenerations: allHistory.filter(h => h.type === 'generation').length,
+  }), [allHistory]);
+
+  const recentActivity: HistoryItem[] = useMemo(() => {
+    const filtered = filterType === 'all' ? allHistory : allHistory.filter(h => h.type === filterType);
+    return filtered.slice(0, 20);
+  }, [allHistory, filterType]);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState<'ios' | 'windows' | null>(null);
   
@@ -67,30 +79,48 @@ export default function DashboardPage() {
     setShowDownloadModal(true);
   };
 
+  // Load everything in ONE parallel call on mount only
   useEffect(() => {
-    if (user) {
-      loadProfile();
-      loadDashboard();
-      loadInterviewContext();
-    }
-  }, [user, filterType]);
+    if (!user) return;
+    loadAllData();
+  }, [user]);
 
-  const loadInterviewContext = async () => {
-    const { data } = await supabase
-      .from('interview_context')
-      .select('*')
-      .eq('user_id', user!.id)
-      .single();
-    if (data) {
-      setJobDescription(data.job_description || '');
-      setResume(data.resume || '');
-      setTargetRole(data.target_role || '');
-      setCompanyName(data.company_name || '');
-      setUseJD(data.use_jd !== false);
-      setUseResume(data.use_resume !== false);
-      setShortAnswers(data.short_answers === true);
-      setLongAnswers(data.long_answers !== false);
+  const loadAllData = async () => {
+    if (!user) return;
+    setLoading(true);
+
+    // Fire all 3 queries in parallel — no sequential waiting
+    const [profileRes, historyRes, contextRes] = await Promise.all([
+      supabase.from('users').select('full_name,username,display_name,avatar_url,bio,location,created_at').eq('id', user.id).single(),
+      supabase.from('history').select('id,type,mode,query,created_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(50),
+      supabase.from('interview_context').select('*').eq('user_id', user.id).single(),
+    ]);
+
+    // Profile: try users table first, fall back to profiles
+    if (profileRes.data) {
+      setProfile(profileRes.data);
+    } else {
+      const { data: fallback } = await supabase.from('profiles').select('full_name,username,display_name,avatar_url,bio,location,created_at').eq('id', user.id).single();
+      if (fallback) setProfile(fallback);
     }
+
+    // History
+    if (historyRes.data) setAllHistory(historyRes.data);
+
+    // Interview context
+    if (contextRes.data) {
+      const d = contextRes.data;
+      setJobDescription(d.job_description || '');
+      setResume(d.resume || '');
+      setTargetRole(d.target_role || '');
+      setCompanyName(d.company_name || '');
+      setUseJD(d.use_jd !== false);
+      setUseResume(d.use_resume !== false);
+      setShortAnswers(d.short_answers === true);
+      setLongAnswers(d.long_answers !== false);
+    }
+
+    setLoading(false);
   };
 
   const saveInterviewContext = async () => {
@@ -123,46 +153,6 @@ export default function DashboardPage() {
     setSavingSetup(false);
   };
 
-  const loadProfile = async () => {
-    // Read from central users table
-    const { data: userData } = await supabase
-      .from('users')
-      .select('full_name, username, display_name, avatar_url, bio, location, created_at')
-      .eq('id', user!.id)
-      .single();
-    if (userData) { setProfile(userData); return; }
-    // Fallback to profiles table
-    const { data } = await supabase
-      .from('profiles')
-      .select('full_name, username, display_name, avatar_url, bio, location, created_at')
-      .eq('id', user!.id)
-      .single();
-    if (data) setProfile(data);
-  };
-
-  const loadDashboard = async () => {
-    setLoading(true);
-
-    const { data: history } = await supabase
-      .from('history')
-      .select('*')
-      .eq('user_id', user!.id)
-      .order('created_at', { ascending: false })
-      .limit(50);
-
-    if (history) {
-      setStats({
-        totalChats: history.filter(h => h.type === 'chat').length,
-        totalScreenAnalyses: history.filter(h => h.type === 'screen_analysis').length,
-        totalInterviews: history.filter(h => h.type === 'interview').length,
-        totalGenerations: history.filter(h => h.type === 'generation').length,
-      });
-
-      const filtered = filterType === 'all' ? history : history.filter(h => h.type === filterType);
-      setRecentActivity(filtered.slice(0, 20));
-    }
-    setLoading(false);
-  };
 
   const statCards = [
     {
