@@ -1706,6 +1706,135 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Modern UI Section (Uiverse-inspired) */}
+      <section style={{ padding: '60px 24px', background: 'linear-gradient(165deg, #0b0b0b 0%, #161616 55%, #0f0f0f 100%)' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 30 }}>
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '8px 14px',
+              borderRadius: 999,
+              border: '1px solid rgba(255,255,255,0.22)',
+              background: 'rgba(255,255,255,0.06)',
+              color: 'rgba(255,255,255,0.9)',
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: 0.4,
+            }}>
+              <Icon name="Sparkles" size={14} /> UI UPGRADE
+            </span>
+            <h2 style={{ fontSize: 'clamp(24px, 4vw, 38px)', fontWeight: 900, color: '#fff', margin: '14px 0 10px', letterSpacing: '-0.8px' }}>
+              Faster Decisions, Cleaner Interface
+            </h2>
+            <p style={{ margin: 0, fontSize: 15, color: 'rgba(255,255,255,0.72)' }}>
+              Polished cards, modern buttons, and clean layouts built for interview workflows.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1.1fr', gap: 18 }}>
+            <div style={{
+              borderRadius: 20,
+              border: '1px solid rgba(255,255,255,0.12)',
+              background: 'linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03))',
+              padding: 22,
+              boxShadow: '0 22px 50px rgba(0,0,0,0.25)',
+            }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: 12 }}>
+                {[
+                  { title: 'One-click startup', desc: 'Launch interview mode instantly with preloaded context.', icon: 'Rocket' },
+                  { title: 'Live answer stream', desc: 'Readable token-by-token response for natural flow.', icon: 'MessageSquare' },
+                  { title: 'Screen insights', desc: 'Analyze shared screens and coding tasks in real time.', icon: 'Monitor' },
+                  { title: 'Reminder smart actions', desc: 'Capture follow-ups without leaving interview focus.', icon: 'Bell' },
+                ].map((item, idx) => (
+                  <div key={idx} style={{
+                    borderRadius: 14,
+                    border: '1px solid rgba(255,255,255,0.14)',
+                    background: 'rgba(9,9,9,0.5)',
+                    padding: 14,
+                  }}>
+                    <div style={{
+                      width: 34, height: 34, borderRadius: 10,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      background: 'linear-gradient(145deg, #ffffff, #cccccc)',
+                      color: '#000', marginBottom: 10,
+                    }}>
+                      <Icon name={item.icon} size={16} />
+                    </div>
+                    <div style={{ color: '#fff', fontWeight: 700, fontSize: 14, marginBottom: 6 }}>{item.title}</div>
+                    <p style={{ margin: 0, color: 'rgba(255,255,255,0.72)', fontSize: 12.5, lineHeight: 1.6 }}>{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{
+                borderRadius: 16,
+                border: '1px solid rgba(255,255,255,0.16)',
+                background: 'rgba(255,255,255,0.06)',
+                padding: 16,
+              }}>
+                <div style={{ color: '#fff', fontSize: 13, fontWeight: 700, marginBottom: 12 }}>Quick Actions</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <button
+                    onClick={() => handleDownloadClick('ios')}
+                    style={{
+                      border: 'none', borderRadius: 12, padding: '12px 14px', cursor: 'pointer',
+                      background: 'linear-gradient(135deg, #ffffff 0%, #d6d6d6 100%)',
+                      color: '#000', fontWeight: 700, fontSize: 13,
+                      boxShadow: '0 8px 18px rgba(255,255,255,0.2)',
+                      transition: 'transform 0.2s',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)' }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)' }}
+                  >
+                    Download for Mac
+                  </button>
+                  <a
+                    href={user ? '/settings/dashboard' : '/signin'}
+                    onClick={() => trackCTAClick(user ? 'go_dashboard_modern_ui' : 'start_now_modern_ui')}
+                    style={{
+                      borderRadius: 12, padding: '12px 14px',
+                      background: 'rgba(255,255,255,0.02)',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      color: '#fff', fontWeight: 700, fontSize: 13,
+                      textDecoration: 'none', textAlign: 'center',
+                    }}
+                  >
+                    {user ? 'Go to Dashboard' : 'Start Free'}
+                  </a>
+                </div>
+              </div>
+
+              <div style={{
+                borderRadius: 16,
+                border: '1px solid rgba(255,255,255,0.16)',
+                background: 'linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
+                padding: 16,
+              }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                  {[
+                    { value: '100K+', label: 'Users' },
+                    { value: '4.9/5', label: 'Rating' },
+                    { value: '<2 min', label: 'Setup' },
+                    { value: '24/7', label: 'AI support' },
+                  ].map((stat, idx) => (
+                    <div key={idx} style={{
+                      borderRadius: 10, background: 'rgba(0,0,0,0.35)',
+                      border: '1px solid rgba(255,255,255,0.1)', padding: '10px 8px',
+                      textAlign: 'center',
+                    }}>
+                      <div style={{ color: '#fff', fontWeight: 800, fontSize: 14 }}>{stat.value}</div>
+                      <div style={{ color: 'rgba(255,255,255,0.62)', fontSize: 11 }}>{stat.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Testimonials */}
       <section style={{
         padding: '60px 24px',
