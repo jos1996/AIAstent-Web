@@ -9,12 +9,30 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 // Shared session store — settings web app writes here, Tauri chatbot reads
 let sessionStore: { access_token: string; refresh_token: string } | null = null;
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ mode, command, isSsrBuild }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const gaMeasurementId =
     env.VITE_GA_MEASUREMENT_ID?.trim() || 'G-T3T0N5C7YG'
 
+  // For SSR builds we swap the real Supabase client for a no-op stub. The
+  // browser bundle keeps the real client. See `src/lib/supabase.ssr-stub.ts`.
+  // AuthContext stays as-is — its `useAuth` already falls back to a SSR-safe
+  // default when no provider is mounted (`typeof window === 'undefined'`).
+  const ssrAliases = isSsrBuild
+    ? {
+        '@supabase/supabase-js': path.resolve(__dirname, 'src/lib/supabase.ssr-stub.ts'),
+        [path.resolve(__dirname, 'src/lib/supabase.ts')]: path.resolve(
+          __dirname,
+          'src/lib/supabase.ssr-stub.ts',
+        ),
+      }
+    : {}
+  void command
+
   return {
+  resolve: {
+    alias: ssrAliases,
+  },
   plugins: [
     {
       // Some dependencies (jspdf, canvg) import "@babel/runtime/helpers/<name>"
@@ -91,6 +109,38 @@ export default defineConfig(({ mode }) => {
   ],
   server: {
     port: 5174,
+  },
+  build: {
+    // Lift the warning ceiling — Core Web Vitals are dominated by LCP, FID,
+    // and CLS, not by total bundle size. We code-split the heavy bits
+    // (Supabase, Lucide icons, jspdf/html2canvas) into separate chunks below
+    // so the initial route only loads what it actually needs.
+    chunkSizeWarningLimit: 800,
+    rollupOptions: {
+      output: {
+        manualChunks(id: string) {
+          if (!id.includes('node_modules')) return undefined;
+          // React core stays in the main entry — every page needs it.
+          if (id.includes('react-dom') || /node_modules\/react\//.test(id)) return undefined;
+          if (id.includes('react-router')) return undefined;
+          if (id.includes('@supabase')) return 'vendor-supabase';
+          if (id.includes('lucide-react')) return 'vendor-lucide';
+          if (id.includes('jspdf')) return 'vendor-pdf';
+          if (id.includes('html2canvas')) return 'vendor-pdf';
+          if (id.includes('pdfjs-dist')) return 'vendor-pdf';
+          if (id.includes('canvg')) return 'vendor-pdf';
+          if (id.includes('date-fns')) return 'vendor-datefns';
+          return 'vendor';
+        },
+      },
+    },
+  },
+  ssr: {
+    // Don't try to externalize these for SSR — bundle them so the
+    // server-rendered output works as a self-contained ESM module that
+    // `scripts/prerender-ssr.mjs` can `import()` from Node. Supabase is
+    // intentionally absent here; it's aliased to a no-op stub above.
+    noExternal: ['react-router-dom', 'react-router', 'lucide-react'],
   },
 }
 })

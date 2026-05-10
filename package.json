@@ -8,9 +8,10 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build && (npm run prerender:full || npm run prerender:meta || echo '⚠️  prerender failed; shipping SPA')",
+    "build": "vite build && (npm run prerender:ssr || npm run prerender:meta || echo '⚠️  prerender failed; shipping SPA')",
     "build:nopre": "vite build",
-    "prerender": "npm run prerender:full",
+    "prerender": "npm run prerender:ssr",
+    "prerender:ssr": "node scripts/prerender-ssr.mjs",
     "prerender:full": "node scripts/prerender.mjs",
     "prerender:meta": "node scripts/prerender-meta.mjs",
     "preview": "vite preview",

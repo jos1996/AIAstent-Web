@@ -102,7 +102,30 @@ export default function SEOHead({
     applyJsonLd(jsonLd);
   }, [title, description, keywords, canonical, ogType, ogImage, jsonLd, noindex]);
 
-  return null;
+  // Also render JSON-LD inline as JSX so the SSR pass captures it on the
+  // first byte. React renders these script tags into the DOM verbatim;
+  // because the type is `application/ld+json` the browser doesn't execute
+  // them and Google's crawler parses them as structured data wherever they
+  // appear in the document. The runtime `applyJsonLd()` above keeps the
+  // <head> copy in sync during client-side navigations.
+  const ssrJsonLd = !jsonLd
+    ? []
+    : Array.isArray(jsonLd)
+      ? jsonLd
+      : [jsonLd];
+
+  return (
+    <>
+      {ssrJsonLd.map((payload, i) => (
+        <script
+          key={`ssr-jsonld-${i}`}
+          type="application/ld+json"
+          data-seo="ssr"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(payload).replaceAll('</', '<\\/') }}
+        />
+      ))}
+    </>
+  );
 }
 
 /* ─── JSON-LD builders (named exports so pages can compose schema cleanly) ── */

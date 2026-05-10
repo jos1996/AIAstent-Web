@@ -11,6 +11,16 @@ Allow: /ai-interview-answer-generator
 Allow: /free-ai-interview-helper
 Allow: /google-meet-ai-interview-helper
 Allow: /microsoft-teams-ai-interview-helper
+Allow: /faang-interview-ai-helper
+Allow: /google-interview-ai-helper
+Allow: /amazon-interview-ai-helper
+Allow: /meta-interview-ai-helper
+Allow: /microsoft-interview-ai-helper
+Allow: /mckinsey-case-interview-ai
+Allow: /goldman-sachs-interview-ai
+Allow: /coding-interview-ai-helper
+Allow: /system-design-interview-ai
+Allow: /behavioral-interview-ai-helper
 Allow: /vs/
 Allow: /alternatives/
 Allow: /compare/
@@ -41,7 +51,43 @@ Disallow: /auth/
 User-agent: GPTBot
 Allow: /
 
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
 User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: Diffbot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: Meta-ExternalAgent
 Allow: /
 
 Sitemap: https://www.helplyai.co/sitemap.xml

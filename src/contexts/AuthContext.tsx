@@ -273,8 +273,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// SSR-safe default — used when there is no AuthProvider in the tree (e.g.
+// during build-time prerendering). The browser bundle always mounts an
+// AuthProvider via App.tsx, so this default is never observed at runtime.
+const stubError = async () => ({ error: null });
+const stubVoid = async () => undefined;
+const SSR_FALLBACK: AuthContextType = {
+  user: null,
+  session: null,
+  loading: false,
+  signUp: stubError,
+  signIn: stubError,
+  signInWithGoogle: stubError,
+  signOut: stubVoid,
+  resetPassword: stubError,
+  deleteAccount: stubError,
+};
+
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within an AuthProvider');
+  if (!context) {
+    if (typeof window === 'undefined') return SSR_FALLBACK;
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
   return context;
 }
