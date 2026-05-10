@@ -48,6 +48,14 @@ import FinancePage from './pages/interview-prep/FinancePage';
 import DataSciencePage from './pages/interview-prep/DataSciencePage';
 import MarketingPage from './pages/interview-prep/MarketingPage';
 import ConsultingPage from './pages/interview-prep/ConsultingPage';
+import AIResumeBuilderPage from './pages/seo/AIResumeBuilderPage';
+import MockInterviewAIPage from './pages/seo/MockInterviewAIPage';
+import AIJobSearchPage from './pages/seo/AIJobSearchPage';
+import FreeAIInterviewHelperPage from './pages/seo/FreeAIInterviewHelperPage';
+import GoogleMeetAIInterviewHelperPage from './pages/seo/GoogleMeetAIInterviewHelperPage';
+import MicrosoftTeamsAIInterviewHelperPage from './pages/seo/MicrosoftTeamsAIInterviewHelperPage';
+import AIInterviewAnswerGeneratorPage from './pages/seo/AIInterviewAnswerGeneratorPage';
+import OnlineInterviewHelperHubPage from './pages/seo/OnlineInterviewHelperHubPage';
 
 function AnalyticsRouteTracker() {
   const location = useLocation();
@@ -92,6 +100,14 @@ export default function App() {
           <Route path="/auth/callback" element={<AuthCallbackPage />} />
           {/* SEO Pages */}
           <Route path="/ai-interview-helper" element={<AIInterviewHelperPage />} />
+          <Route path="/online-interview-helper" element={<OnlineInterviewHelperHubPage />} />
+          <Route path="/ai-resume-builder" element={<AIResumeBuilderPage />} />
+          <Route path="/mock-interview-ai" element={<MockInterviewAIPage />} />
+          <Route path="/ai-job-search" element={<AIJobSearchPage />} />
+          <Route path="/free-ai-interview-helper" element={<FreeAIInterviewHelperPage />} />
+          <Route path="/google-meet-ai-interview-helper" element={<GoogleMeetAIInterviewHelperPage />} />
+          <Route path="/microsoft-teams-ai-interview-helper" element={<MicrosoftTeamsAIInterviewHelperPage />} />
+          <Route path="/ai-interview-answer-generator" element={<AIInterviewAnswerGeneratorPage />} />
           {/* Competitor Comparison Pages */}
           <Route path="/vs/final-round-ai" element={<ComparisonPage competitor={competitors['final-round-ai']} />} />
           <Route path="/vs/lockedin-ai" element={<ComparisonPage competitor={competitors['lockedin-ai']} />} />

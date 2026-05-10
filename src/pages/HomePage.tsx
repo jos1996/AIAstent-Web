@@ -5,6 +5,15 @@ import { trackVideoPlayed, trackVideoPaused, trackCTAClick, trackDownload } from
 import { detectRegionalPricing, getDefaultPricing } from '../lib/pricing'
 import type { RegionalPricing } from '../lib/pricing'
 
+const footerLinkStyle: React.CSSProperties = {
+  display: 'block',
+  color: 'rgba(255,255,255,0.7)',
+  fontSize: 14,
+  marginBottom: 12,
+  textDecoration: 'none',
+  transition: 'color 0.2s',
+};
+
 function VideoDemo() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -2204,20 +2213,93 @@ export default function HomePage() {
 
           <div style={{ display: 'flex', gap: 60, flexWrap: 'wrap' }}>
             <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 16, textTransform: 'uppercase', letterSpacing: 1 }}>AI Tools</div>
+              <a href="/ai-interview-helper" style={footerLinkStyle}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >AI Interview Helper</a>
+              <a href="/online-interview-helper" style={footerLinkStyle}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >Online Interview Helper</a>
+              <a href="/mock-interview-ai" style={footerLinkStyle}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >Mock Interview AI</a>
+              <a href="/ai-resume-builder" style={footerLinkStyle}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >AI Resume Builder</a>
+              <a href="/ai-job-search" style={footerLinkStyle}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >AI Job Search</a>
+              <a href="/ai-interview-answer-generator" style={footerLinkStyle}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >Interview Answer Generator</a>
+              <a href="/free-ai-interview-helper" style={footerLinkStyle}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >Free AI Interview Helper</a>
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 16, textTransform: 'uppercase', letterSpacing: 1 }}>Platforms</div>
+              <a href="/blog/zoom-ai-interview-helper" style={footerLinkStyle}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >Zoom Interview Helper</a>
+              <a href="/google-meet-ai-interview-helper" style={footerLinkStyle}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >Google Meet Helper</a>
+              <a href="/microsoft-teams-ai-interview-helper" style={footerLinkStyle}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >Microsoft Teams Helper</a>
+              <a href="/blog/best-ai-interview-helper-tools" style={footerLinkStyle}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >Best AI Interview Tools</a>
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 16, textTransform: 'uppercase', letterSpacing: 1 }}>Compare</div>
+              <a href="/compare/final-round-ai-vs-helplyai" style={footerLinkStyle}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >vs Final Round AI</a>
+              <a href="/compare/lockedin-ai-vs-helplyai" style={footerLinkStyle}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >vs LockedIn AI</a>
+              <a href="/compare/sensei-ai-vs-helplyai" style={footerLinkStyle}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >vs Sensei AI</a>
+              <a href="/compare/parakeet-ai-vs-helplyai" style={footerLinkStyle}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >vs Parakeet AI</a>
+              <a href="/alternatives" style={footerLinkStyle}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              >All Alternatives</a>
+            </div>
+            <div>
               <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 16, textTransform: 'uppercase', letterSpacing: 1 }}>Product</div>
-              <a href="#features" style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: 14, marginBottom: 12, textDecoration: 'none', transition: 'color 0.2s' }}
+              <a href="#features" style={footerLinkStyle}
                 onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
               >Features</a>
-              <a href="/settings/dashboard" style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: 14, marginBottom: 12, textDecoration: 'none', transition: 'color 0.2s' }}
+              <a href="/settings/dashboard" style={footerLinkStyle}
                 onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
               >Dashboard</a>
-              <a href="/settings/billing" style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: 14, marginBottom: 12, textDecoration: 'none', transition: 'color 0.2s' }}
+              <a href="/settings/billing" style={footerLinkStyle}
                 onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
               >Pricing</a>
-              <a href="#" onClick={() => handleDownloadClick('ios')} style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: 14, marginBottom: 12, textDecoration: 'none', transition: 'color 0.2s' }}
+              <a href="#" onClick={() => handleDownloadClick('ios')} style={footerLinkStyle}
                 onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
               >Download</a>

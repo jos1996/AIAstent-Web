@@ -1,17 +1,47 @@
 User-agent: *
 Allow: /
+
+# High-value SEO pages (indexable)
 Allow: /ai-interview-helper
+Allow: /online-interview-helper
+Allow: /mock-interview-ai
+Allow: /ai-resume-builder
+Allow: /ai-job-search
+Allow: /ai-interview-answer-generator
+Allow: /free-ai-interview-helper
+Allow: /google-meet-ai-interview-helper
+Allow: /microsoft-teams-ai-interview-helper
 Allow: /vs/
+Allow: /alternatives/
+Allow: /compare/
 Allow: /blog/
+Allow: /interview-prep/
 Allow: /about
 Allow: /privacy
 Allow: /refund
-Allow: /alternatives/
-Allow: /compare/
-Allow: /interview-prep/
 
+# Authenticated areas — not for indexing
 Disallow: /settings/
 Disallow: /api/
 Disallow: /auth/
+
+# Search-engine-specific guidance
+User-agent: Googlebot
+Allow: /
+Disallow: /settings/
+Disallow: /api/
+Disallow: /auth/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /settings/
+Disallow: /api/
+Disallow: /auth/
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
 
 Sitemap: https://www.helplyai.co/sitemap.xml
