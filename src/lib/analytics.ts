@@ -5,20 +5,32 @@ declare global {
   }
 }
 
-const GA_ID = 'G-B9BL1X4VZ0';
+/** Must match Web stream Measurement ID in GA4 Admin (Admin → Data streams → your stream). */
+export const GA_MEASUREMENT_ID =
+  (typeof import.meta.env.VITE_GA_MEASUREMENT_ID === 'string' &&
+    import.meta.env.VITE_GA_MEASUREMENT_ID.trim()) ||
+  'G-T3T0N5C7YG'
 
-function gtag(...args: any[]) {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag(...args);
+function gtag(...args: unknown[]) {
+  if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+    (window.gtag as (...args: unknown[]) => void)(...args);
   }
 }
 
-export function trackEvent(eventName: string, params?: Record<string, any>) {
-  gtag('event', eventName, { ...params, send_to: GA_ID });
+export function trackEvent(eventName: string, params?: Record<string, unknown>) {
+  gtag('event', eventName, params ?? {});
 }
 
+/**
+ * SPA navigations: GA4 expects a `page_view` event with path + URL (initial load uses gtag config in index.html).
+ */
 export function trackPageView(pagePath: string, pageTitle?: string) {
-  gtag('config', GA_ID, { page_path: pagePath, page_title: pageTitle });
+  if (typeof window === 'undefined') return;
+  gtag('event', 'page_view', {
+    page_path: pagePath,
+    page_title: pageTitle ?? document.title,
+    page_location: window.location.href,
+  });
 }
 
 // ─── Auth Events ───────────────────────────────────────────────
