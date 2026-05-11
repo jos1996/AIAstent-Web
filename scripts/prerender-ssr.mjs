@@ -99,6 +99,18 @@ function rewriteHead(shell, meta) {
     meta.path === '/' ? 'https://www.helplyai.co/' : `https://www.helplyai.co${meta.path}`;
   let h = shell;
 
+  // For non-home routes, strip the FAQPage JSON-LD baked into the static
+  // index.html shell — it's specifically the homepage FAQ and would
+  // otherwise be wrongly attached to /ai-resume-builder, /amazon-..., etc.
+  // The route's own FAQPage schema comes from SEOHead's JSX render in the
+  // SSR body, plus an injected copy below if `meta.faqs` is provided.
+  if (meta.path !== '/') {
+    h = h.replace(
+      /<script type="application\/ld\+json">\s*\{[\s\S]*?"@type":\s*"FAQPage"[\s\S]*?\}\s*<\/script>/g,
+      '',
+    );
+  }
+
   h = h.replace(/<title>[\s\S]*?<\/title>/, `<title>${ESC(meta.title)}</title>`);
   h = h.replace(
     /<meta\s+name="title"\s+content="[^"]*"\s*\/?>/,
