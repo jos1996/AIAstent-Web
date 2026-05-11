@@ -14,6 +14,7 @@
     "prerender:ssr": "node scripts/prerender-ssr.mjs",
     "prerender:full": "node scripts/prerender.mjs",
     "prerender:meta": "node scripts/prerender-meta.mjs",
+    "indexnow": "node scripts/indexnow.mjs",
     "preview": "vite preview",
     "lint": "eslint ."
   },
