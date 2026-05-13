@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/check-vercel-config.mjs",
     "build": "vite build && (npm run prerender:ssr || npm run prerender:meta || echo '⚠️  prerender failed; shipping SPA')",
     "build:nopre": "vite build",
     "prerender": "npm run prerender:ssr",
@@ -16,6 +17,9 @@
     "prerender:meta": "node scripts/prerender-meta.mjs",
     "indexnow": "node scripts/indexnow.mjs",
     "preview": "vite preview",
+    "smoke": "node scripts/smoke-test.mjs",
+    "smoke:verbose": "VERBOSE=1 node scripts/smoke-test.mjs",
+    "check:vercel": "node scripts/check-vercel-config.mjs",
     "lint": "eslint ."
   },
   "dependencies": {
