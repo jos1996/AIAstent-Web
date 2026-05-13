@@ -856,30 +856,30 @@ export default function JobSearchPage() {
 
   return (
     <div style={{ maxWidth: 1400, margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 12, background: '#111827', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Briefcase size={24} color="#fff" />
+          <div style={{ width: 40, height: 40, borderRadius: 10, background: '#111827', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Briefcase size={20} color="#fff" />
           </div>
           <div>
-            <h1 style={{ color: '#111827', fontSize: 28, fontWeight: 700, margin: 0 }}>Job Search</h1>
-            <p style={{ color: '#6b7280', fontSize: 13, margin: 0 }}>Aggregating jobs from LinkedIn, Indeed, Glassdoor, Naukri, Remotive & more</p>
+            <h1 style={{ color: '#111827', fontSize: 22, fontWeight: 700, margin: 0 }}>Job Search</h1>
+            <p style={{ color: '#6b7280', fontSize: 12, margin: 0 }}>LinkedIn, Indeed, Glassdoor & more</p>
           </div>
         </div>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', gap: 14, padding: '10px 16px', background: '#f9fafb', borderRadius: 10, border: '1px solid #e5e7eb' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}><Bookmark size={14} color="#6b7280" /><span style={{ fontSize: 13, color: '#111827', fontWeight: 600 }}>{savedCount}</span></div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}><CheckCircle2 size={14} color="#6b7280" /><span style={{ fontSize: 13, color: '#111827', fontWeight: 600 }}>{appliedCount}</span></div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}><X size={14} color="#6b7280" /><span style={{ fontSize: 13, color: '#111827', fontWeight: 600 }}>{ignoredCount}</span></div>
           </div>
-          <button onClick={() => setShowSaved(!showSaved)} style={{ padding: '10px 20px', borderRadius: 10, border: '1px solid #e5e7eb', background: showSaved ? '#111827' : '#fff', color: showSaved ? '#fff' : '#111827', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button onClick={() => setShowSaved(!showSaved)} style={{ padding: '8px 14px', borderRadius: 10, border: '1px solid #e5e7eb', background: showSaved ? '#111827' : '#fff', color: showSaved ? '#fff' : '#111827', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
             <Bookmark size={14} /> {showSaved ? 'Back to Search' : 'Saved Jobs'}
           </button>
           <button
             onClick={() => {
               if (!userResume) { setShowResumeModal(true); } else { setShowResumeBuilder(true); }
             }}
-            style={{ padding: '10px 20px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#7c3aed,#4f46e5)', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 12px #7c3aed40' }}
+            style={{ padding: '8px 14px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#7c3aed,#4f46e5)', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, boxShadow: '0 2px 12px #7c3aed40' }}
           >
             <Wand2 size={14} /> AI Resume Builder
           </button>
@@ -959,14 +959,14 @@ export default function JobSearchPage() {
       ) : (
         <>
           <form onSubmit={onSubmit} style={{ marginBottom: 24 }}>
-            <div style={{ display: 'flex', gap: 12, marginBottom: 14 }}>
-              <div style={{ flex: 2, position: 'relative' }}>
+            <div style={{ display: 'flex', gap: 10, marginBottom: 14, flexWrap: 'wrap' }}>
+              <div style={{ flex: '2 1 200px', position: 'relative' }}>
                 <Search size={18} color="#9ca3af" style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                 <input type="text" placeholder="Job title, role, or keyword..." value={query} onChange={e => setQuery(e.target.value)}
                   style={{ width: '100%', padding: '14px 16px 14px 46px', borderRadius: 12, border: '2px solid #e5e7eb', fontSize: 14, color: '#111827', outline: 'none', background: '#fff', fontWeight: 500, boxSizing: 'border-box' }}
                   onFocus={e => e.currentTarget.style.borderColor = '#111827'} onBlur={e => e.currentTarget.style.borderColor = '#e5e7eb'} />
               </div>
-              <div style={{ flex: 1, position: 'relative' }}>
+              <div style={{ flex: '1 1 140px', position: 'relative' }}>
                 <MapPin size={18} color="#9ca3af" style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                 <input type="text" placeholder="City or location..." value={location} onChange={e => onLocChange(e.target.value)}
                   onFocus={e => { setShowLocDropdown(true); e.currentTarget.style.borderColor = '#111827'; if (location.length >= 1) searchLoc(location); }}

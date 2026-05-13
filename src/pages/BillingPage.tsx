@@ -653,7 +653,7 @@ export default function BillingPage() {
       )}
 
       {/* ── Credit Plan Cards — 4 cards ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 14, marginBottom: 24 }}>
         {PLAN_ORDER.map(planId => {
           const plan = PLANS[planId];
           const isFree = planId === 'free';
@@ -770,7 +770,7 @@ export default function BillingPage() {
         background: '#f9fafb', border: '1px solid #e5e7eb',
       }}>
         <h3 style={{ color: '#000', fontSize: 16, fontWeight: 700, margin: '0 0 14px' }}>How Credits Work</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16 }}>
           <div>
             <div style={{ fontSize: 24, marginBottom: 6 }}>⏱</div>
             <div style={{ color: '#000', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Time-Based Billing</div>
@@ -863,7 +863,7 @@ export default function BillingPage() {
         <h2 style={{ color: '#000', fontSize: 20, fontWeight: 700, margin: '0 0 6px', letterSpacing: '-0.01em' }}>General Mode Plans</h2>
         <p style={{ color: '#6b7280', fontSize: 13, margin: '0 0 16px' }}>Choose between free trial or monthly subscription for the general assistant.</p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, maxWidth: 800 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16, maxWidth: 800 }}>
           {/* General Free Plan Card */}
           <div style={{
             padding: 24, borderRadius: 14, position: 'relative',
@@ -1037,7 +1037,7 @@ export default function BillingPage() {
         background: '#f9fafb', border: '1px solid #e5e7eb',
       }}>
         <h3 style={{ color: '#000', fontSize: 16, fontWeight: 700, margin: '0 0 14px' }}>How General Mode Works</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16 }}>
           <div>
             <div style={{ fontSize: 24, marginBottom: 6 }}>📅</div>
             <div style={{ color: '#000', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>2 Days Access/Month</div>

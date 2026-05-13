@@ -248,17 +248,17 @@ export default function DashboardPage() {
   return (
     <div>
       {/* Action Buttons - Top Right */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginBottom: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
         {/* Download for Mac */}
         <button
           onClick={() => handleDownloadClick('ios')}
           style={{
-            padding: '12px 24px', borderRadius: 12, fontSize: 14, fontWeight: 600,
+            padding: '10px 14px', borderRadius: 10, fontSize: 13, fontWeight: 600,
             background: '#000',
             border: '2px solid #000',
             color: '#ffffff', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: 10,
-            transition: 'all 0.3s',
+            display: 'flex', alignItems: 'center', gap: 8,
+            transition: 'all 0.3s', flex: '1 1 auto', justifyContent: 'center',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
           }}
           onMouseEnter={e => { 
@@ -272,7 +272,7 @@ export default function DashboardPage() {
             e.currentTarget.style.background = '#000';
           }}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
           </svg>
           Download for Mac
@@ -282,12 +282,12 @@ export default function DashboardPage() {
         <button
           onClick={() => handleDownloadClick('windows')}
           style={{
-            padding: '12px 24px', borderRadius: 12, fontSize: 14, fontWeight: 600,
+            padding: '10px 14px', borderRadius: 10, fontSize: 13, fontWeight: 600,
             background: '#000',
             border: '2px solid #000',
             color: '#ffffff', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: 10,
-            transition: 'all 0.3s',
+            display: 'flex', alignItems: 'center', gap: 8,
+            transition: 'all 0.3s', flex: '1 1 auto', justifyContent: 'center',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
           }}
           onMouseEnter={e => { 
@@ -301,7 +301,7 @@ export default function DashboardPage() {
             e.currentTarget.style.background = '#000';
           }}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/>
           </svg>
           Download for Windows
@@ -317,11 +317,12 @@ export default function DashboardPage() {
             }, 1000);
           }}
           style={{
-            padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600,
+            padding: '10px 14px', borderRadius: 10, fontSize: 13, fontWeight: 600,
             background: '#000',
             border: '2px solid #000', color: '#fff', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: 10,
+            display: 'flex', alignItems: 'center', gap: 8,
             transition: 'all 0.2s', boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+            flex: '1 1 auto', justifyContent: 'center',
           }}
           onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)'; e.currentTarget.style.background = '#1a1a1a'; }}
           onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)'; e.currentTarget.style.background = '#000'; }}
@@ -336,10 +337,10 @@ export default function DashboardPage() {
 
       {/* Profile Welcome Card */}
       <div style={{
-        marginBottom: 28, padding: 24, borderRadius: 12,
+        marginBottom: 28, padding: 20, borderRadius: 12,
         background: '#f9fafb',
         border: '1px solid #e5e7eb',
-        display: 'flex', alignItems: 'center', gap: 20,
+        display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap',
       }}>
         {profile?.avatar_url ? (
           <img src={profile.avatar_url} alt="" style={{ width: 56, height: 56, borderRadius: 14, objectFit: 'cover', flexShrink: 0 }} />
@@ -387,7 +388,7 @@ export default function DashboardPage() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
               <div>
                 <label style={{ display: 'block', color: '#374151', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
                   Target Role
@@ -480,7 +481,7 @@ export default function DashboardPage() {
                 </label>
                 <span style={{ color: '#9ca3af', fontSize: 11 }}>Select how the chatbot should respond</span>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 10 }}>
                 <label style={{
                   display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 8,
                   border: `1.5px solid ${useJD ? '#000' : '#e5e7eb'}`, background: useJD ? '#f9f9f9' : '#fff',
@@ -529,7 +530,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Save & Resume Builder Buttons */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
               <button
                 onClick={saveInterviewContext}
                 disabled={savingSetup}
@@ -583,7 +584,7 @@ export default function DashboardPage() {
         </div>
 
       {/* Stats Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12, marginBottom: 24 }}>
         {statCards.map(card => (
           <div key={card.label} style={{
             padding: 20, borderRadius: 12,
@@ -605,10 +606,10 @@ export default function DashboardPage() {
       }}>
         <div style={{
           padding: '16px 20px', borderBottom: '1px solid #e5e7eb',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10,
         }}>
           <h2 style={{ color: '#000000', fontSize: 16, fontWeight: 600, margin: 0 }}>Recent Activity</h2>
-          <div style={{ display: 'flex', gap: 6 }}>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {filterOptions.map(opt => (
               <button
                 key={opt.value}
@@ -637,7 +638,7 @@ export default function DashboardPage() {
           ) : (
             recentActivity.map(item => (
               <div key={item.id} style={{
-                padding: '12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '12px 16px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8,
                 borderBottom: '1px solid #f3f4f6',
               }}>
                 <div style={{ flex: 1 }}>
@@ -653,8 +654,8 @@ export default function DashboardPage() {
                     <span style={{ color: '#6b7280', fontSize: 11 }}>{item.mode}</span>
                   </div>
                 </div>
-                <div style={{ color: '#4b5563', fontSize: 12 }}>
-                  {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                <div style={{ color: '#4b5563', fontSize: 11, whiteSpace: 'nowrap', flexShrink: 0 }}>
+                  {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </div>
               </div>
             ))
