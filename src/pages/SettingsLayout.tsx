@@ -7,6 +7,7 @@ const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: 'grid', path: '/settings/dashboard' },
   { id: 'billing', label: 'Billing', icon: 'card', path: '/settings/billing' },
   { id: 'job-search', label: 'Job Search', icon: 'briefcase', path: '/settings/job-search' },
+  { id: 'mock-interview', label: 'Mock Interview', icon: 'mic', path: '/settings/mock-interview' },
   { id: 'history', label: 'History', icon: 'clock', path: '/settings/history' },
   { id: 'reminders', label: 'Reminders', icon: 'bell', path: '/settings/reminders' },
   { id: 'language', label: 'Language', icon: 'globe', path: '/settings/language' },
@@ -35,6 +36,7 @@ function SidebarIcon({ type }: { type: string }) {
     case 'sparkle': return <svg {...s}><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>;
     case 'play': return <svg {...s}><polygon points="5 3 19 12 5 21 5 3"/></svg>;
     case 'briefcase': return <svg {...s}><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>;
+    case 'mic': return <svg {...s}><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>;
     default: return null;
   }
 }

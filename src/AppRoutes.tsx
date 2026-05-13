@@ -17,6 +17,7 @@ import ReferralPage from './pages/ReferralPage';
 import AuthCallbackPage from './pages/AuthCallbackPage';
 import AIInterviewHelperPage from './pages/AIInterviewHelperPage';
 import JobSearchPage from './pages/JobSearchPage';
+import MockInterviewPage from './pages/MockInterviewPage';
 import ComparisonPage from './pages/ComparisonPage';
 import { competitors } from './data/competitors';
 import HowToCrackInterviewPage from './pages/blog/HowToCrackInterviewPage';
@@ -90,6 +91,7 @@ export default function AppRoutes() {
         <Route path="billing" element={<BillingPage />} />
         <Route path="help" element={<HelpCenterPage />} />
         <Route path="job-search" element={<JobSearchPage />} />
+        <Route path="mock-interview" element={<MockInterviewPage />} />
         <Route path="referral" element={<ReferralPage />} />
       </Route>
       <Route path="/auth/callback" element={<AuthCallbackPage />} />
