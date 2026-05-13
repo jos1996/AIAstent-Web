@@ -32,3 +32,137 @@ input, textarea, select {
 button {
   font-family: inherit;
 }
+
+/* ─────────────────────────────────────────
+   Global Mobile Responsive — Dashboard Pages
+   ───────────────────────────────────────── */
+
+/* Viewport meta baseline */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── Tablet (≤900px) ── */
+@media (max-width: 900px) {
+  /* Billing: 4-col stats → 2-col */
+  [style*="repeat(4, 1fr)"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Billing: 3-col plans → 1-col */
+  [style*="1fr 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Dashboard: fixed 4-col stats → 2-col */
+  [style*="gridTemplateColumns: 'repeat(4, 1fr)'"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* ── Mobile (≤640px) ── */
+@media (max-width: 640px) {
+  /* All 2-col grids → 1-col */
+  [style*="1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* All repeat(N, 1fr) → 1-col */
+  [style*="repeat(4, 1fr)"],
+  [style*="repeat(3, 1fr)"],
+  [style*="repeat(2, 1fr)"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* auto-fit/auto-fill grids with large minmax → go 1-col */
+  [style*="minmax(340px"],
+  [style*="minmax(300px"],
+  [style*="minmax(280px"],
+  [style*="minmax(260px"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Reduce section/card padding */
+  [style*="padding: '32px"],
+  [style*="padding: '40px"],
+  [style*="padding: '48px"] {
+    padding: 16px !important;
+  }
+
+  /* Modals → full screen */
+  [style*="maxWidth: 500"],
+  [style*="maxWidth: 600"],
+  [style*="maxWidth: 640"] {
+    max-width: 100% !important;
+    width: calc(100vw - 32px) !important;
+    margin: 0 16px !important;
+  }
+
+  /* Flex rows that overflow → wrap */
+  [style*="display: 'flex'"][style*="gap"],
+  [style*='display: "flex"'][style*="gap"] {
+    flex-wrap: wrap !important;
+  }
+
+  /* Download modal buttons: stack vertically */
+  [style*="flexDirection: 'column'"][style*="gap: 12"] {
+    gap: 10px !important;
+  }
+
+  /* Topbar profile text hidden by default (SettingsLayout handles this) */
+
+  /* Tables / wide content: allow scroll */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+/* ── Small Mobile (≤480px) ── */
+@media (max-width: 480px) {
+  /* Dashboard stat cards: 2-col */
+  [style*="repeat(4, 1fr)"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  /* Typography scale-down */
+  h1 { font-size: clamp(20px, 6vw, 32px) !important; }
+  h2 { font-size: clamp(18px, 5vw, 28px) !important; }
+  h3 { font-size: clamp(15px, 4vw, 22px) !important; }
+
+  /* Billing plan cards: ensure full width */
+  [style*="borderRadius"][style*="padding: '24px"] {
+    padding: 16px !important;
+  }
+
+  /* Job search filters: stack */
+  [style*="minmax(340px"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Ensure inputs/textareas are full-width on mobile */
+  input, textarea, select {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    font-size: 16px !important; /* prevent iOS zoom */
+  }
+
+  /* Tap target size */
+  button {
+    min-height: 44px;
+  }
+
+  a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}

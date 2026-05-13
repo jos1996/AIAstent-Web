@@ -1,0 +1,218 @@
+/*
+  mobile.css — Dashboard & Settings pages mobile layout
+  Imported in main.tsx / App.tsx
+  Covers: DashboardPage, BillingPage, JobSearchPage, MockInterviewPage,
+          ProfilePage, HistoryPage, RemindersPage, LanguagePage,
+          LatestUpdatesPage, TutorialsPage, HelpCenterPage, ReferralPage
+*/
+
+/* ── Settings main content area: reduce padding on small screens ── */
+@media (max-width: 768px) {
+  /* The main content div inside SettingsLayout */
+  .settings-main-content,
+  #root > div > div > div:last-child {
+    padding: 16px 12px 32px !important;
+  }
+}
+
+/* ── Dashboard stat cards row ── */
+@media (max-width: 640px) {
+  /* 4-column stat grid → 2 columns */
+  .dash-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  /* Download modal → full width */
+  .download-modal-inner {
+    width: calc(100vw - 32px) !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 16px !important;
+  }
+
+  /* Action buttons row → wrap and stack */
+  .dash-action-buttons {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    justify-content: flex-start !important;
+  }
+  .dash-action-buttons button {
+    flex: 1 1 140px !important;
+    min-width: 140px !important;
+    font-size: 13px !important;
+    padding: 10px 12px !important;
+  }
+
+  /* Setup form: 2-col inputs → 1-col */
+  .dash-setup-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Setup toggle options → 2-col */
+  .dash-toggle-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+/* ── Billing page ── */
+@media (max-width: 768px) {
+  /* Plan cards: switch between interview/general tabs stack nicely */
+  .billing-plan-tabs {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+
+  /* Plan card grid: always 1-col on mobile */
+  .billing-plans-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Pricing top stats row → 2-col */
+  .billing-stats-row {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+}
+
+/* ── Job Search page ── */
+@media (max-width: 640px) {
+  /* Search bar + button → stack */
+  .jobsearch-bar {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  .jobsearch-bar input {
+    width: 100% !important;
+  }
+  .jobsearch-bar button {
+    width: 100% !important;
+  }
+
+  /* Filter row → wrap */
+  .jobsearch-filters {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  /* Job cards → full width */
+  .jobsearch-cards {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ── Mock Interview page ── */
+@media (max-width: 640px) {
+  /* Role selector grid → 2-col */
+  .mock-role-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  /* Step instructions: reduce padding */
+  .mock-steps {
+    padding: 16px !important;
+  }
+}
+
+/* ── Profile page ── */
+@media (max-width: 640px) {
+  /* Profile header: stack avatar + info */
+  .profile-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+  }
+
+  /* Profile form: 2-col → 1-col */
+  .profile-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ── Reminders page ── */
+@media (max-width: 640px) {
+  .reminders-list {
+    padding: 0 !important;
+  }
+  .reminder-item {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+}
+
+/* ── History page ── */
+@media (max-width: 640px) {
+  /* Filter tabs → scrollable row */
+  .history-filter-tabs {
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: 4px !important;
+  }
+  .history-filter-tabs button {
+    flex-shrink: 0 !important;
+  }
+
+  /* History rows: hide timestamp on very small screens */
+  .history-timestamp {
+    display: none !important;
+  }
+}
+
+/* ── Tutorials & Updates pages ── */
+@media (max-width: 640px) {
+  .tutorials-grid,
+  .updates-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ── Referral page ── */
+@media (max-width: 640px) {
+  .referral-stats {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+  .referral-link-row {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .referral-link-row input {
+    width: 100% !important;
+  }
+  .referral-link-row button {
+    width: 100% !important;
+  }
+}
+
+/* ── Universal: prevent horizontal scroll on all pages ── */
+@media (max-width: 768px) {
+  body {
+    overflow-x: hidden !important;
+  }
+
+  /* All page wrappers should not exceed viewport */
+  #root, #root > * {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Cards and containers: remove fixed widths */
+  [style*="width: 400"],
+  [style*="width: 500"],
+  [style*="width: 600"],
+  [style*="width: 700"],
+  [style*="width: 800"] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Flex rows with nowrap → allow wrap */
+  [style*="flexWrap: 'nowrap'"] {
+    flex-wrap: wrap !important;
+  }
+
+  /* Font size floors to prevent tiny text — handled per-component */
+}
