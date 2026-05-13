@@ -50,6 +50,7 @@ export default function SettingsLayout() {
   const [profileName, setProfileName] = useState('');
   const [profileUsername, setProfileUsername] = useState('');
   const [profileAvatar, setProfileAvatar] = useState('');
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Auth form state (embedded in settings)
   const [authMode, setAuthMode] = useState<'login' | 'signup' | 'forgot'>('login');
@@ -188,55 +189,84 @@ export default function SettingsLayout() {
       top: 0, left: 0, right: 0, bottom: 0,
     }}>
 
+      {/* Mobile sidebar overlay */}
+      {mobileSidebarOpen && (
+        <div
+          onClick={() => setMobileSidebarOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 200,
+            background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(2px)',
+          }}
+        />
+      )}
+
       {/* Top Bar */}
       <div
         style={{
-          height: 60, flexShrink: 0, display: 'flex', alignItems: 'center',
-          justifyContent: 'space-between', padding: '0 24px',
+          height: 56, flexShrink: 0, display: 'flex', alignItems: 'center',
+          justifyContent: 'space-between', padding: '0 16px',
           borderBottom: '1px solid #e5e7eb',
-          background: '#ffffff',
+          background: '#ffffff', zIndex: 10, position: 'relative',
         }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', cursor: 'pointer' }}>
-            <img src="/favicon.png" alt="Helply AI" style={{ width: 32, height: 32, borderRadius: 8 }} />
-            <span style={{ color: '#000000', fontSize: 16, fontWeight: 700, letterSpacing: '-0.02em' }}>Helply AI</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+          {/* Hamburger — only on mobile */}
+          {isAuthenticated && (
+            <button
+              className="mobile-menu-btn"
+              onClick={() => setMobileSidebarOpen(v => !v)}
+              style={{
+                display: 'none', /* shown via CSS below */
+                width: 36, height: 36, borderRadius: 8,
+                background: 'transparent', border: '1px solid #e5e7eb',
+                cursor: 'pointer', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                color: '#374151',
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+              </svg>
+            </button>
+          )}
+          <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', flexShrink: 0 }}>
+            <img src="/favicon.png" alt="Helply AI" style={{ width: 30, height: 30, borderRadius: 8 }} />
+            <span style={{ color: '#000000', fontSize: 15, fontWeight: 700, letterSpacing: '-0.02em' }}>Helply AI</span>
           </a>
           {isAuthenticated && (
             <>
-              <button onClick={() => navigate('/')} style={{ padding: '8px 16px', borderRadius: 8, background: '#f3f4f6', border: '1px solid #e5e7eb', color: '#6b7280', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <button onClick={() => navigate('/')} className="topbar-home-btn" style={{ padding: '6px 12px', borderRadius: 8, background: '#f3f4f6', border: '1px solid #e5e7eb', color: '#6b7280', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 Home
               </button>
-              <button onClick={() => navigate('/settings/referral')} style={{ padding: '8px 16px', borderRadius: 8, background: 'linear-gradient(135deg, #2563eb, #7c3aed)', border: 'none', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
-                🎁 Refer & Get 15 min Free
+              <button onClick={() => navigate('/settings/referral')} className="topbar-refer-btn" style={{ padding: '6px 12px', borderRadius: 8, background: 'linear-gradient(135deg, #2563eb, #7c3aed)', border: 'none', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
+                Refer & Get 15 min
               </button>
             </>
           )}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
           {isAuthenticated ? (
             <>
               {profileAvatar ? (
                 <img src={profileAvatar} alt="" style={{ width: 28, height: 28, borderRadius: 8, objectFit: 'cover' }} />
               ) : profileName ? (
                 <div style={{
-                  width: 32, height: 32, borderRadius: 8,
+                  width: 30, height: 30, borderRadius: 8,
                   background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: '#fff', fontSize: 12, fontWeight: 700,
+                  color: '#fff', fontSize: 11, fontWeight: 700, flexShrink: 0,
                 }}>{profileName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}</div>
               ) : null}
-              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.3 }}>
-                {profileName && <span style={{ color: '#000000', fontSize: 14, fontWeight: 600 }}>{profileName}</span>}
-                <span style={{ color: '#6b7280', fontSize: profileName ? 12 : 14 }}>{profileUsername ? `@${profileUsername}` : user?.email}</span>
+              <div className="topbar-user-name" style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.3, minWidth: 0 }}>
+                {profileName && <span style={{ color: '#000000', fontSize: 13, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{profileName}</span>}
+                <span style={{ color: '#6b7280', fontSize: profileName ? 11 : 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{profileUsername ? `@${profileUsername}` : user?.email}</span>
               </div>
-              <div style={{ position: 'relative' }}>
+              <div style={{ position: 'relative', flexShrink: 0 }}>
                 <button
                   className="no-drag"
                   onClick={() => setShowPrefs(!showPrefs)}
                   style={{
-                    width: 36, height: 36, borderRadius: 8,
+                    width: 34, height: 34, borderRadius: 8,
                     background: showPrefs ? '#f3f4f6' : 'transparent',
                     border: '1px solid #e5e7eb', color: '#6b7280',
                     cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -251,27 +281,27 @@ export default function SettingsLayout() {
               </div>
             </>
           ) : null}
-
         </div>
       </div>
 
       {isAuthenticated ? (
         <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
-          {/* Sidebar */}
+          {/* Sidebar — desktop always visible, mobile = slide-out drawer */}
           <div style={{
-            width: 260, flexShrink: 0,
+            width: 220, flexShrink: 0,
             borderRight: '1px solid #e5e7eb',
             display: 'flex', flexDirection: 'column',
             overflow: 'hidden',
             background: '#f9fafb',
-          }}>
+            transition: 'transform 0.25s ease',
+          }} className={`settings-sidebar ${mobileSidebarOpen ? 'sidebar-open' : ''}`}>
             {/* Nav items — scrollable if content overflows */}
             <div style={{ flex: 1, padding: '20px 16px 12px', overflowY: 'auto', overflowX: 'hidden' }}>
               <div style={{ marginBottom: 8 }}>
                 {menuItems.map(item => (
                   <button
                     key={item.id}
-                    onClick={() => navigate(item.path)}
+                    onClick={() => { navigate(item.path); setMobileSidebarOpen(false); }}
                     style={{
                       width: '100%', padding: '12px 16px', borderRadius: 10,
                       background: currentPath === item.path ? '#2563eb' : 'transparent',
@@ -296,7 +326,7 @@ export default function SettingsLayout() {
               {supportItems.map(item => (
                 <button
                   key={item.id}
-                  onClick={() => navigate(item.path)}
+                  onClick={() => { navigate(item.path); setMobileSidebarOpen(false); }}
                   style={{
                     width: '100%', padding: '12px 16px', borderRadius: 10,
                     background: currentPath === item.path ? '#2563eb' : 'transparent',
@@ -347,7 +377,7 @@ export default function SettingsLayout() {
             flex: 1, 
             overflowY: 'auto', 
             overflowX: 'hidden',
-            padding: '32px 40px 40px', 
+            padding: '24px 20px 40px',
             background: '#ffffff',
             height: '100%',
           }}>
@@ -358,10 +388,11 @@ export default function SettingsLayout() {
         /* ── Embedded Auth Form (when not logged in) ── */
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{
-            width: 400, padding: 40, borderRadius: 20,
+            width: '100%', maxWidth: 400, padding: '32px 24px', borderRadius: 20, margin: '0 16px',
             background: '#ffffff',
             border: '2px solid #000',
             boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+            boxSizing: 'border-box',
           }}>
             <div style={{ textAlign: 'center', marginBottom: 32 }}>
               <img src="/favicon.png" alt="HelplyAI" style={{ width: 56, height: 56, borderRadius: '50%', marginBottom: 16 }} />
@@ -503,6 +534,33 @@ export default function SettingsLayout() {
           </div>
         </div>
       )}
+
+      {/* Mobile responsive styles */}
+      <style>{`
+        @media (max-width: 768px) {
+          .mobile-menu-btn { display: flex !important; }
+          .topbar-home-btn { display: none !important; }
+          .topbar-refer-btn { display: none !important; }
+          .topbar-user-name { display: none !important; }
+
+          .settings-sidebar {
+            position: fixed !important;
+            top: 56px !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            width: 260px !important;
+            z-index: 210 !important;
+            transform: translateX(-100%) !important;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.15) !important;
+          }
+          .settings-sidebar.sidebar-open {
+            transform: translateX(0) !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .settings-main-content { padding: 16px 12px 32px !important; }
+        }
+      `}</style>
     </div>
   );
 }

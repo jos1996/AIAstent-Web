@@ -303,56 +303,85 @@ export default function HomePage() {
       {/* Navigation */}
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-        padding: '0 40px', height: 70,
+        padding: '0 20px', height: 60,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        background: scrolled ? 'rgba(255,255,255,0.95)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(20px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(0,0,0,0.08)' : 'none',
+        background: scrolled ? 'rgba(255,255,255,0.97)' : 'rgba(255,255,255,0.85)',
+        backdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(0,0,0,0.07)',
         transition: 'all 0.3s',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <img src="/favicon.png" alt="Helply AI" style={{ width: 36, height: 36, borderRadius: 8 }} />
-          <span style={{ fontSize: 19, fontWeight: 800, color: '#000', letterSpacing: '-0.02em' }}>Helply AI</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <img src="/favicon.png" alt="Helply AI" style={{ width: 32, height: 32, borderRadius: 8 }} />
+          <span style={{ fontSize: 17, fontWeight: 800, color: '#000', letterSpacing: '-0.02em' }}>Helply AI</span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-          <a href="/" style={{
-            color: '#000', fontSize: 14, fontWeight: 600, transition: 'color 0.2s',
-          }}>Home</a>
-          <a href="#features" style={{
-            color: '#555', fontSize: 14, fontWeight: 500, transition: 'color 0.2s',
-          }}
+        {/* Desktop links */}
+        <div className="home-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+          <a href="/" style={{ color: '#000', fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>Home</a>
+          <a href="#features" style={{ color: '#555', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}
             onMouseEnter={e => (e.currentTarget.style.color = '#000')}
             onMouseLeave={e => (e.currentTarget.style.color = '#555')}
           >Features</a>
-          <a href="#pricing" style={{
-            color: '#555', fontSize: 14, fontWeight: 500, transition: 'color 0.2s',
-          }}
+          <a href="#pricing" style={{ color: '#555', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}
             onMouseEnter={e => (e.currentTarget.style.color = '#000')}
             onMouseLeave={e => (e.currentTarget.style.color = '#555')}
           >Pricing</a>
-          <a href="#how-it-works" style={{
-            color: '#555', fontSize: 14, fontWeight: 500, transition: 'color 0.2s',
-          }}
+          <a href="#how-it-works" style={{ color: '#555', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}
             onMouseEnter={e => (e.currentTarget.style.color = '#000')}
             onMouseLeave={e => (e.currentTarget.style.color = '#555')}
           >How It Works</a>
-          <a href="#about" style={{
-            color: '#555', fontSize: 14, fontWeight: 500, transition: 'color 0.2s',
-          }}
+          <a href="#about" style={{ color: '#555', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}
             onMouseEnter={e => (e.currentTarget.style.color = '#000')}
             onMouseLeave={e => (e.currentTarget.style.color = '#555')}
           >About Us</a>
           <a href="/settings/dashboard" style={{
             padding: '8px 20px', borderRadius: 100, fontSize: 14, fontWeight: 600,
-            background: '#000',
-            color: '#fff', transition: 'all 0.3s', textDecoration: 'none',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#1a1a1a'; e.currentTarget.style.transform = 'translateY(-1px)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#000'; e.currentTarget.style.transform = 'translateY(0)' }}
-          >{user ? 'Dashboard' : 'Sign In'}</a>
+            background: '#000', color: '#fff', textDecoration: 'none',
+          }}>{user ? 'Dashboard' : 'Sign In'}</a>
+        </div>
+
+        {/* Mobile: Dashboard button + hamburger */}
+        <div className="home-nav-mobile" style={{ display: 'none', alignItems: 'center', gap: 8 }}>
+          <a href="/settings/dashboard" style={{
+            padding: '7px 16px', borderRadius: 100, fontSize: 13, fontWeight: 700,
+            background: '#000', color: '#fff', textDecoration: 'none',
+          }}>{user ? 'Dashboard' : 'Sign In'}</a>
+          <button
+            className="home-hamburger"
+            onClick={() => {
+              const menu = document.getElementById('home-mobile-menu');
+              if (menu) menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+            }}
+            style={{
+              width: 38, height: 38, borderRadius: 8, background: '#f3f4f6',
+              border: '1px solid #e5e7eb', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#374151',
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
         </div>
       </nav>
+
+      {/* Mobile menu dropdown */}
+      <div id="home-mobile-menu" style={{
+        display: 'none', position: 'fixed', top: 60, left: 0, right: 0, zIndex: 99,
+        background: 'rgba(255,255,255,0.98)', backdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(0,0,0,0.08)',
+        flexDirection: 'column', padding: '12px 20px 20px', gap: 4,
+      }}>
+        {[['/', 'Home'], ['#features', 'Features'], ['#pricing', 'Pricing'], ['#how-it-works', 'How It Works'], ['#about', 'About Us']].map(([href, label]) => (
+          <a key={href} href={href}
+            onClick={() => { const m = document.getElementById('home-mobile-menu'); if (m) m.style.display = 'none'; }}
+            style={{
+              display: 'block', padding: '12px 4px', fontSize: 16, fontWeight: 600, color: '#111',
+              textDecoration: 'none', borderBottom: '1px solid #f3f4f6',
+            }}
+          >{label}</a>
+        ))}
+      </div>
 
       {/* Hero Section */}
       <section style={{
@@ -2724,16 +2753,18 @@ export default function HomePage() {
 
         /* ── Mobile responsive ── */
         @media (max-width: 768px) {
+          /* Nav */
+          .home-nav-links { display: none !important; }
+          .home-nav-mobile { display: flex !important; }
+
           /* Feature cards grid: 1 column on mobile */
           #features > div > div[style*="minmax(480px"] {
             grid-template-columns: 1fr !important;
           }
-          /* Nav: hide non-essential links */
-          .nav-links { display: none !important; }
-          /* Hero padding */
-          .hero-section { padding: 60px 16px 40px !important; }
           /* Section padding */
           section { padding-left: 16px !important; padding-right: 16px !important; }
+          /* Hero top padding for fixed nav */
+          section:first-of-type { padding-top: 80px !important; }
         }
 
         @media (max-width: 600px) {
