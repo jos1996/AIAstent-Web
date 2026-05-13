@@ -235,15 +235,13 @@ export default function MockInterviewPage() {
       {/* ── Step-by-step Instructions ── */}
       {!isInterviewing && (
         <div style={{ marginBottom: 28, padding: '24px', borderRadius: 16, background: '#fff', border: '1px solid #e5e7eb' }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#111', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-            <span style={{ letterSpacing: '0.05em', textTransform: 'uppercase', color: '#374151' }}>Before you start — follow these steps</span>
+          <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 20, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#374151' }}>
+            Before you start — follow these steps
           </div>
 
           {[
             {
               num: '1',
-              icon: '💻',
               title: 'Open Helply AI App on your computer',
               desc: 'Launch the Helply AI desktop app you installed. Drag and snap it to the side of this browser window so both are visible at the same time.',
               tag: 'Setup',
@@ -251,7 +249,6 @@ export default function MockInterviewPage() {
             },
             {
               num: '2',
-              icon: '🎯',
               title: 'Select your role below',
               desc: 'Pick your job role from the chips below, or type a custom role (e.g. Cloud Architect, Scrum Master). This sets the interview questions.',
               tag: 'On this page',
@@ -259,7 +256,6 @@ export default function MockInterviewPage() {
             },
             {
               num: '3',
-              icon: '🎙',
               title: 'Click "Start Interview"',
               desc: 'A voice will speak your first question aloud. Listen carefully — just like a real interview!',
               tag: 'On this page',
@@ -267,7 +263,6 @@ export default function MockInterviewPage() {
             },
             {
               num: '4',
-              icon: '💬',
               title: 'Click "Get Answer" in the Helply AI chatbot',
               desc: 'Switch to the Helply AI app and click "Get Answer". The AI will show you the ideal answer for the question that was just asked.',
               tag: 'In Helply AI App',
@@ -275,7 +270,6 @@ export default function MockInterviewPage() {
             },
             {
               num: '5',
-              icon: '➡️',
               title: 'Click "Next Question" to continue',
               desc: 'Come back here and click "Next Question" when ready. The voice will ask the next question and you repeat the process.',
               tag: 'On this page',
@@ -302,7 +296,6 @@ export default function MockInterviewPage() {
                 {/* Right: content */}
                 <div style={{ paddingBottom: i < arr.length - 1 ? 4 : 0, flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                    <span style={{ fontSize: 18 }}>{step.icon}</span>
                     <span style={{ fontSize: 15, fontWeight: 700, color: '#111' }}>{step.title}</span>
                     <span style={{
                       fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 20,
@@ -418,7 +411,7 @@ export default function MockInterviewPage() {
             onMouseEnter={e => { if (activeRole && remainingToday > 0) e.currentTarget.style.opacity = '0.9'; }}
             onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
           >
-            {remainingToday <= 0 ? '🚫 Daily Limit Reached' : '🎙 Start Interview'}
+            {remainingToday <= 0 ? 'Daily Limit Reached' : 'Start Interview'}
           </button>
         </div>
       ) : (
@@ -471,7 +464,7 @@ export default function MockInterviewPage() {
                 ))}
               </div>
               <div style={{ fontSize: 12, fontWeight: 600, color: isSpeaking ? '#2563eb' : '#9ca3af', marginBottom: 14, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                {isSpeaking ? '🔊 Interviewer is speaking...' : '⏳ Waiting for your answer'}
+                {isSpeaking ? 'Interviewer is speaking...' : 'Waiting for your answer'}
               </div>
               {/* Question text */}
               <div style={{ fontSize: 16, color: '#111', fontWeight: 500, lineHeight: 1.7, textAlign: 'center', maxWidth: 560 }}>
@@ -485,10 +478,9 @@ export default function MockInterviewPage() {
             <div style={{
               padding: '11px 16px', borderRadius: 10, marginBottom: 20,
               background: '#fffbeb', border: '1px solid #fde68a',
-              fontSize: 13, color: '#92400e', display: 'flex', alignItems: 'center', gap: 8,
+              fontSize: 13, color: '#92400e',
             }}>
-              <span>💡</span>
-              <span>Open <strong>Helply AI chatbot</strong> and click <strong>"Get Answer"</strong> to see the ideal answer, then come back and click Next.</span>
+              Open <strong>Helply AI chatbot</strong> and click <strong>"Get Answer"</strong> to see the ideal answer, then come back and click Next.
             </div>
           )}
 
@@ -499,8 +491,7 @@ export default function MockInterviewPage() {
               background: 'linear-gradient(135deg, rgba(37,99,235,0.05), rgba(124,58,237,0.05))',
               border: '1px solid rgba(37,99,235,0.15)', textAlign: 'center',
             }}>
-              <div style={{ fontSize: 40, marginBottom: 12 }}>🎉</div>
-              <h3 style={{ fontSize: 18, fontWeight: 700, color: '#111', margin: '0 0 8px' }}>Interview Complete!</h3>
+              <h3 style={{ fontSize: 18, fontWeight: 700, color: '#111', margin: '0 0 8px' }}>Interview Complete</h3>
               <p style={{ fontSize: 14, color: '#6b7280', margin: 0, lineHeight: 1.6 }}>
                 Great job! You answered all {TOTAL_QUESTIONS_PER_SESSION} questions.<br/>
                 Check the Helply AI chatbot for all your AI-generated answers.
