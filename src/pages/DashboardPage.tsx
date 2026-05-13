@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { DOWNLOAD_LINKS } from '../config/releases';
 import { trackDownload } from '../lib/analytics';
 import ResumeBuilderPage from './ResumeBuilderPage';
+import AtsCheckPage from './AtsCheckPage';
 
 interface ProfileData {
   full_name: string;
@@ -63,6 +64,7 @@ export default function DashboardPage() {
   const [shortAnswers, setShortAnswers] = useState(false);
   const [longAnswers, setLongAnswers] = useState(true);
   const [showResumeBuilder, setShowResumeBuilder] = useState(false);
+  const [showAtsCheck, setShowAtsCheck] = useState(false);
 
   // Use centralized download links from config/releases.ts
   const downloadLinks = DOWNLOAD_LINKS;
@@ -219,6 +221,28 @@ export default function DashboardPage() {
       );
     }
     return <ResumeBuilderPage resumeText={resume} onClose={() => setShowResumeBuilder(false)} />;
+  }
+
+  // Show ATS Check view
+  if (showAtsCheck) {
+    if (!resume.trim()) {
+      return (
+        <div style={{ maxWidth: 640, margin: '0 auto', padding: '40px 20px', textAlign: 'center' }}>
+          <div style={{ width: 64, height: 64, borderRadius: '50%', border: '2px solid #000', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', background: '#fff' }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.5">
+              <path d="M9 11l3 3L22 4"/>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+          </div>
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: '#000', margin: '0 0 8px' }}>Resume Required</h2>
+          <p style={{ color: '#666', fontSize: 14, margin: '0 0 24px' }}>Paste your resume in the Resume / CV section on the dashboard first, then click ATS Check to score it.</p>
+          <button onClick={() => setShowAtsCheck(false)} style={{ padding: '10px 24px', borderRadius: 8, background: '#000', border: 'none', color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+            Go Back to Dashboard
+          </button>
+        </div>
+      );
+    }
+    return <AtsCheckPage resumeText={resume} initialJd={jobDescription} onClose={() => setShowAtsCheck(false)} />;
   }
 
   return (
@@ -531,6 +555,28 @@ export default function DashboardPage() {
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
                 Resume Builder
+              </button>
+              <button
+                onClick={() => setShowAtsCheck(true)}
+                disabled={!resume.trim()}
+                title={!resume.trim() ? 'Paste your resume above first' : 'Run an ATS check on this resume'}
+                style={{
+                  padding: '10px 24px', borderRadius: 8, fontSize: 14, fontWeight: 600,
+                  background: resume.trim() ? '#000' : '#9ca3af',
+                  border: '2px solid ' + (resume.trim() ? '#000' : '#9ca3af'),
+                  color: '#fff',
+                  cursor: resume.trim() ? 'pointer' : 'not-allowed',
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  transition: 'all 0.15s',
+                }}
+                onMouseEnter={e => { if (resume.trim()) { e.currentTarget.style.background = '#1a1a1a'; e.currentTarget.style.transform = 'translateY(-1px)'; } }}
+                onMouseLeave={e => { if (resume.trim()) { e.currentTarget.style.background = '#000'; e.currentTarget.style.transform = 'translateY(0)'; } }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 11l3 3L22 4"/>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                </svg>
+                ATS Check
               </button>
             </div>
           </div>

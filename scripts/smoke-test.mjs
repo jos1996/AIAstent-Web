@@ -110,6 +110,7 @@ const API_PROBES = [
   // function should be reached, not rewritten into the SPA shell.
   // POST is required; GET returns 405 from the handler itself.
   { path: '/api/tailor-resume', expectStatus: [405, 200] },
+  { path: '/api/ats-check', expectStatus: [405, 200] },
 ];
 
 const REDIRECT_PROBES = [
