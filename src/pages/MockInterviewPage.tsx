@@ -9,13 +9,120 @@ const PRESET_ROLES = [
   'DevOps Engineer', 'Finance Analyst', 'Project Manager', 'Full Stack Developer',
 ];
 
-const generateQuestionsForRole = (role: string): string[] => [
-  `Tell me about yourself and your experience as a ${role}.`,
-  `What's the most challenging situation you've faced in your ${role} career? How did you handle it?`,
-  `How do you stay up to date with the latest trends and skills relevant to a ${role}?`,
-  `Describe a time you worked in a team to achieve a difficult goal. What was your contribution?`,
-  `Where do you see yourself in 5 years as a ${role}?`,
-];
+const ROLE_QUESTIONS: Record<string, string[]> = {
+  'Software Engineer': [
+    "Walk me through how you would design a scalable REST API from scratch.",
+    "How do you approach debugging a production issue that only happens intermittently?",
+    "Explain the difference between horizontal and vertical scaling. When would you use each?",
+    "How do you ensure code quality in a fast-moving team? What processes do you rely on?",
+    "Describe a time you refactored a large codebase. What was your approach and what was the outcome?",
+    "How do you handle technical debt in a product that needs constant new features?",
+  ],
+  'Product Manager': [
+    "How do you decide which features to build next when you have 10 competing priorities?",
+    "Walk me through how you wrote a product requirements document for a complex feature.",
+    "How do you measure whether a feature you shipped was actually successful?",
+    "Describe a situation where data and user feedback were contradicting each other. What did you do?",
+    "How do you work with engineering when they say your proposed timeline is unrealistic?",
+    "How do you handle stakeholders who keep changing requirements mid-sprint?",
+  ],
+  'Data Scientist': [
+    "How would you approach building a churn prediction model from scratch?",
+    "What steps do you take when your model performs well on training data but poorly in production?",
+    "How do you explain a complex machine learning model's output to a non-technical business team?",
+    "Describe how you would design an A/B test to evaluate a new recommendation algorithm.",
+    "How do you handle class imbalance in a classification problem?",
+    "Walk me through how you would clean and prepare a messy real-world dataset for modeling.",
+  ],
+  'UI/UX Designer': [
+    "Walk me through your end-to-end design process for a recent project you're proud of.",
+    "How do you balance business goals with user needs when they conflict?",
+    "How do you conduct user research when you have limited time and budget?",
+    "Describe a time your design was challenged by developers or stakeholders. How did you handle it?",
+    "How do you validate that a design solution actually solves the user's problem?",
+    "How do you approach designing for accessibility from the start?",
+  ],
+  'Marketing Manager': [
+    "How do you build a go-to-market strategy for a new product launch?",
+    "Walk me through a campaign you ran end-to-end. What was the goal, execution, and result?",
+    "How do you measure ROI across different marketing channels?",
+    "How do you decide how to allocate a limited marketing budget across channels?",
+    "Describe a time a campaign didn't perform as expected. What did you do?",
+    "How do you keep messaging consistent across multiple markets or audiences?",
+  ],
+  'Business Analyst': [
+    "How do you gather and validate requirements from multiple conflicting stakeholders?",
+    "Walk me through how you documented and mapped a complex business process.",
+    "How do you prioritize which business problems to focus on when everything feels urgent?",
+    "Describe a time your analysis directly influenced a major business decision.",
+    "How do you handle a situation where stakeholders reject your recommendations?",
+    "What techniques do you use to identify root causes of business performance issues?",
+  ],
+  'Sales Executive': [
+    "Walk me through your typical process from initial outreach to closing a deal.",
+    "How do you handle a prospect who is interested but keeps stalling the decision?",
+    "Describe the most complex deal you closed. What made it difficult and how did you win it?",
+    "How do you build trust with a new client in the first 30 days?",
+    "How do you handle objections around pricing without immediately discounting?",
+    "How do you manage a large pipeline and decide where to spend your time?",
+  ],
+  'HR Manager': [
+    "How do you design a recruitment process that reduces bias and improves quality of hire?",
+    "Walk me through how you handled a serious conflict between two team members or departments.",
+    "How do you measure employee engagement and what do you do when it's declining?",
+    "Describe a time you had to deliver difficult feedback to a senior leader.",
+    "How do you build a culture of continuous feedback in an organization that resists it?",
+    "How do you handle a situation where a manager is underperforming but leadership likes them?",
+  ],
+  'DevOps Engineer': [
+    "How would you design a CI/CD pipeline for a microservices-based application?",
+    "Walk me through how you would investigate and resolve a P0 production outage.",
+    "How do you approach infrastructure as code and what tools do you prefer?",
+    "How do you balance deployment speed with system reliability and rollback safety?",
+    "Describe how you would set up monitoring and alerting for a new service.",
+    "How do you manage secrets and credentials securely across environments?",
+  ],
+  'Finance Analyst': [
+    "Walk me through how you would build a financial model to evaluate a new business opportunity.",
+    "How do you identify and communicate financial risks to non-finance stakeholders?",
+    "Describe a time your financial analysis led to a significant business decision.",
+    "How do you approach variance analysis when actuals differ significantly from budget?",
+    "How do you ensure the accuracy and integrity of financial reports under tight deadlines?",
+    "How would you evaluate whether the company should build versus buy a software tool?",
+  ],
+  'Project Manager': [
+    "How do you keep a project on track when scope, timeline, and budget are all under pressure?",
+    "Walk me through how you managed a project that had multiple dependencies across teams.",
+    "How do you handle a team member who is consistently missing deadlines?",
+    "Describe how you communicate project status and risks to senior stakeholders.",
+    "How do you manage scope creep without damaging your relationship with the client?",
+    "What does your project kickoff process look like and why?",
+  ],
+  'Full Stack Developer': [
+    "How do you decide when to optimize for backend performance versus frontend experience?",
+    "Walk me through how you would architect a full stack feature from database to UI.",
+    "How do you approach security vulnerabilities in a web application you maintain?",
+    "Describe how you handle state management in a complex frontend application.",
+    "How do you design APIs that are easy for frontend teams to consume?",
+    "How do you ensure your deployments don't break existing functionality?",
+  ],
+};
+
+const generateQuestionsForRole = (role: string): string[] => {
+  const bank = ROLE_QUESTIONS[role];
+  if (bank) {
+    const shuffled = [...bank].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, TOTAL_QUESTIONS_PER_SESSION);
+  }
+  // Fallback for custom roles — role-specific generic questions
+  return [
+    `What does a typical day look like in your ${role} position and how do you prioritize your work?`,
+    `What is the most technically challenging aspect of being a ${role} and how do you tackle it?`,
+    `How do you collaborate with cross-functional teams as a ${role}?`,
+    `Describe a significant problem you solved in your ${role} role. What was your approach?`,
+    `How do you measure success in your ${role} position and what metrics do you track?`,
+  ];
+};
 
 export default function MockInterviewPage() {
   const [selectedRole, setSelectedRole] = useState('');
