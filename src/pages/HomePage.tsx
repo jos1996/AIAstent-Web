@@ -1727,11 +1727,38 @@ export default function HomePage() {
                   ))}
                 </div>
               </div>
-              {/* Mock UI preview */}
-              <div style={{ margin: '0 24px 24px', borderRadius: 12, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', padding: '14px 16px' }}>
-                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: 1, marginBottom: 10 }}>Live Interview — Answer Generated</div>
-                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, borderLeft: '2px solid rgba(255,255,255,0.2)', paddingLeft: 12 }}>
-                  "At my previous role, I led a cross-functional team to migrate our monolith to microservices — reducing deployment time by 60% and improving system uptime to 99.97%..."
+              {/* Browser window mockup — AI Interview Helper */}
+              <div style={{ margin: '0 20px 20px', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
+                {/* Title bar */}
+                <div style={{ background: '#1a1a1a', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#ff5f57' }} />
+                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#febc2e' }} />
+                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#28c840' }} />
+                  <span style={{ marginLeft: 8, color: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: 600 }}>Helply AI — Interview Mode</span>
+                </div>
+                {/* App UI */}
+                <div style={{ background: '#111', padding: '14px' }}>
+                  {/* Transcription box */}
+                  <div style={{ background: '#1c1c1c', borderRadius: 8, padding: '10px 12px', marginBottom: 10, border: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: 1, marginBottom: 6 }}>Interviewer said</div>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>"Walk me through how you would design a scalable REST API from scratch."</div>
+                  </div>
+                  {/* AI Answer streaming */}
+                  <div style={{ background: '#1c1c1c', borderRadius: 8, padding: '10px 12px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                      <div style={{ width: 14, height: 14, borderRadius: '50%', background: 'linear-gradient(135deg,#2563eb,#7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <svg width="8" height="8" viewBox="0 0 24 24" fill="#fff"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                      </div>
+                      <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: 1 }}>AI Answer — GPT-4.1</span>
+                      <span style={{ marginLeft: 'auto', fontSize: 8, padding: '2px 6px', borderRadius: 4, background: 'rgba(34,197,94,0.2)', color: '#4ade80', fontWeight: 700 }}>LIVE</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7 }}>"I'd start by defining the resource model — nouns like /users, /orders. Then enforce versioning via /v1/. For scalability, I'd add rate limiting, use stateless JWT auth, implement pagination on list endpoints, and put an API gateway in front for throttling and caching..."</div>
+                    <div style={{ display: 'flex', gap: 4, marginTop: 10 }}>
+                      {['Copy', 'Regenerate'].map(b => (
+                        <div key={b} style={{ padding: '4px 10px', borderRadius: 6, background: 'rgba(255,255,255,0.08)', fontSize: 9, color: 'rgba(255,255,255,0.6)', fontWeight: 700, cursor: 'default' }}>{b}</div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1762,25 +1789,40 @@ export default function HomePage() {
                   ))}
                 </div>
               </div>
-              {/* Mock UI preview */}
-              <div style={{ margin: '0 24px 24px', borderRadius: 12, background: '#fff', border: '1px solid #e5e7eb', padding: '14px 16px' }}>
-                <div style={{ fontSize: 10, color: '#888', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: 1, marginBottom: 10 }}>Resume Generated — ATS Score</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ flex: 1 }}>
-                    {[['Keyword match', 94], ['ATS compatibility', 98], ['Readability', 91]].map(([label, val]) => (
-                      <div key={label as string} style={{ marginBottom: 8 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#374151', fontWeight: 600, marginBottom: 3 }}>
-                          <span>{label}</span><span>{val}%</span>
+              {/* Browser window mockup — Resume Builder */}
+              <div style={{ margin: '0 20px 20px', borderRadius: 12, overflow: 'hidden', border: '1px solid #e5e7eb', boxShadow: '0 8px 32px rgba(0,0,0,0.08)' }}>
+                {/* Title bar */}
+                <div style={{ background: '#1a1a1a', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#ff5f57' }} />
+                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#febc2e' }} />
+                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#28c840' }} />
+                  <span style={{ marginLeft: 8, color: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: 600 }}>Helply AI — Resume Builder</span>
+                </div>
+                {/* Two-column layout */}
+                <div style={{ background: '#fff', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
+                  {/* Left: input */}
+                  <div style={{ padding: '12px', borderRight: '1px solid #f3f4f6' }}>
+                    <div style={{ fontSize: 9, color: '#888', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: 1, marginBottom: 8 }}>Job Description</div>
+                    <div style={{ background: '#f9fafb', borderRadius: 6, padding: '8px', fontSize: 10, color: '#374151', lineHeight: 1.6, marginBottom: 8, border: '1px solid #e5e7eb', minHeight: 60 }}>"Senior Product Manager at Google. 5+ years exp. Must have experience with OKRs, roadmapping, agile, and cross-functional leadership..."</div>
+                    <div style={{ background: '#000', borderRadius: 6, padding: '7px 0', textAlign: 'center' as const, fontSize: 10, fontWeight: 800, color: '#fff' }}>Generate Tailored Resume</div>
+                  </div>
+                  {/* Right: output */}
+                  <div style={{ padding: '12px', background: '#fafafa' }}>
+                    <div style={{ fontSize: 9, color: '#888', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: 1, marginBottom: 8 }}>Your Resume — ATS Score</div>
+                    {[['Keyword match', 94, '#22c55e'], ['ATS compatibility', 98, '#2563eb'], ['Readability', 91, '#7c3aed']].map(([label, val, col]) => (
+                      <div key={label as string} style={{ marginBottom: 7 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: '#374151', fontWeight: 700, marginBottom: 2 }}>
+                          <span>{label}</span><span style={{ color: col as string }}>{val}%</span>
                         </div>
-                        <div style={{ height: 5, background: '#f3f4f6', borderRadius: 3 }}>
-                          <div style={{ height: '100%', background: '#000', borderRadius: 3, width: `${val}%` }} />
+                        <div style={{ height: 4, background: '#f3f4f6', borderRadius: 2 }}>
+                          <div style={{ height: '100%', background: col as string, borderRadius: 2, width: `${val}%` }} />
                         </div>
                       </div>
                     ))}
-                  </div>
-                  <div style={{ width: 52, height: 52, borderRadius: '50%', background: '#000', display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ color: '#fff', fontSize: 16, fontWeight: 900 }}>94</span>
-                    <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 8, fontWeight: 700 }}>SCORE</span>
+                    <div style={{ marginTop: 8, padding: '6px 8px', background: '#000', borderRadius: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: 9, color: '#fff', fontWeight: 700 }}>Executive Template</span>
+                      <span style={{ fontSize: 8, padding: '2px 6px', background: 'rgba(255,255,255,0.15)', borderRadius: 4, color: '#fff', fontWeight: 700 }}>Download PDF</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1816,21 +1858,49 @@ export default function HomePage() {
                   ))}
                 </div>
               </div>
-              {/* Mock UI preview */}
-              <div style={{ margin: '0 24px 24px', borderRadius: 12, background: '#fff', border: '1px solid #e5e7eb', overflow: 'hidden' }}>
-                {[
-                  { title: 'Senior Product Manager', co: 'Google', loc: 'Remote', match: '96%' },
-                  { title: 'Product Manager II', co: 'Stripe', loc: 'San Francisco', match: '91%' },
-                  { title: 'Associate PM', co: 'Notion', loc: 'New York', match: '88%' },
-                ].map((job, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: i < 2 ? '1px solid #f3f4f6' : 'none' }}>
-                    <div>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: '#111' }}>{job.title}</div>
-                      <div style={{ fontSize: 11, color: '#6b7280' }}>{job.co} · {job.loc}</div>
-                    </div>
-                    <span style={{ fontSize: 10, fontWeight: 800, padding: '3px 8px', borderRadius: 6, background: '#000', color: '#fff' }}>{job.match}</span>
+              {/* Browser window mockup — Job Search */}
+              <div style={{ margin: '0 20px 20px', borderRadius: 12, overflow: 'hidden', border: '1px solid #e5e7eb', boxShadow: '0 8px 32px rgba(0,0,0,0.08)' }}>
+                {/* Title bar */}
+                <div style={{ background: '#1a1a1a', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#ff5f57' }} />
+                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#febc2e' }} />
+                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#28c840' }} />
+                  <span style={{ marginLeft: 8, color: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: 600 }}>Helply AI — Job Search</span>
+                </div>
+                <div style={{ background: '#fff' }}>
+                  {/* Search bar */}
+                  <div style={{ padding: '10px 12px', borderBottom: '1px solid #f3f4f6', display: 'flex', gap: 6 }}>
+                    <div style={{ flex: 1, background: '#f9fafb', borderRadius: 6, padding: '6px 10px', fontSize: 10, color: '#374151', border: '1px solid #e5e7eb' }}>Product Manager · Remote · Any experience</div>
+                    <div style={{ padding: '6px 12px', background: '#000', borderRadius: 6, fontSize: 10, fontWeight: 700, color: '#fff' }}>Search</div>
                   </div>
-                ))}
+                  {/* Source logos row */}
+                  <div style={{ padding: '8px 12px', display: 'flex', gap: 8, borderBottom: '1px solid #f3f4f6' }}>
+                    {[['in', '#0077b5'], ['G', '#ea4335'], ['G+', '#1a9b00']].map(([label, col]) => (
+                      <div key={label as string} style={{ padding: '3px 8px', borderRadius: 4, background: col as string, fontSize: 9, fontWeight: 800, color: '#fff' }}>{label}</div>
+                    ))}
+                    <span style={{ fontSize: 9, color: '#9ca3af', alignSelf: 'center' }}>LinkedIn · Indeed · Glassdoor</span>
+                  </div>
+                  {/* Job listings */}
+                  {[
+                    { title: 'Senior Product Manager', co: 'Google', loc: 'Remote', match: '96%', tag: 'New' },
+                    { title: 'Product Manager II', co: 'Stripe', loc: 'San Francisco', match: '91%', tag: '' },
+                    { title: 'Associate PM', co: 'Notion', loc: 'New York', match: '88%', tag: '' },
+                  ].map((job, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 12px', borderBottom: i < 2 ? '1px solid #f9fafb' : 'none' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{ width: 24, height: 24, borderRadius: 6, background: ['#4285f4','#635bff','#000'][i], display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 800, color: '#fff' }}>{job.co[0]}</div>
+                        <div>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: '#111', display: 'flex', alignItems: 'center', gap: 4 }}>
+                            {job.title}
+                            {job.tag && <span style={{ fontSize: 8, padding: '1px 5px', background: '#dcfce7', color: '#16a34a', borderRadius: 3, fontWeight: 800 }}>{job.tag}</span>}
+                          </div>
+                          <div style={{ fontSize: 9, color: '#6b7280' }}>{job.co} · {job.loc}</div>
+                        </div>
+                      </div>
+                      <span style={{ fontSize: 9, fontWeight: 800, padding: '3px 7px', borderRadius: 5, background: '#000', color: '#fff' }}>{job.match}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -1860,20 +1930,47 @@ export default function HomePage() {
                   ))}
                 </div>
               </div>
-              {/* Mock UI preview */}
-              <div style={{ margin: '0 24px 24px', borderRadius: 12, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', padding: '14px 16px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: 1 }}>Question 2 of 5 — Product Manager</div>
-                  <div style={{ display: 'flex', gap: 3 }}>
-                    {[1,2,3,4,5].map(i => <div key={i} style={{ width: 20, height: 4, borderRadius: 2, background: i <= 2 ? '#fff' : 'rgba(255,255,255,0.2)' }} />)}
+              {/* Browser window mockup — Mock Interview */}
+              <div style={{ margin: '0 20px 20px', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
+                {/* Title bar */}
+                <div style={{ background: '#1a1a1a', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#ff5f57' }} />
+                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#febc2e' }} />
+                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#28c840' }} />
+                  <span style={{ marginLeft: 8, color: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: 600 }}>helplyai.co — Mock Interview</span>
+                </div>
+                <div style={{ background: '#111', padding: '14px' }}>
+                  {/* Role badge + progress */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                    <span style={{ fontSize: 9, padding: '3px 8px', borderRadius: 12, background: 'rgba(37,99,235,0.2)', color: '#93c5fd', fontWeight: 700 }}>Product Manager</span>
+                    <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', fontWeight: 600 }}>Question 2 of 5</span>
                   </div>
-                </div>
-                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, borderLeft: '2px solid rgba(255,255,255,0.2)', paddingLeft: 12 }}>
-                  "How do you measure whether a feature you shipped was actually successful?"
-                </div>
-                <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-                  <div style={{ flex: 1, padding: '8px 0', background: '#fff', borderRadius: 8, textAlign: 'center' as const, fontSize: 11, fontWeight: 700, color: '#000' }}>Next Question</div>
-                  <div style={{ padding: '8px 14px', background: 'rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.15)' }}>End</div>
+                  {/* Progress segments */}
+                  <div style={{ display: 'flex', gap: 4, marginBottom: 12 }}>
+                    {[1,2,3,4,5].map(i => (
+                      <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: i <= 2 ? 'linear-gradient(90deg,#2563eb,#7c3aed)' : 'rgba(255,255,255,0.12)' }} />
+                    ))}
+                  </div>
+                  {/* Waveform visual */}
+                  <div style={{ display: 'flex', gap: 3, alignItems: 'center', justifyContent: 'center', marginBottom: 10, height: 28 }}>
+                    {[10,18,14,22,16,20,12,24,14,18,10].map((h, i) => (
+                      <div key={i} style={{ width: 3, height: h, borderRadius: 2, background: 'rgba(37,99,235,0.7)' }} />
+                    ))}
+                  </div>
+                  <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', textAlign: 'center' as const, fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: 1, marginBottom: 10 }}>Interviewer is speaking...</div>
+                  {/* Question */}
+                  <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 8, padding: '10px 12px', marginBottom: 10, border: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)', lineHeight: 1.65 }}>"How do you measure whether a feature you shipped was actually successful?"</div>
+                  </div>
+                  {/* Tip */}
+                  <div style={{ background: 'rgba(253,224,71,0.08)', borderRadius: 6, padding: '7px 10px', marginBottom: 10, border: '1px solid rgba(253,224,71,0.15)' }}>
+                    <div style={{ fontSize: 9, color: 'rgba(253,224,71,0.8)', lineHeight: 1.5 }}>Open Helply AI chatbot and click <strong>Get Answer</strong> to see the ideal answer</div>
+                  </div>
+                  {/* Buttons */}
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <div style={{ flex: 1, padding: '7px 0', background: '#fff', borderRadius: 7, textAlign: 'center' as const, fontSize: 10, fontWeight: 800, color: '#000' }}>Next Question</div>
+                    <div style={{ padding: '7px 12px', background: 'rgba(255,255,255,0.08)', borderRadius: 7, fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.12)' }}>End</div>
+                  </div>
                 </div>
               </div>
             </div>
