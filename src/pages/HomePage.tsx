@@ -1124,42 +1124,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* App Screenshots — after How It Works */}
-      <section style={{ padding: '80px 24px', background: '#fff', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#888', letterSpacing: 2, textTransform: 'uppercase' }}>See it in action</span>
-            <h2 style={{ fontSize: 'clamp(22px, 3vw, 36px)', fontWeight: 900, color: '#000', marginTop: 10, marginBottom: 0 }}>Real-time Job Search</h2>
-            <p style={{ color: '#666', fontSize: 15, marginTop: 10, maxWidth: 600, margin: '10px auto 0' }}>Search millions of jobs from LinkedIn, Indeed, Glassdoor & more — all in one place</p>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
-            <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(0,0,0,0.1)', boxShadow: '0 16px 48px rgba(0,0,0,0.1)', transition: 'all 0.35s' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 28px 64px rgba(0,0,0,0.18)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.1)' }}
-            >
-              <div style={{ padding: '10px 14px', background: '#1a1a1a', display: 'flex', alignItems: 'center', gap: 7 }}>
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#ff5f57' }} />
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#febc2e' }} />
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#28c840' }} />
-                <span style={{ marginLeft: 10, color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 600 }}>HelplyAI — Interview Assistant</span>
-              </div>
-              <img src="https://beeptalk.s3.eu-north-1.amazonaws.com/520f487f-051a-47a0-b252-8b12dd857c7d.png" alt="HelplyAI interview assistant" style={{ width: '100%', display: 'block', objectFit: 'cover' }} />
-            </div>
-            <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(0,0,0,0.1)', boxShadow: '0 16px 48px rgba(0,0,0,0.1)', transition: 'all 0.35s' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 28px 64px rgba(0,0,0,0.18)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.1)' }}
-            >
-              <div style={{ padding: '10px 14px', background: '#1a1a1a', display: 'flex', alignItems: 'center', gap: 7 }}>
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#ff5f57' }} />
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#febc2e' }} />
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#28c840' }} />
-                <span style={{ marginLeft: 10, color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 600 }}>HelplyAI — Job Search</span>
-              </div>
-              <img src="https://beeptalk.s3.eu-north-1.amazonaws.com/d4ef4241-efb1-41c8-8420-8caf0d06a790.png" alt="HelplyAI job search" style={{ width: '100%', display: 'block', objectFit: 'cover' }} />
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Custom Resume Builder Section */}
       <section style={{ padding: '80px 24px', background: '#f9fafb', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
@@ -1476,30 +1440,31 @@ export default function HomePage() {
           </div>
 
           {/* Feature highlights */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 20, marginBottom: 56 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 56 }}>
             {[
-              { icon: '🔍', title: 'Search Once', desc: 'One search across LinkedIn, Indeed, Naukri, Glassdoor & more' },
-              { icon: '⚡', title: 'Instant Results', desc: 'Real-time job listings updated as you search, no delays' },
-              { icon: '🎯', title: 'Smart Matching', desc: 'AI scores jobs by relevance to your role, skills & experience' },
-              { icon: '🔗', title: 'Direct Apply', desc: 'Click Apply and go straight to the job on the original platform' },
+              { num: '01', title: 'Search Once', desc: 'One search across LinkedIn, Indeed, Naukri, Glassdoor & more — no tab switching.' },
+              { num: '02', title: 'Instant Results', desc: 'Real-time job listings updated as you search. No delays, no refresh needed.' },
+              { num: '03', title: 'Smart Matching', desc: 'AI scores jobs by relevance to your role, skills & experience level.' },
+              { num: '04', title: 'Direct Apply', desc: 'Click Apply and go straight to the job on the original platform instantly.' },
             ].map((f, i) => (
               <div key={i} style={{
                 padding: '24px 20px', borderRadius: 14,
-                border: '1px solid rgba(0,0,0,0.08)', background: '#fafafa',
-                transition: 'all 0.25s',
+                border: '1px solid #e5e7eb', background: '#fff',
+                transition: 'all 0.25s', cursor: 'default',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
               }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#000'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.transform = 'translateY(-4px)' }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#fafafa'; e.currentTarget.style.color = ''; e.currentTarget.style.transform = 'translateY(0)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#000'; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.15)'; (e.currentTarget.querySelector('.fnum') as HTMLElement).style.color = 'rgba(255,255,255,0.3)'; (e.currentTarget.querySelector('.ftitle') as HTMLElement).style.color = '#fff'; (e.currentTarget.querySelector('.fdesc') as HTMLElement).style.color = 'rgba(255,255,255,0.75)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)'; (e.currentTarget.querySelector('.fnum') as HTMLElement).style.color = '#d1d5db'; (e.currentTarget.querySelector('.ftitle') as HTMLElement).style.color = '#111'; (e.currentTarget.querySelector('.fdesc') as HTMLElement).style.color = '#6b7280'; }}
               >
-                <div style={{ fontSize: 28, marginBottom: 10 }}>{f.icon}</div>
-                <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 6 }}>{f.title}</div>
-                <div style={{ fontSize: 13, lineHeight: 1.6, opacity: 0.7 }}>{f.desc}</div>
+                <div className="fnum" style={{ fontSize: 11, fontWeight: 800, color: '#d1d5db', letterSpacing: 1, marginBottom: 14, transition: 'color 0.25s' }}>{f.num}</div>
+                <div className="ftitle" style={{ fontWeight: 700, fontSize: 16, color: '#111', marginBottom: 8, transition: 'color 0.25s' }}>{f.title}</div>
+                <div className="fdesc" style={{ fontSize: 13, lineHeight: 1.65, color: '#6b7280', transition: 'color 0.25s' }}>{f.desc}</div>
               </div>
             ))}
           </div>
 
-          {/* Screenshots */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
+          {/* Screenshot — single, centered */}
+          <div style={{ maxWidth: 760, margin: '0 auto' }}>
             <div style={{
               borderRadius: 16, overflow: 'hidden',
               border: '1px solid rgba(0,0,0,0.1)',
@@ -1513,32 +1478,11 @@ export default function HomePage() {
                 <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#ff5f57' }} />
                 <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#febc2e' }} />
                 <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#28c840' }} />
-                <span style={{ marginLeft: 10, color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 600 }}>HelplyAI — Interview Assistant</span>
-              </div>
-              <img
-                src="https://beeptalk.s3.eu-north-1.amazonaws.com/520f487f-051a-47a0-b252-8b12dd857c7d.png"
-                alt="HelplyAI interview assistant"
-                style={{ width: '100%', display: 'block', objectFit: 'cover' }}
-              />
-            </div>
-            <div style={{
-              borderRadius: 16, overflow: 'hidden',
-              border: '1px solid rgba(0,0,0,0.1)',
-              boxShadow: '0 16px 48px rgba(0,0,0,0.1)',
-              transition: 'all 0.35s',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 28px 64px rgba(0,0,0,0.18)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.1)' }}
-            >
-              <div style={{ padding: '10px 14px', background: '#1a1a1a', display: 'flex', alignItems: 'center', gap: 7 }}>
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#ff5f57' }} />
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#febc2e' }} />
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#28c840' }} />
-                <span style={{ marginLeft: 10, color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 600 }}>HelplyAI — AI Suggestions</span>
+                <span style={{ marginLeft: 10, color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 600 }}>HelplyAI — Job Search</span>
               </div>
               <img
                 src="https://beeptalk.s3.eu-north-1.amazonaws.com/d4ef4241-efb1-41c8-8420-8caf0d06a790.png"
-                alt="HelplyAI AI suggestions"
+                alt="HelplyAI job search"
                 style={{ width: '100%', display: 'block', objectFit: 'cover' }}
               />
             </div>
@@ -2776,6 +2720,54 @@ export default function HomePage() {
         @keyframes waveform {
           0%, 100% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
+        }
+
+        /* ── Mobile responsive ── */
+        @media (max-width: 768px) {
+          /* Feature cards grid: 1 column on mobile */
+          #features > div > div[style*="minmax(480px"] {
+            grid-template-columns: 1fr !important;
+          }
+          /* Nav: hide non-essential links */
+          .nav-links { display: none !important; }
+          /* Hero padding */
+          .hero-section { padding: 60px 16px 40px !important; }
+          /* Section padding */
+          section { padding-left: 16px !important; padding-right: 16px !important; }
+        }
+
+        @media (max-width: 600px) {
+          /* Stack all auto-fit grids to single column */
+          [style*="repeat(auto-fit"] {
+            grid-template-columns: 1fr !important;
+          }
+          /* Feature section 2x2 */
+          [style*="minmax(480px"] {
+            grid-template-columns: 1fr !important;
+          }
+          /* Smaller headings */
+          h1, h2 { letter-spacing: -0.5px !important; }
+          /* Download buttons stack */
+          .download-buttons { flex-direction: column !important; }
+          /* Pricing cards */
+          [style*="minmax(300px"] {
+            grid-template-columns: 1fr !important;
+          }
+          /* Mock window previews don't overflow */
+          [style*="minmax(200px"] {
+            grid-template-columns: 1fr 1fr !important;
+          }
+        }
+
+        /* Ensure all images are responsive */
+        img { max-width: 100%; height: auto; }
+
+        /* Smooth scrolling */
+        html { scroll-behavior: smooth; }
+
+        /* Tap targets: minimum 44px on mobile */
+        @media (max-width: 768px) {
+          button, a { min-height: 44px; }
         }
       `}</style>
       </div>
