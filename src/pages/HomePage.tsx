@@ -118,51 +118,98 @@ function VideoShowcase() {
   const [playing, setPlaying] = useState(false);
   const active = VIDEO_CHIPS.find(v => v.id === activeId)!;
 
-  const selectChip = (id: string) => {
-    setActiveId(id);
-    setPlaying(false);
+  const selectVideo = (id: string) => {
+    if (id === activeId) {
+      setPlaying(true);
+    } else {
+      setActiveId(id);
+      setPlaying(false);
+    }
   };
 
   return (
-    <section id="how-it-works" style={{ padding: '60px 24px', background: 'linear-gradient(180deg, #f9f9f9 0%, #fff 100%)', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
-      <div style={{ maxWidth: 900, margin: '0 auto' }}>
+    <section id="how-it-works" style={{ padding: '48px 24px 64px', background: '#fff', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 36 }}>
-          <h2 style={{ fontSize: 'clamp(24px, 4vw, 40px)', fontWeight: 900, letterSpacing: '-1px', color: '#000', marginBottom: 12 }}>
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <h2 style={{ fontSize: 'clamp(22px, 3.5vw, 36px)', fontWeight: 900, letterSpacing: '-0.5px', color: '#000', marginBottom: 10 }}>
             See HelplyAI in Action
           </h2>
-          <p style={{ fontSize: 16, color: '#666', maxWidth: 520, margin: '0 auto' }}>
-            Watch how each feature works — pick a topic below.
+          <p style={{ fontSize: 15, color: '#666', maxWidth: 480, margin: '0 auto' }}>
+            Click any video below to watch it play.
           </p>
         </div>
 
-        {/* Chips */}
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 32 }}>
-          {VIDEO_CHIPS.map(v => (
-            <button
-              key={v.id}
-              onClick={() => selectChip(v.id)}
-              style={{
-                padding: '10px 20px',
-                borderRadius: 100,
-                border: activeId === v.id ? '2px solid #000' : '2px solid rgba(0,0,0,0.12)',
-                background: activeId === v.id ? '#000' : '#fff',
-                color: activeId === v.id ? '#fff' : '#333',
-                fontSize: 13,
-                fontWeight: 600,
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-              }}
-            >
-              {v.label}
-            </button>
-          ))}
+        {/* All 5 thumbnails side by side */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(5, 1fr)',
+          gap: 12,
+          marginBottom: 28,
+        }}>
+          {VIDEO_CHIPS.map(v => {
+            const isActive = v.id === activeId;
+            return (
+              <div
+                key={v.id}
+                onClick={() => selectVideo(v.id)}
+                style={{
+                  borderRadius: 12,
+                  overflow: 'hidden',
+                  cursor: 'pointer',
+                  position: 'relative',
+                  aspectRatio: '16/9',
+                  border: isActive ? '2.5px solid #000' : '2px solid rgba(0,0,0,0.1)',
+                  boxShadow: isActive ? '0 6px 24px rgba(0,0,0,0.2)' : '0 2px 8px rgba(0,0,0,0.08)',
+                  transform: isActive ? 'translateY(-3px)' : 'translateY(0)',
+                  transition: 'all 0.25s',
+                  background: '#000',
+                }}
+              >
+                <img
+                  src={`https://img.youtube.com/vi/${v.id}/mqdefault.jpg`}
+                  alt={v.label}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', opacity: isActive ? 1 : 0.75, transition: 'opacity 0.25s' }}
+                  onError={e => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${v.id}/hqdefault.jpg`; }}
+                />
+                {/* Overlay */}
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  background: isActive ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.35)',
+                  display: 'flex', flexDirection: 'column',
+                  alignItems: 'center', justifyContent: 'center', gap: 6,
+                  transition: 'background 0.25s',
+                }}>
+                  <div style={{
+                    width: 32, height: 32, borderRadius: '50%',
+                    background: isActive ? '#ff0000' : 'rgba(255,255,255,0.2)',
+                    backdropFilter: 'blur(4px)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    border: '1.5px solid rgba(255,255,255,0.5)',
+                    transition: 'all 0.25s',
+                  }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  </div>
+                </div>
+                {/* Label at bottom */}
+                <div style={{
+                  position: 'absolute', bottom: 0, left: 0, right: 0,
+                  background: 'linear-gradient(transparent, rgba(0,0,0,0.75))',
+                  padding: '14px 8px 7px',
+                }}>
+                  <span style={{ color: '#fff', fontSize: 11, fontWeight: 700, letterSpacing: 0.2, textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>
+                    {v.label}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
-        {/* Description */}
+        {/* Active video description */}
         <p style={{ textAlign: 'center', fontSize: 14, color: '#555', marginBottom: 20 }}>{active.desc}</p>
 
-        {/* Video Player */}
+        {/* Large player for selected video */}
         <div style={{
           borderRadius: 20,
           overflow: 'hidden',
@@ -193,7 +240,6 @@ function VideoShowcase() {
                 position: 'absolute', inset: 0,
                 background: 'rgba(0,0,0,0.3)',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16,
-                transition: 'background 0.2s',
               }}>
                 <div style={{
                   width: 72, height: 72, borderRadius: '50%',
@@ -549,6 +595,9 @@ export default function HomePage() {
         <VideoDemo />
         </div>
       </section>
+
+      {/* Video Showcase — all 5 videos side by side, directly under hero */}
+      <VideoShowcase />
 
       {/* CSS Animations */}
       <style>{`
@@ -1648,9 +1697,6 @@ export default function HomePage() {
           </p>
         </div>
       </section>
-
-      {/* Video Showcase Section */}
-      <VideoShowcase />
 
       {/* Features Section */}
       <section id="features" style={{ padding: '80px 24px', background: '#fff', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
