@@ -1,50 +1,57 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-const MAX_DAILY_QUESTIONS = 5;
-const TOTAL_QUESTIONS_PER_SESSION = 5;
+const MAX_DAILY_QUESTIONS = 15;
+const TOTAL_QUESTIONS_PER_SESSION = 12; // ask up to 12, drawn from shuffled bank
 
-// ── Voice helpers — always Maya (female) ────────────────────────────────────
-// Priority-ordered female voice name fragments across macOS, Windows, Chrome, Firefox
+// ── Voice helpers — Smith (male, clear) ─────────────────────────────────────
+// Priority-ordered male voice name fragments across macOS, Windows, Chrome, Firefox
+const MALE_VOICE_FRAGMENTS = [
+  'Daniel',            // macOS — clear British male
+  'Google UK English Male',
+  'Microsoft David',
+  'Microsoft Mark',
+  'Microsoft Guy',
+  'Alex',              // macOS English male
+  'Fred',
+  'Tom',
+  'Gordon',
+  'Reed',
+  'en-US-GuyNeural',
+  'en-GB-RyanNeural',
+];
+
+// Voices to exclude (known female)
 const FEMALE_VOICE_FRAGMENTS = [
   'Samantha', 'Karen', 'Victoria', 'Moira', 'Tessa', 'Fiona', 'Veena',
-  'Google US English', // Chrome macOS — typically female by default
-  'Microsoft Zira', 'Microsoft Eva', 'Microsoft Jenny', 'Microsoft Aria',
-  'Jenny', 'Aria', 'Sonia', 'Susan', 'Linda', 'Emma', 'Amy', 'Joanna',
-  'en-US-Jenny', 'en-US-Aria', 'en-GB-Sonia', 'en-AU-Natasha',
-  'female', 'Female',
+  'Google US English', 'Microsoft Zira', 'Microsoft Eva', 'Microsoft Jenny',
+  'Microsoft Aria', 'Jenny', 'Aria', 'Sonia', 'Susan', 'Linda', 'Emma',
+  'Amy', 'Joanna', 'en-US-Jenny', 'en-US-Aria', 'en-GB-Sonia',
 ];
 
-// Voices to explicitly exclude (known male)
-const MALE_VOICE_FRAGMENTS = [
-  'Daniel', 'Alex', 'Fred', 'Tom', 'Gordon', 'Lee', 'Reed', 'Ralph',
-  'Google UK English Male', 'Microsoft David', 'Microsoft Mark', 'Microsoft Guy',
-  'Guy', 'David', 'Mark', 'Ryan', 'en-US-Guy', 'male', 'Male',
-];
-
-function getFemaleVoice(): SpeechSynthesisVoice | null {
+function getMaleVoice(): SpeechSynthesisVoice | null {
   if (!window.speechSynthesis) return null;
   const voices = window.speechSynthesis.getVoices();
   if (!voices.length) return null;
 
-  // 1. Explicit female match
+  // 1. Explicit male name match
   const explicit = voices.find(v =>
-    FEMALE_VOICE_FRAGMENTS.some(f => v.name.includes(f))
+    MALE_VOICE_FRAGMENTS.some(f => v.name.includes(f))
   );
   if (explicit) return explicit;
 
-  // 2. Any en-US voice that isn't explicitly male
-  const enUS = voices.find(v =>
-    v.lang === 'en-US' && !MALE_VOICE_FRAGMENTS.some(f => v.name.includes(f))
+  // 2. Any en-GB voice (often male on macOS/Windows)
+  const enGB = voices.find(v =>
+    v.lang === 'en-GB' && !FEMALE_VOICE_FRAGMENTS.some(f => v.name.includes(f))
   );
-  if (enUS) return enUS;
+  if (enGB) return enGB;
 
-  // 3. Any English voice that isn't explicitly male
+  // 3. Any English voice not in known-female list
   const enAny = voices.find(v =>
-    v.lang.startsWith('en') && !MALE_VOICE_FRAGMENTS.some(f => v.name.includes(f))
+    v.lang.startsWith('en') && !FEMALE_VOICE_FRAGMENTS.some(f => v.name.includes(f))
   );
   if (enAny) return enAny;
 
-  // 4. Absolute fallback — first available voice
+  // 4. First available voice
   return voices[0] || null;
 }
 
@@ -62,6 +69,12 @@ const ROLE_QUESTIONS: Record<string, string[]> = {
     "How do you ensure code quality in a fast-moving team? What processes do you rely on?",
     "Describe a time you refactored a large codebase. What was your approach and what was the outcome?",
     "How do you handle technical debt in a product that needs constant new features?",
+    "How do you decide between building something custom versus using a third-party library?",
+    "Walk me through how you would conduct a thorough code review for a critical feature.",
+    "How do you approach writing tests for legacy code that has none?",
+    "Describe your process for estimating the complexity and time needed for a new feature.",
+    "How do you handle disagreements with a senior engineer on a technical decision?",
+    "What does good documentation look like to you and how do you enforce it in a team?",
   ],
   'Product Manager': [
     "How do you decide which features to build next when you have 10 competing priorities?",
@@ -70,6 +83,12 @@ const ROLE_QUESTIONS: Record<string, string[]> = {
     "Describe a situation where data and user feedback were contradicting each other. What did you do?",
     "How do you work with engineering when they say your proposed timeline is unrealistic?",
     "How do you handle stakeholders who keep changing requirements mid-sprint?",
+    "What does your discovery process look like before you write a single line of spec?",
+    "How do you say no to a feature request from a senior executive without damaging the relationship?",
+    "Describe a product launch that did not go as planned. What did you learn?",
+    "How do you align a cross-functional team around a single product vision?",
+    "How do you approach pricing decisions for a new product or feature?",
+    "Walk me through how you define and track your north star metric.",
   ],
   'Data Scientist': [
     "How would you approach building a churn prediction model from scratch?",
@@ -78,6 +97,12 @@ const ROLE_QUESTIONS: Record<string, string[]> = {
     "Describe how you would design an A/B test to evaluate a new recommendation algorithm.",
     "How do you handle class imbalance in a classification problem?",
     "Walk me through how you would clean and prepare a messy real-world dataset for modeling.",
+    "How do you decide which features to include or exclude when building a model?",
+    "Describe a time your analysis challenged an assumption leadership strongly believed.",
+    "How do you detect and handle data drift in a production machine learning model?",
+    "What is your approach to model explainability for regulated industries?",
+    "How would you build a recommendation system for a platform with limited historical data?",
+    "How do you communicate uncertainty in your predictions to business stakeholders?",
   ],
   'UI/UX Designer': [
     "Walk me through your end-to-end design process for a recent project you're proud of.",
@@ -86,6 +111,12 @@ const ROLE_QUESTIONS: Record<string, string[]> = {
     "Describe a time your design was challenged by developers or stakeholders. How did you handle it?",
     "How do you validate that a design solution actually solves the user's problem?",
     "How do you approach designing for accessibility from the start?",
+    "How do you design for multiple platforms while keeping a consistent experience?",
+    "Describe a time you had to redesign something due to poor usability data. What changed?",
+    "How do you present your design rationale to stakeholders who are not designers?",
+    "What is your approach to building and maintaining a design system?",
+    "How do you handle situations where engineering says a design is too complex to implement?",
+    "How do you incorporate feedback from usability testing without losing the design vision?",
   ],
   'Marketing Manager': [
     "How do you build a go-to-market strategy for a new product launch?",
@@ -94,6 +125,12 @@ const ROLE_QUESTIONS: Record<string, string[]> = {
     "How do you decide how to allocate a limited marketing budget across channels?",
     "Describe a time a campaign didn't perform as expected. What did you do?",
     "How do you keep messaging consistent across multiple markets or audiences?",
+    "How do you use data to make decisions about content strategy?",
+    "Describe how you would build a brand from scratch with a limited budget.",
+    "How do you align marketing goals with overall business objectives?",
+    "How do you evaluate whether an influencer or partnership opportunity is worth pursuing?",
+    "Describe a time you had to pivot a campaign strategy mid-execution.",
+    "How do you approach marketing to multiple buyer personas within the same product?",
   ],
   'Business Analyst': [
     "How do you gather and validate requirements from multiple conflicting stakeholders?",
@@ -102,6 +139,12 @@ const ROLE_QUESTIONS: Record<string, string[]> = {
     "Describe a time your analysis directly influenced a major business decision.",
     "How do you handle a situation where stakeholders reject your recommendations?",
     "What techniques do you use to identify root causes of business performance issues?",
+    "How do you ensure your requirements documentation stays current as a project evolves?",
+    "Describe how you would facilitate a requirements workshop with 15 stakeholders.",
+    "How do you bridge the gap between what business stakeholders want and what is technically feasible?",
+    "What is your approach to defining acceptance criteria for complex user stories?",
+    "How do you handle ambiguity when key information is missing at the start of a project?",
+    "Describe a time you uncovered a hidden business requirement that changed the project scope.",
   ],
   'Sales Executive': [
     "Walk me through your typical process from initial outreach to closing a deal.",
@@ -110,6 +153,12 @@ const ROLE_QUESTIONS: Record<string, string[]> = {
     "How do you build trust with a new client in the first 30 days?",
     "How do you handle objections around pricing without immediately discounting?",
     "How do you manage a large pipeline and decide where to spend your time?",
+    "How do you research a prospect before a first meeting?",
+    "Describe a time you lost a deal. What did you learn from it?",
+    "How do you maintain long-term relationships with clients after the deal is closed?",
+    "How do you approach upselling or cross-selling to an existing account?",
+    "How do you stay motivated during a quarter where results are not coming in?",
+    "Describe how you would build a territory plan if you were starting from scratch.",
   ],
   'HR Manager': [
     "How do you design a recruitment process that reduces bias and improves quality of hire?",
@@ -118,6 +167,12 @@ const ROLE_QUESTIONS: Record<string, string[]> = {
     "Describe a time you had to deliver difficult feedback to a senior leader.",
     "How do you build a culture of continuous feedback in an organization that resists it?",
     "How do you handle a situation where a manager is underperforming but leadership likes them?",
+    "How do you design a compensation structure that is competitive and internally equitable?",
+    "Describe how you approach building a DEI strategy that goes beyond box-checking.",
+    "How do you handle an employee who is at risk of leaving due to a competing offer?",
+    "What does a strong onboarding program look like to you and how do you measure its success?",
+    "How do you support managers in having career development conversations with their teams?",
+    "Describe a time you had to manage a large-scale organizational change. How did you handle it?",
   ],
   'DevOps Engineer': [
     "How would you design a CI/CD pipeline for a microservices-based application?",
@@ -126,6 +181,12 @@ const ROLE_QUESTIONS: Record<string, string[]> = {
     "How do you balance deployment speed with system reliability and rollback safety?",
     "Describe how you would set up monitoring and alerting for a new service.",
     "How do you manage secrets and credentials securely across environments?",
+    "How would you approach migrating a monolithic application to containers?",
+    "Describe how you have handled capacity planning for a high-traffic event.",
+    "How do you manage configuration drift across many servers or environments?",
+    "Walk me through your approach to disaster recovery planning and testing.",
+    "How do you evaluate and introduce new tools into an existing DevOps stack?",
+    "Describe a post-mortem process you followed after a significant incident.",
   ],
   'Finance Analyst': [
     "Walk me through how you would build a financial model to evaluate a new business opportunity.",
@@ -134,6 +195,12 @@ const ROLE_QUESTIONS: Record<string, string[]> = {
     "How do you approach variance analysis when actuals differ significantly from budget?",
     "How do you ensure the accuracy and integrity of financial reports under tight deadlines?",
     "How would you evaluate whether the company should build versus buy a software tool?",
+    "How do you approach sensitivity analysis and scenario planning in your models?",
+    "Describe a time you identified a cost reduction opportunity that leadership hadn't seen.",
+    "How do you make financial data meaningful to non-finance audiences?",
+    "Walk me through how you would run the annual budgeting process from start to finish.",
+    "How do you handle pressure from business units to hit a number that isn't achievable?",
+    "Describe your approach to forecasting when historical data is limited or unreliable.",
   ],
   'Project Manager': [
     "How do you keep a project on track when scope, timeline, and budget are all under pressure?",
@@ -142,6 +209,12 @@ const ROLE_QUESTIONS: Record<string, string[]> = {
     "Describe how you communicate project status and risks to senior stakeholders.",
     "How do you manage scope creep without damaging your relationship with the client?",
     "What does your project kickoff process look like and why?",
+    "How do you build alignment among stakeholders who have conflicting priorities?",
+    "Describe a time a project failed. What happened and what did you do differently after?",
+    "How do you motivate a team that is burned out in the middle of a long project?",
+    "How do you manage risk on a project with a lot of unknowns at the start?",
+    "Describe your approach to lessons learned and how you apply them to future projects.",
+    "How do you handle a situation where the project sponsor becomes unresponsive?",
   ],
   'Full Stack Developer': [
     "How do you decide when to optimize for backend performance versus frontend experience?",
@@ -150,23 +223,44 @@ const ROLE_QUESTIONS: Record<string, string[]> = {
     "Describe how you handle state management in a complex frontend application.",
     "How do you design APIs that are easy for frontend teams to consume?",
     "How do you ensure your deployments don't break existing functionality?",
+    "How do you approach database schema design for a feature that may scale significantly?",
+    "Describe how you handle authentication and authorization in a web application.",
+    "How do you approach performance optimization when a page is loading too slowly?",
+    "Walk me through how you would debug a memory leak in a Node.js application.",
+    "How do you handle versioning of APIs that are consumed by multiple clients?",
+    "Describe how you approach testing strategy across the full stack.",
   ],
 };
+
+// Shuffle helper — Fisher-Yates
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 const generateQuestionsForRole = (role: string): string[] => {
   const bank = ROLE_QUESTIONS[role];
   if (bank) {
-    const shuffled = [...bank].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, TOTAL_QUESTIONS_PER_SESSION);
+    // Always shuffle so repeat sessions get different order
+    return shuffle(bank).slice(0, TOTAL_QUESTIONS_PER_SESSION);
   }
-  // Fallback for custom roles — role-specific generic questions
-  return [
+  // Fallback for custom roles — generic questions, always shuffled
+  return shuffle([
     `What does a typical day look like in your ${role} position and how do you prioritize your work?`,
     `What is the most technically challenging aspect of being a ${role} and how do you tackle it?`,
     `How do you collaborate with cross-functional teams as a ${role}?`,
     `Describe a significant problem you solved in your ${role} role. What was your approach?`,
     `How do you measure success in your ${role} position and what metrics do you track?`,
-  ];
+    `How do you stay updated with industry trends relevant to your ${role} responsibilities?`,
+    `Tell me about a time you had to influence a decision without direct authority as a ${role}.`,
+    `How do you handle pressure and tight deadlines in the ${role} role?`,
+    `Describe a project where you had to quickly learn something new to succeed as a ${role}.`,
+    `How do you approach building relationships with key stakeholders in your ${role}?`,
+  ]).slice(0, TOTAL_QUESTIONS_PER_SESSION);
 };
 
 export default function MockInterviewPage() {
@@ -181,7 +275,7 @@ export default function MockInterviewPage() {
   const [waitingForNext, setWaitingForNext] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [questionsUsedToday, setQuestionsUsedToday] = useState(0);
-  const aiName = 'Maya'; // Always Maya — female voice
+  const aiName = 'Smith'; // Always Smith — male voice
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const synthRef = useRef<SpeechSynthesisUtterance | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -240,12 +334,12 @@ export default function MockInterviewPage() {
       if (!window.speechSynthesis) { resolve(); return; }
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      // Slower, more natural pace — 0.78 feels conversational, not rushed
-      utterance.rate = 0.78;
-      // Slight pitch lift for warmth without sounding robotic
-      utterance.pitch = 1.05;
+      // Clear, measured male voice — 0.82 is natural without being slow
+      utterance.rate = 0.82;
+      // Slightly lowered pitch for a confident, clear male tone
+      utterance.pitch = 0.95;
       utterance.volume = 1.0;
-      const voice = getFemaleVoice();
+      const voice = getMaleVoice();
       if (voice) utterance.voice = voice;
       utterance.onstart = () => setIsSpeaking(true);
       utterance.onend = () => { setIsSpeaking(false); resolve(); };
@@ -272,17 +366,17 @@ export default function MockInterviewPage() {
     setCurrentQuestionIndex(-1);
     setCurrentQuestion('');
 
-    // Introduction — Maya always, with natural pauses between lines
-    await speakWithPause(`Hi there! I'm Maya, your AI interviewer from Helply AI.`, 500);
+    // Introduction — Smith (male)
+    await speakWithPause(`Hi there. I'm Smith, your AI interviewer from Helply AI.`, 500);
     await speakWithPause(`Today I'll be conducting your mock interview for the ${activeRole} role.`, 400);
-    await speakWithPause(`We'll go through ${TOTAL_QUESTIONS_PER_SESSION} questions. Take all the time you need to answer each one. When you're ready to move on, just click the Next Question button.`, 500);
-    await speakWithPause(`Alright... let's get started!`, 800);
+    await speakWithPause(`I'll be asking you a series of questions. Take your time, answer as fully as you can, and when you're done just click Next Question.`, 500);
+    await speakWithPause(`Alright, let's begin.`, 900);
 
     setIsIntro(false);
     setCurrentQuestionIndex(0);
     setCurrentQuestion(qs[0]);
     incrementUsage();
-    await speakWithPause(`Here's your first question.`, 400);
+    await speakWithPause(`Here's your first question.`, 450);
     await speakText(qs[0]);
     setWaitingForNext(true);
   };
@@ -293,15 +387,27 @@ export default function MockInterviewPage() {
     if (nextIdx >= questions.length) {
       setWaitingForNext(false);
       setIsComplete(true);
-      await speakWithPause(`And... that's a wrap!`, 500);
-      await speakText(`You've completed all ${TOTAL_QUESTIONS_PER_SESSION} questions. Excellent work! Open the Helply AI chatbot to review ideal answers for each question.`);
+      await speakWithPause(`And that brings us to the end of the interview.`, 600);
+      await speakText(`You've done a great job working through all the questions. Open the Helply AI chatbot to review ideal answers and feedback for each one. Well done!`);
       return;
     }
     setWaitingForNext(false);
     setCurrentQuestionIndex(nextIdx);
     setCurrentQuestion(questions[nextIdx]);
     incrementUsage();
-    await speakWithPause(`Great. Here's question ${nextIdx + 1}.`, 400);
+    // Conversational transitions — rotated so they don't repeat
+    const transitions = [
+      "That's a great answer. Here's the next one.",
+      "Good. Let's keep going.",
+      "Great response. Moving on.",
+      "Excellent. Here's your next question.",
+      "Nice. Let's continue.",
+      "Thank you for that. Here's the next question.",
+      "Alright, next one.",
+      "Very good. Moving forward.",
+    ];
+    const transition = transitions[nextIdx % transitions.length];
+    await speakWithPause(transition, 450);
     await speakText(questions[nextIdx]);
     setWaitingForNext(true);
   };
@@ -326,7 +432,7 @@ export default function MockInterviewPage() {
         ? 'Interview Complete'
         : isSpeaking
           ? `${aiName} is speaking...`
-          : 'Your turn — answer freely';
+          : 'I am listening... answer now';
 
     return (
       <div className="mock-meeting-room" style={{
@@ -419,29 +525,58 @@ export default function MockInterviewPage() {
               border: `1.5px solid rgba(99,102,241,${isSpeaking || isIntro ? '0.4' : '0.1'})`,
               animation: isSpeaking || isIntro ? 'ring2 1.8s ease-out infinite 0.4s' : 'none',
             }} />
+            {/* Listening ripple rings — only when waiting for user answer */}
+            {!isSpeaking && !isIntro && !isComplete && (<>
+              <div style={{
+                position: 'absolute', inset: -45, borderRadius: '50%',
+                border: '1.5px solid rgba(34,197,94,0.25)',
+                animation: 'listenRing1 2.2s ease-out infinite',
+              }} />
+              <div style={{
+                position: 'absolute', inset: -60, borderRadius: '50%',
+                border: '1px solid rgba(34,197,94,0.15)',
+                animation: 'listenRing2 2.2s ease-out infinite 0.55s',
+              }} />
+              <div style={{
+                position: 'absolute', inset: -75, borderRadius: '50%',
+                border: '1px solid rgba(34,197,94,0.08)',
+                animation: 'listenRing3 2.2s ease-out infinite 1.1s',
+              }} />
+            </>)}
+
             {/* Avatar circle */}
             <div style={{
               width: 140, height: 140, borderRadius: '50%',
               background: isSpeaking || isIntro
                 ? 'linear-gradient(135deg, #6366f1, #8b5cf6)'
-                : 'linear-gradient(135deg, #4338ca, #6d28d9)',
+                : !isComplete
+                  ? 'linear-gradient(135deg, #065f46, #047857)' // green tint when listening
+                  : 'linear-gradient(135deg, #374151, #4b5563)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              border: `3px solid ${isSpeaking || isIntro ? 'rgba(167,139,250,0.9)' : 'rgba(99,102,241,0.35)'}`,
+              border: `3px solid ${
+                isSpeaking || isIntro
+                  ? 'rgba(167,139,250,0.9)'
+                  : !isComplete
+                    ? 'rgba(52,211,153,0.5)'
+                    : 'rgba(107,114,128,0.3)'
+              }`,
               boxShadow: isSpeaking || isIntro
                 ? '0 0 50px rgba(99,102,241,0.7), 0 0 100px rgba(99,102,241,0.25)'
-                : '0 4px 24px rgba(99,102,241,0.25)',
-              transition: 'all 0.4s ease',
+                : !isComplete
+                  ? '0 0 40px rgba(52,211,153,0.35), 0 0 80px rgba(52,211,153,0.12)'
+                  : '0 4px 24px rgba(0,0,0,0.3)',
+              transition: 'all 0.5s ease',
               position: 'relative', zIndex: 1, flexShrink: 0,
             }}>
               <span style={{ fontSize: 52, fontWeight: 700, color: '#fff', letterSpacing: '-2px' }}>
-                M
+                S
               </span>
             </div>
           </div>
 
           {/* AI Name + status */}
           <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <div style={{ color: '#fff', fontSize: 24, fontWeight: 700, marginBottom: 8, letterSpacing: '-0.5px' }}>Maya</div>
+            <div style={{ color: '#fff', fontSize: 24, fontWeight: 700, marginBottom: 8, letterSpacing: '-0.5px' }}>Smith</div>
             <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginBottom: 12, fontWeight: 500 }}>AI Interviewer · Helply AI</div>
             {/* Status pill */}
             <div style={{
@@ -468,11 +603,13 @@ export default function MockInterviewPage() {
                 </div>
               )}
               {!isSpeaking && !isIntro && !isComplete && (
-                <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                  {[0.5, 0.65, 0.8].map((dur, i) => (
+                <div style={{ display: 'flex', gap: 3, alignItems: 'center', height: 18 }}>
+                  {[0.35, 0.5, 0.42, 0.58, 0.38, 0.52].map((dur, i) => (
                     <div key={i} style={{
-                      width: 7, height: 7, borderRadius: '50%', background: '#4ade80',
-                      animation: `dotBounce ${dur}s ease-in-out infinite alternate`,
+                      width: 3, borderRadius: 3,
+                      background: 'linear-gradient(to top, #34d399, #6ee7b7)',
+                      animation: `listenBar ${dur}s ease-in-out infinite alternate`,
+                      minHeight: 4,
                     }} />
                   ))}
                 </div>
@@ -482,7 +619,7 @@ export default function MockInterviewPage() {
               )}
               <span style={{
                 fontSize: 12, fontWeight: 600, letterSpacing: '0.02em',
-                color: isComplete ? '#9ca3af' : isSpeaking || isIntro ? '#c4b5fd' : '#86efac',
+                color: isComplete ? '#9ca3af' : isSpeaking || isIntro ? '#c4b5fd' : '#6ee7b7',
               }}>
                 {statusLabel}
               </span>
@@ -503,14 +640,14 @@ export default function MockInterviewPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
                 <span style={{
                   padding: '4px 12px', borderRadius: 8, fontSize: 11, fontWeight: 700,
-                  background: 'rgba(99,102,241,0.2)', color: '#a5b4fc',
-                  border: '1px solid rgba(99,102,241,0.25)',
+                  background: 'rgba(99,102,241,0.18)', color: '#a5b4fc',
+                  border: '1px solid rgba(99,102,241,0.22)',
                 }}>
-                  Question {currentQuestionIndex + 1} of {TOTAL_QUESTIONS_PER_SESSION}
+                  Interview Question
                 </span>
                 {isSpeaking && (
                   <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontStyle: 'italic' }}>
-                    Maya is reading aloud...
+                    Smith is speaking...
                   </span>
                 )}
               </div>
@@ -570,20 +707,7 @@ export default function MockInterviewPage() {
             </div>
           )}
 
-          {/* Progress bar */}
-          {!isIntro && !isComplete && (
-            <div style={{ display: 'flex', gap: 6, maxWidth: 700, width: '100%', marginTop: 4 }}>
-              {Array.from({ length: TOTAL_QUESTIONS_PER_SESSION }).map((_, i) => (
-                <div key={i} style={{
-                  flex: 1, height: 3, borderRadius: 3,
-                  background: i <= currentQuestionIndex
-                    ? 'linear-gradient(90deg, #6366f1, #a78bfa)'
-                    : 'rgba(255,255,255,0.1)',
-                  transition: 'background 0.4s',
-                }} />
-              ))}
-            </div>
-          )}
+          {/* No progress bar — questions are open-ended, no count shown */}
         </div>
 
         {/* ── Bottom controls ── */}
@@ -689,6 +813,22 @@ export default function MockInterviewPage() {
             0%, 100% { opacity: 1;   box-shadow: 0 0 8px #22c55e; }
             50%       { opacity: 0.4; box-shadow: 0 0 2px #22c55e; }
           }
+          @keyframes listenBar {
+            from { height: 4px;  opacity: 0.7; }
+            to   { height: 20px; opacity: 1;   }
+          }
+          @keyframes listenRing1 {
+            0%   { transform: scale(1);    opacity: 0.6; }
+            100% { transform: scale(1.5);  opacity: 0; }
+          }
+          @keyframes listenRing2 {
+            0%   { transform: scale(1);    opacity: 0.4; }
+            100% { transform: scale(1.4);  opacity: 0; }
+          }
+          @keyframes listenRing3 {
+            0%   { transform: scale(1);    opacity: 0.2; }
+            100% { transform: scale(1.35); opacity: 0; }
+          }
         `}</style>
       </div>
     );
@@ -782,7 +922,7 @@ export default function MockInterviewPage() {
       }}>
         <div style={{ width: 7, height: 7, borderRadius: '50%', background: remainingToday > 0 ? '#22c55e' : '#ef4444' }} />
         <span style={{ fontSize: 12, fontWeight: 600, color: remainingToday > 0 ? '#16a34a' : '#dc2626' }}>
-          {remainingToday} / {MAX_DAILY_QUESTIONS} questions left today
+          {remainingToday > 0 ? 'Questions available today' : 'Daily limit reached'}
         </span>
       </div>
 
