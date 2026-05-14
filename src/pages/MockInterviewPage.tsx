@@ -232,13 +232,18 @@ export default function MockInterviewPage() {
     });
   }, []);
 
+  // Small helper: pause for ms milliseconds
+  const pause = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
+
   const speakText = useCallback((text: string): Promise<void> => {
     return new Promise((resolve) => {
       if (!window.speechSynthesis) { resolve(); return; }
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.9;
-      utterance.pitch = 1.2;  // Higher pitch reinforces female sound on any fallback voice
+      // Slower, more natural pace — 0.78 feels conversational, not rushed
+      utterance.rate = 0.78;
+      // Slight pitch lift for warmth without sounding robotic
+      utterance.pitch = 1.05;
       utterance.volume = 1.0;
       const voice = getFemaleVoice();
       if (voice) utterance.voice = voice;
@@ -249,6 +254,12 @@ export default function MockInterviewPage() {
       window.speechSynthesis.speak(utterance);
     });
   }, []);
+
+  // Speak with a natural pause between sentences
+  const speakWithPause = useCallback(async (text: string, afterMs = 600) => {
+    await speakText(text);
+    await pause(afterMs);
+  }, [speakText]);
 
   const startInterview = async () => {
     if (!activeRole) return;
@@ -261,17 +272,18 @@ export default function MockInterviewPage() {
     setCurrentQuestionIndex(-1);
     setCurrentQuestion('');
 
-    // Introduction — Maya always
-    await speakText(`Hi! I'm Maya, your AI interviewer from Helply AI.`);
-    await speakText(`Today, I'll be taking your mock interview for the ${activeRole} role.`);
-    await speakText(`We'll go through ${TOTAL_QUESTIONS_PER_SESSION} questions. Take your time to answer each one fully. When you're done with your answer, click Next Question and I'll move on.`);
-    await speakText(`Alright, let's get started!`);
+    // Introduction — Maya always, with natural pauses between lines
+    await speakWithPause(`Hi there! I'm Maya, your AI interviewer from Helply AI.`, 500);
+    await speakWithPause(`Today I'll be conducting your mock interview for the ${activeRole} role.`, 400);
+    await speakWithPause(`We'll go through ${TOTAL_QUESTIONS_PER_SESSION} questions. Take all the time you need to answer each one. When you're ready to move on, just click the Next Question button.`, 500);
+    await speakWithPause(`Alright... let's get started!`, 800);
 
     setIsIntro(false);
     setCurrentQuestionIndex(0);
     setCurrentQuestion(qs[0]);
     incrementUsage();
-    await speakText(`Question 1. ${qs[0]}`);
+    await speakWithPause(`Here's your first question.`, 400);
+    await speakText(qs[0]);
     setWaitingForNext(true);
   };
 
@@ -281,14 +293,16 @@ export default function MockInterviewPage() {
     if (nextIdx >= questions.length) {
       setWaitingForNext(false);
       setIsComplete(true);
-      await speakText(`That's a wrap! You've completed all ${TOTAL_QUESTIONS_PER_SESSION} questions. Great job! Open the Helply AI chatbot to review ideal answers for each question.`);
+      await speakWithPause(`And... that's a wrap!`, 500);
+      await speakText(`You've completed all ${TOTAL_QUESTIONS_PER_SESSION} questions. Excellent work! Open the Helply AI chatbot to review ideal answers for each question.`);
       return;
     }
     setWaitingForNext(false);
     setCurrentQuestionIndex(nextIdx);
     setCurrentQuestion(questions[nextIdx]);
     incrementUsage();
-    await speakText(`Question ${nextIdx + 1}. ${questions[nextIdx]}`);
+    await speakWithPause(`Great. Here's question ${nextIdx + 1}.`, 400);
+    await speakText(questions[nextIdx]);
     setWaitingForNext(true);
   };
 
@@ -306,56 +320,68 @@ export default function MockInterviewPage() {
 
   // ── ACTIVE INTERVIEW — Full-screen dark meeting room ────────────────────────
   if (isInterviewing) {
-    const avatarInitial = aiName === 'Maya' ? 'M' : 'S';
     const statusLabel = isIntro
       ? `${aiName} is introducing...`
       : isComplete
         ? 'Interview Complete'
         : isSpeaking
           ? `${aiName} is speaking...`
-          : 'Your turn to answer';
+          : 'Your turn — answer freely';
 
     return (
       <div className="mock-meeting-room" style={{
         position: 'fixed', inset: 0, zIndex: 200,
-        background: 'linear-gradient(160deg, #0d0d0d 0%, #111827 60%, #0a0a1a 100%)',
+        background: 'linear-gradient(180deg, #0c0c14 0%, #0f1729 55%, #0c0c14 100%)',
         display: 'flex', flexDirection: 'column',
         fontFamily: '-apple-system, system-ui, sans-serif',
       }}>
         {/* ── Top bar ── */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '14px 24px',
-          background: 'rgba(255,255,255,0.04)',
-          borderBottom: '1px solid rgba(255,255,255,0.07)',
-          backdropFilter: 'blur(12px)',
+          padding: '12px 28px',
+          background: 'rgba(0,0,0,0.4)',
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          backdropFilter: 'blur(20px)',
           flexShrink: 0,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{
-              width: 8, height: 8, borderRadius: '50%',
-              background: isComplete ? '#6b7280' : '#22c55e',
-              boxShadow: isComplete ? 'none' : '0 0 8px #22c55e',
-              animation: (!isComplete && !isSpeaking && waitingForNext) ? 'livePulse 2s ease-in-out infinite' : 'none',
-            }} />
-            <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: 14, fontWeight: 600 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {/* Live indicator */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6,
+              padding: '4px 10px', borderRadius: 20,
+              background: isComplete ? 'rgba(107,114,128,0.15)' : 'rgba(34,197,94,0.12)',
+              border: `1px solid ${isComplete ? 'rgba(107,114,128,0.2)' : 'rgba(34,197,94,0.25)'}`,
+            }}>
+              <div style={{
+                width: 7, height: 7, borderRadius: '50%',
+                background: isComplete ? '#6b7280' : '#22c55e',
+                boxShadow: isComplete ? 'none' : '0 0 6px #22c55e',
+                animation: (!isComplete) ? 'livePulse 2s ease-in-out infinite' : 'none',
+              }} />
+              <span style={{ color: isComplete ? '#6b7280' : '#4ade80', fontSize: 11, fontWeight: 700, letterSpacing: '0.05em' }}>
+                {isComplete ? 'ENDED' : 'LIVE'}
+              </span>
+            </div>
+            <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13, fontWeight: 600 }}>
               Helply AI — Mock Interview
             </span>
             <span style={{
               padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600,
-              background: 'rgba(37,99,235,0.25)', color: '#93c5fd',
-              border: '1px solid rgba(37,99,235,0.35)',
+              background: 'rgba(99,102,241,0.2)', color: '#a5b4fc',
+              border: '1px solid rgba(99,102,241,0.3)',
             }}>{activeRole}</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, fontFamily: 'monospace' }}>
-              {formatTime(elapsedSeconds)}
-            </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
             {!isComplete && (
-              <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>
-                {currentQuestionIndex >= 0 ? `Q${currentQuestionIndex + 1}/${TOTAL_QUESTIONS_PER_SESSION}` : 'Intro'}
+              <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontWeight: 500 }}>
+                {currentQuestionIndex >= 0 ? `Question ${currentQuestionIndex + 1} of ${TOTAL_QUESTIONS_PER_SESSION}` : 'Introduction'}
               </span>
             )}
+            <span style={{
+              color: 'rgba(255,255,255,0.6)', fontSize: 14, fontFamily: 'monospace', fontWeight: 600,
+              background: 'rgba(255,255,255,0.06)', padding: '3px 10px', borderRadius: 8,
+            }}>
+              {formatTime(elapsedSeconds)}
+            </span>
           </div>
         </div>
 
@@ -363,88 +389,100 @@ export default function MockInterviewPage() {
         <div style={{
           flex: 1, display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center',
-          padding: '24px 24px 0',
-          overflow: 'hidden',
+          padding: '32px 32px 0',
+          overflow: 'hidden', gap: 0,
         }}>
 
           {/* AI Avatar with pulse rings */}
-          <div style={{ position: 'relative', marginBottom: 28 }}>
-            {/* Outer pulse ring 1 */}
+          <div style={{ position: 'relative', marginBottom: 24, flexShrink: 0 }}>
+            {/* Outermost ambient glow — always present, brighter when speaking */}
             <div style={{
-              position: 'absolute', inset: -28, borderRadius: '50%',
-              border: `2px solid ${isSpeaking ? 'rgba(99,102,241,0.5)' : 'rgba(99,102,241,0.15)'}`,
-              animation: isSpeaking ? 'ring1 1.4s ease-out infinite' : 'none',
+              position: 'absolute',
+              top: '50%', left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 220, height: 220, borderRadius: '50%',
+              background: isSpeaking || isIntro
+                ? 'radial-gradient(circle, rgba(99,102,241,0.22) 0%, transparent 70%)'
+                : 'radial-gradient(circle, rgba(99,102,241,0.07) 0%, transparent 70%)',
+              transition: 'background 0.5s',
+              pointerEvents: 'none',
             }} />
-            {/* Outer pulse ring 2 */}
+            {/* Pulse ring 1 */}
             <div style={{
-              position: 'absolute', inset: -14, borderRadius: '50%',
-              border: `2px solid ${isSpeaking ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.1)'}`,
-              animation: isSpeaking ? 'ring2 1.4s ease-out infinite 0.3s' : 'none',
+              position: 'absolute', inset: -30, borderRadius: '50%',
+              border: `1.5px solid rgba(99,102,241,${isSpeaking || isIntro ? '0.55' : '0.12'})`,
+              animation: isSpeaking || isIntro ? 'ring1 1.8s ease-out infinite' : 'none',
             }} />
-            {/* Glow bg */}
+            {/* Pulse ring 2 */}
             <div style={{
-              position: 'absolute', inset: -6, borderRadius: '50%',
-              background: isSpeaking
-                ? 'radial-gradient(circle, rgba(99,102,241,0.35) 0%, transparent 70%)'
-                : 'radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%)',
-              transition: 'all 0.4s',
+              position: 'absolute', inset: -16, borderRadius: '50%',
+              border: `1.5px solid rgba(99,102,241,${isSpeaking || isIntro ? '0.4' : '0.1'})`,
+              animation: isSpeaking || isIntro ? 'ring2 1.8s ease-out infinite 0.4s' : 'none',
             }} />
             {/* Avatar circle */}
             <div style={{
-              width: 120, height: 120, borderRadius: '50%',
-              background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+              width: 140, height: 140, borderRadius: '50%',
+              background: isSpeaking || isIntro
+                ? 'linear-gradient(135deg, #6366f1, #8b5cf6)'
+                : 'linear-gradient(135deg, #4338ca, #6d28d9)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              border: `3px solid ${isSpeaking ? 'rgba(167,139,250,0.8)' : 'rgba(99,102,241,0.4)'}`,
-              boxShadow: isSpeaking
-                ? '0 0 40px rgba(99,102,241,0.6), 0 0 80px rgba(99,102,241,0.3)'
-                : '0 0 20px rgba(99,102,241,0.2)',
-              transition: 'all 0.3s',
-              position: 'relative', zIndex: 1,
+              border: `3px solid ${isSpeaking || isIntro ? 'rgba(167,139,250,0.9)' : 'rgba(99,102,241,0.35)'}`,
+              boxShadow: isSpeaking || isIntro
+                ? '0 0 50px rgba(99,102,241,0.7), 0 0 100px rgba(99,102,241,0.25)'
+                : '0 4px 24px rgba(99,102,241,0.25)',
+              transition: 'all 0.4s ease',
+              position: 'relative', zIndex: 1, flexShrink: 0,
             }}>
-              <span style={{ fontSize: 42, fontWeight: 700, color: '#fff', letterSpacing: '-1px' }}>
-                {avatarInitial}
+              <span style={{ fontSize: 52, fontWeight: 700, color: '#fff', letterSpacing: '-2px' }}>
+                M
               </span>
             </div>
           </div>
 
           {/* AI Name + status */}
-          <div style={{ textAlign: 'center', marginBottom: 20 }}>
-            <div style={{ color: '#fff', fontSize: 22, fontWeight: 700, marginBottom: 6 }}>{aiName}</div>
+          <div style={{ textAlign: 'center', marginBottom: 24 }}>
+            <div style={{ color: '#fff', fontSize: 24, fontWeight: 700, marginBottom: 8, letterSpacing: '-0.5px' }}>Maya</div>
+            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginBottom: 12, fontWeight: 500 }}>AI Interviewer · Helply AI</div>
+            {/* Status pill */}
             <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: 7,
-              padding: '5px 14px', borderRadius: 20,
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '7px 18px', borderRadius: 24,
               background: isComplete
-                ? 'rgba(107,114,128,0.2)'
+                ? 'rgba(107,114,128,0.15)'
                 : isSpeaking || isIntro
-                  ? 'rgba(99,102,241,0.2)'
-                  : 'rgba(34,197,94,0.15)',
-              border: `1px solid ${isComplete ? 'rgba(107,114,128,0.3)' : isSpeaking || isIntro ? 'rgba(99,102,241,0.4)' : 'rgba(34,197,94,0.3)'}`,
+                  ? 'rgba(99,102,241,0.18)'
+                  : 'rgba(34,197,94,0.12)',
+              border: `1px solid ${isComplete ? 'rgba(107,114,128,0.25)' : isSpeaking || isIntro ? 'rgba(99,102,241,0.35)' : 'rgba(34,197,94,0.25)'}`,
+              transition: 'all 0.3s',
             }}>
               {(isSpeaking || isIntro) && !isComplete && (
-                <div style={{ display: 'flex', gap: 3, alignItems: 'center' }}>
-                  {[1,2,3,4,5,6,7,8].map(i => (
+                <div style={{ display: 'flex', gap: 2.5, alignItems: 'center', height: 18 }}>
+                  {[0.38, 0.52, 0.44, 0.6, 0.48, 0.56, 0.42, 0.5].map((dur, i) => (
                     <div key={i} style={{
                       width: 3, borderRadius: 3,
-                      background: '#818cf8',
-                      animation: `waveBar ${0.4 + (i % 4) * 0.12}s ease-in-out infinite alternate`,
+                      background: 'linear-gradient(to top, #818cf8, #c4b5fd)',
+                      animation: `waveBar ${dur}s ease-in-out infinite alternate`,
                       minHeight: 4,
                     }} />
                   ))}
                 </div>
               )}
               {!isSpeaking && !isIntro && !isComplete && (
-                <div style={{ display: 'flex', gap: 3, alignItems: 'center' }}>
-                  {[1,2,3].map(i => (
+                <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                  {[0.5, 0.65, 0.8].map((dur, i) => (
                     <div key={i} style={{
-                      width: 6, height: 6, borderRadius: '50%', background: '#4ade80',
-                      animation: `dotBounce ${0.5 + i * 0.15}s ease-in-out infinite alternate`,
+                      width: 7, height: 7, borderRadius: '50%', background: '#4ade80',
+                      animation: `dotBounce ${dur}s ease-in-out infinite alternate`,
                     }} />
                   ))}
                 </div>
               )}
+              {isComplete && (
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2"><path d="M20 6L9 17l-5-5"/></svg>
+              )}
               <span style={{
-                fontSize: 12, fontWeight: 600,
-                color: isComplete ? '#9ca3af' : isSpeaking || isIntro ? '#a5b4fc' : '#86efac',
+                fontSize: 12, fontWeight: 600, letterSpacing: '0.02em',
+                color: isComplete ? '#9ca3af' : isSpeaking || isIntro ? '#c4b5fd' : '#86efac',
               }}>
                 {statusLabel}
               </span>
@@ -454,24 +492,31 @@ export default function MockInterviewPage() {
           {/* Question card */}
           {!isIntro && !isComplete && currentQuestion && (
             <div style={{
-              maxWidth: 680, width: '100%',
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: 16, padding: '20px 28px',
-              backdropFilter: 'blur(16px)',
-              marginBottom: 16,
+              maxWidth: 700, width: '100%',
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.09)',
+              borderRadius: 20, padding: '24px 32px',
+              backdropFilter: 'blur(20px)',
+              marginBottom: 20,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
                 <span style={{
-                  padding: '3px 10px', borderRadius: 8, fontSize: 11, fontWeight: 700,
-                  background: 'rgba(99,102,241,0.25)', color: '#a5b4fc',
+                  padding: '4px 12px', borderRadius: 8, fontSize: 11, fontWeight: 700,
+                  background: 'rgba(99,102,241,0.2)', color: '#a5b4fc',
+                  border: '1px solid rgba(99,102,241,0.25)',
                 }}>
                   Question {currentQuestionIndex + 1} of {TOTAL_QUESTIONS_PER_SESSION}
                 </span>
+                {isSpeaking && (
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontStyle: 'italic' }}>
+                    Maya is reading aloud...
+                  </span>
+                )}
               </div>
               <p style={{
-                color: 'rgba(255,255,255,0.92)', fontSize: 16, fontWeight: 500,
-                lineHeight: 1.75, margin: 0,
+                color: 'rgba(255,255,255,0.9)', fontSize: 17, fontWeight: 500,
+                lineHeight: 1.8, margin: 0, letterSpacing: '0.01em',
               }}>
                 {currentQuestion}
               </p>
@@ -481,10 +526,16 @@ export default function MockInterviewPage() {
           {/* Intro loading state */}
           {isIntro && (
             <div style={{
-              maxWidth: 480, textAlign: 'center',
-              color: 'rgba(255,255,255,0.5)', fontSize: 14,
+              maxWidth: 480, textAlign: 'center', padding: '20px 24px',
+              background: 'rgba(255,255,255,0.03)', borderRadius: 16,
+              border: '1px solid rgba(255,255,255,0.07)',
             }}>
-              {aiName} is introducing the interview session...
+              <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14, margin: '0 0 8px', fontStyle: 'italic' }}>
+                Maya is introducing the session...
+              </p>
+              <p style={{ color: 'rgba(255,255,255,0.25)', fontSize: 12, margin: 0 }}>
+                Listen carefully — your first question will follow shortly.
+              </p>
             </div>
           )}
 
@@ -521,7 +572,7 @@ export default function MockInterviewPage() {
 
           {/* Progress bar */}
           {!isIntro && !isComplete && (
-            <div style={{ display: 'flex', gap: 6, maxWidth: 680, width: '100%', marginTop: 8 }}>
+            <div style={{ display: 'flex', gap: 6, maxWidth: 700, width: '100%', marginTop: 4 }}>
               {Array.from({ length: TOTAL_QUESTIONS_PER_SESSION }).map((_, i) => (
                 <div key={i} style={{
                   flex: 1, height: 3, borderRadius: 3,
@@ -538,50 +589,75 @@ export default function MockInterviewPage() {
         {/* ── Bottom controls ── */}
         {!isComplete && (
           <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16,
-            padding: '20px 24px 28px',
-            borderTop: '1px solid rgba(255,255,255,0.07)',
-            background: 'rgba(0,0,0,0.3)',
-            backdropFilter: 'blur(12px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14,
+            padding: '18px 32px 28px',
+            borderTop: '1px solid rgba(255,255,255,0.06)',
+            background: 'rgba(0,0,0,0.45)',
+            backdropFilter: 'blur(20px)',
             flexShrink: 0,
           }}>
+            {/* Hint text */}
+            <span style={{
+              position: 'absolute',
+              fontSize: 11, color: 'rgba(255,255,255,0.2)', fontStyle: 'italic',
+              bottom: 8, left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap',
+            }}>
+              {isSpeaking || isIntro ? 'Maya is speaking — please wait' : 'Click "Next Question" when done answering'}
+            </span>
+
             {/* Next Question */}
             <button
               onClick={nextQuestion}
               disabled={isSpeaking || isIntro}
               style={{
-                padding: '13px 32px', borderRadius: 50, fontSize: 14, fontWeight: 700,
+                padding: '14px 36px', borderRadius: 50, fontSize: 14, fontWeight: 700,
                 background: isSpeaking || isIntro
-                  ? 'rgba(255,255,255,0.08)'
-                  : 'linear-gradient(135deg, #4f46e5, #7c3aed)',
-                border: isSpeaking || isIntro ? '1px solid rgba(255,255,255,0.12)' : 'none',
-                color: isSpeaking || isIntro ? 'rgba(255,255,255,0.35)' : '#fff',
+                  ? 'rgba(255,255,255,0.07)'
+                  : 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+                border: isSpeaking || isIntro ? '1px solid rgba(255,255,255,0.1)' : '1px solid transparent',
+                color: isSpeaking || isIntro ? 'rgba(255,255,255,0.3)' : '#fff',
                 cursor: isSpeaking || isIntro ? 'not-allowed' : 'pointer',
-                display: 'flex', alignItems: 'center', gap: 8,
-                boxShadow: isSpeaking || isIntro ? 'none' : '0 4px 20px rgba(99,102,241,0.5)',
-                transition: 'all 0.2s',
+                display: 'flex', alignItems: 'center', gap: 9,
+                boxShadow: isSpeaking || isIntro ? 'none' : '0 4px 24px rgba(99,102,241,0.55)',
+                transition: 'all 0.25s',
+                letterSpacing: '0.01em',
               }}
+              onMouseEnter={e => { if (!isSpeaking && !isIntro) e.currentTarget.style.transform = 'translateY(-1px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; }}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <polygon points="5 3 19 12 5 21 5 3"/>
-              </svg>
-              {currentQuestionIndex >= TOTAL_QUESTIONS_PER_SESSION - 1
-                ? 'Finish Interview'
-                : isSpeaking || isIntro ? 'Please wait...' : 'Next Question'}
+              {isSpeaking || isIntro ? (
+                <>
+                  <div style={{ display: 'flex', gap: 3 }}>
+                    {[0,1,2].map(i => (
+                      <div key={i} style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', animation: `dotBounce ${0.4 + i * 0.15}s ease-in-out infinite alternate` }} />
+                    ))}
+                  </div>
+                  Please wait...
+                </>
+              ) : (
+                <>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3"/>
+                  </svg>
+                  {currentQuestionIndex >= TOTAL_QUESTIONS_PER_SESSION - 1 ? 'Finish Interview' : 'Next Question'}
+                </>
+              )}
             </button>
 
             {/* End meeting */}
             <button
               onClick={stopInterview}
               style={{
-                padding: '13px 24px', borderRadius: 50, fontSize: 14, fontWeight: 700,
-                background: '#dc2626', border: 'none', color: '#fff',
+                padding: '14px 28px', borderRadius: 50, fontSize: 14, fontWeight: 700,
+                background: 'rgba(220,38,38,0.85)',
+                border: '1px solid rgba(239,68,68,0.4)',
+                color: '#fff',
                 cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-                boxShadow: '0 4px 16px rgba(220,38,38,0.4)',
-                transition: 'all 0.2s',
+                boxShadow: '0 4px 20px rgba(220,38,38,0.35)',
+                transition: 'all 0.25s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#b91c1c'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#dc2626'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#dc2626'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(220,38,38,0.85)'; e.currentTarget.style.transform = 'translateY(0)'; }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C9.61 21 3 14.39 3 6a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.24 1.01l-2.21 2.2z"/>
@@ -594,12 +670,12 @@ export default function MockInterviewPage() {
         {/* ── Animations ── */}
         <style>{`
           @keyframes ring1 {
-            0%   { transform: scale(1);   opacity: 0.8; }
-            100% { transform: scale(1.35); opacity: 0; }
+            0%   { transform: scale(1);    opacity: 0.7; }
+            100% { transform: scale(1.45); opacity: 0; }
           }
           @keyframes ring2 {
-            0%   { transform: scale(1);   opacity: 0.6; }
-            100% { transform: scale(1.2); opacity: 0; }
+            0%   { transform: scale(1);    opacity: 0.5; }
+            100% { transform: scale(1.25); opacity: 0; }
           }
           @keyframes waveBar {
             from { height: 4px;  }
