@@ -3,6 +3,43 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 const MAX_DAILY_QUESTIONS = 5;
 const TOTAL_QUESTIONS_PER_SESSION = 5;
 
+// ── Voice helpers ──────────────────────────────────────────────────────────────
+function pickVoice(): { utterance: SpeechSynthesisUtterance | null; name: 'Maya' | 'Smith' } {
+  if (!window.speechSynthesis) return { utterance: null, name: 'Maya' };
+  const voices = window.speechSynthesis.getVoices();
+
+  // Female preferences → Maya
+  const femaleNames = ['Samantha', 'Karen', 'Victoria', 'Moira', 'Tessa', 'Fiona',
+    'Google US English Female', 'Microsoft Zira', 'Microsoft Eva', 'en-US-JennyNeural'];
+  const female = voices.find(v => femaleNames.some(n => v.name.includes(n)));
+  if (female) return { utterance: null, name: 'Maya' };
+
+  // Male preferences → Smith
+  const maleNames = ['Daniel', 'Alex', 'Fred', 'Tom', 'Google UK English Male',
+    'Microsoft David', 'Microsoft Mark', 'en-US-GuyNeural'];
+  const male = voices.find(v => maleNames.some(n => v.name.includes(n)));
+  if (male) return { utterance: null, name: 'Smith' };
+
+  // Fallback — pick by lang, default Maya
+  const enVoice = voices.find(v => v.lang.startsWith('en'));
+  return { utterance: null, name: enVoice ? 'Maya' : 'Maya' };
+}
+
+function getVoice(): SpeechSynthesisVoice | null {
+  if (!window.speechSynthesis) return null;
+  const voices = window.speechSynthesis.getVoices();
+  const femaleNames = ['Samantha', 'Karen', 'Victoria', 'Moira', 'Tessa', 'Fiona',
+    'Google US English Female', 'Microsoft Zira', 'Microsoft Eva'];
+  const maleNames = ['Daniel', 'Alex', 'Fred', 'Tom', 'Google UK English Male',
+    'Microsoft David', 'Microsoft Mark'];
+  return (
+    voices.find(v => femaleNames.some(n => v.name.includes(n))) ||
+    voices.find(v => maleNames.some(n => v.name.includes(n))) ||
+    voices.find(v => v.lang.startsWith('en')) ||
+    null
+  );
+}
+
 const PRESET_ROLES = [
   'Software Engineer', 'Product Manager', 'Data Scientist', 'UI/UX Designer',
   'Marketing Manager', 'Business Analyst', 'Sales Executive', 'HR Manager',
@@ -132,13 +169,26 @@ export default function MockInterviewPage() {
   const [currentQuestion, setCurrentQuestion] = useState('');
   const [questions, setQuestions] = useState<string[]>([]);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isIntro, setIsIntro] = useState(false);
   const [waitingForNext, setWaitingForNext] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [questionsUsedToday, setQuestionsUsedToday] = useState(0);
+  const [aiName, setAiName] = useState<'Maya' | 'Smith'>('Maya');
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const synthRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const activeRole = customRole.trim() || selectedRole;
   const remainingToday = MAX_DAILY_QUESTIONS - questionsUsedToday;
+
+  // Load voices and determine name
+  useEffect(() => {
+    const resolve = () => setAiName(pickVoice().name);
+    if (window.speechSynthesis) {
+      if (window.speechSynthesis.getVoices().length > 0) resolve();
+      else window.speechSynthesis.onvoiceschanged = resolve;
+    }
+  }, []);
 
   useEffect(() => {
     const today = new Date().toDateString();
@@ -149,6 +199,23 @@ export default function MockInterviewPage() {
       else localStorage.setItem('helplyai_mock_interview_usage', JSON.stringify({ date: today, count: 0 }));
     }
   }, []);
+
+  // Meeting timer
+  useEffect(() => {
+    if (isInterviewing && !isComplete) {
+      timerRef.current = setInterval(() => setElapsedSeconds(s => s + 1), 1000);
+    } else {
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (!isInterviewing) setElapsedSeconds(0);
+    }
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [isInterviewing, isComplete]);
+
+  const formatTime = (s: number) => {
+    const m = Math.floor(s / 60).toString().padStart(2, '0');
+    const ss = (s % 60).toString().padStart(2, '0');
+    return `${m}:${ss}`;
+  };
 
   const incrementUsage = useCallback(() => {
     const today = new Date().toDateString();
@@ -164,12 +231,11 @@ export default function MockInterviewPage() {
       if (!window.speechSynthesis) { resolve(); return; }
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.92;
-      utterance.pitch = 1.0;
+      utterance.rate = 0.9;
+      utterance.pitch = 1.05;
       utterance.volume = 1.0;
-      const voices = window.speechSynthesis.getVoices();
-      const preferred = voices.find(v => v.name.includes('Samantha') || v.name.includes('Daniel') || v.name.includes('Google US English'));
-      if (preferred) utterance.voice = preferred;
+      const voice = getVoice();
+      if (voice) utterance.voice = voice;
       utterance.onstart = () => setIsSpeaking(true);
       utterance.onend = () => { setIsSpeaking(false); resolve(); };
       utterance.onerror = () => { setIsSpeaking(false); resolve(); };
@@ -184,27 +250,41 @@ export default function MockInterviewPage() {
     setQuestions(qs);
     setIsInterviewing(true);
     setIsComplete(false);
+    setIsIntro(true);
+    setWaitingForNext(false);
+    setCurrentQuestionIndex(-1);
+    setCurrentQuestion('');
+
+    // Introduction
+    const name = pickVoice().name;
+    setAiName(name);
+    await speakText(`Hi! I'm ${name}, your AI interviewer from Helply AI.`);
+    await speakText(`Today, I'll be taking your mock interview for the ${activeRole} role.`);
+    await speakText(`We'll go through ${TOTAL_QUESTIONS_PER_SESSION} questions. Take your time to answer each one fully. When you're done with your answer, click "Next Question" and I'll move on.`);
+    await speakText(`Alright, let's get started!`);
+
+    setIsIntro(false);
     setCurrentQuestionIndex(0);
     setCurrentQuestion(qs[0]);
     incrementUsage();
-    await speakText(`Let's begin your mock interview for the ${activeRole} role.`);
-    await speakText(qs[0]);
+    await speakText(`Question 1. ${qs[0]}`);
     setWaitingForNext(true);
   };
 
   const nextQuestion = async () => {
+    if (isSpeaking) return;
     const nextIdx = currentQuestionIndex + 1;
     if (nextIdx >= questions.length) {
-      setIsComplete(true);
       setWaitingForNext(false);
-      await speakText("That's all! Great job completing your mock interview. Check Helply AI chatbot for the answers.");
+      setIsComplete(true);
+      await speakText(`That's a wrap! You've completed all ${TOTAL_QUESTIONS_PER_SESSION} questions. Great job! Open the Helply AI chatbot to review ideal answers for each question.`);
       return;
     }
     setWaitingForNext(false);
     setCurrentQuestionIndex(nextIdx);
     setCurrentQuestion(questions[nextIdx]);
     incrementUsage();
-    await speakText(questions[nextIdx]);
+    await speakText(`Question ${nextIdx + 1}. ${questions[nextIdx]}`);
     setWaitingForNext(true);
   };
 
@@ -212,6 +292,7 @@ export default function MockInterviewPage() {
     window.speechSynthesis.cancel();
     setIsInterviewing(false);
     setIsSpeaking(false);
+    setIsIntro(false);
     setWaitingForNext(false);
     setCurrentQuestion('');
     setCurrentQuestionIndex(-1);
@@ -219,6 +300,321 @@ export default function MockInterviewPage() {
     setQuestions([]);
   };
 
+  // ── ACTIVE INTERVIEW — Full-screen dark meeting room ────────────────────────
+  if (isInterviewing) {
+    const avatarInitial = aiName === 'Maya' ? 'M' : 'S';
+    const statusLabel = isIntro
+      ? `${aiName} is introducing...`
+      : isComplete
+        ? 'Interview Complete'
+        : isSpeaking
+          ? `${aiName} is speaking...`
+          : 'Your turn to answer';
+
+    return (
+      <div className="mock-meeting-room" style={{
+        position: 'fixed', inset: 0, zIndex: 200,
+        background: 'linear-gradient(160deg, #0d0d0d 0%, #111827 60%, #0a0a1a 100%)',
+        display: 'flex', flexDirection: 'column',
+        fontFamily: '-apple-system, system-ui, sans-serif',
+      }}>
+        {/* ── Top bar ── */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '14px 24px',
+          background: 'rgba(255,255,255,0.04)',
+          borderBottom: '1px solid rgba(255,255,255,0.07)',
+          backdropFilter: 'blur(12px)',
+          flexShrink: 0,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{
+              width: 8, height: 8, borderRadius: '50%',
+              background: isComplete ? '#6b7280' : '#22c55e',
+              boxShadow: isComplete ? 'none' : '0 0 8px #22c55e',
+              animation: (!isComplete && !isSpeaking && waitingForNext) ? 'livePulse 2s ease-in-out infinite' : 'none',
+            }} />
+            <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: 14, fontWeight: 600 }}>
+              Helply AI — Mock Interview
+            </span>
+            <span style={{
+              padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600,
+              background: 'rgba(37,99,235,0.25)', color: '#93c5fd',
+              border: '1px solid rgba(37,99,235,0.35)',
+            }}>{activeRole}</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, fontFamily: 'monospace' }}>
+              {formatTime(elapsedSeconds)}
+            </span>
+            {!isComplete && (
+              <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>
+                {currentQuestionIndex >= 0 ? `Q${currentQuestionIndex + 1}/${TOTAL_QUESTIONS_PER_SESSION}` : 'Intro'}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* ── Main meeting area ── */}
+        <div style={{
+          flex: 1, display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
+          padding: '24px 24px 0',
+          overflow: 'hidden',
+        }}>
+
+          {/* AI Avatar with pulse rings */}
+          <div style={{ position: 'relative', marginBottom: 28 }}>
+            {/* Outer pulse ring 1 */}
+            <div style={{
+              position: 'absolute', inset: -28, borderRadius: '50%',
+              border: `2px solid ${isSpeaking ? 'rgba(99,102,241,0.5)' : 'rgba(99,102,241,0.15)'}`,
+              animation: isSpeaking ? 'ring1 1.4s ease-out infinite' : 'none',
+            }} />
+            {/* Outer pulse ring 2 */}
+            <div style={{
+              position: 'absolute', inset: -14, borderRadius: '50%',
+              border: `2px solid ${isSpeaking ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.1)'}`,
+              animation: isSpeaking ? 'ring2 1.4s ease-out infinite 0.3s' : 'none',
+            }} />
+            {/* Glow bg */}
+            <div style={{
+              position: 'absolute', inset: -6, borderRadius: '50%',
+              background: isSpeaking
+                ? 'radial-gradient(circle, rgba(99,102,241,0.35) 0%, transparent 70%)'
+                : 'radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%)',
+              transition: 'all 0.4s',
+            }} />
+            {/* Avatar circle */}
+            <div style={{
+              width: 120, height: 120, borderRadius: '50%',
+              background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              border: `3px solid ${isSpeaking ? 'rgba(167,139,250,0.8)' : 'rgba(99,102,241,0.4)'}`,
+              boxShadow: isSpeaking
+                ? '0 0 40px rgba(99,102,241,0.6), 0 0 80px rgba(99,102,241,0.3)'
+                : '0 0 20px rgba(99,102,241,0.2)',
+              transition: 'all 0.3s',
+              position: 'relative', zIndex: 1,
+            }}>
+              <span style={{ fontSize: 42, fontWeight: 700, color: '#fff', letterSpacing: '-1px' }}>
+                {avatarInitial}
+              </span>
+            </div>
+          </div>
+
+          {/* AI Name + status */}
+          <div style={{ textAlign: 'center', marginBottom: 20 }}>
+            <div style={{ color: '#fff', fontSize: 22, fontWeight: 700, marginBottom: 6 }}>{aiName}</div>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 7,
+              padding: '5px 14px', borderRadius: 20,
+              background: isComplete
+                ? 'rgba(107,114,128,0.2)'
+                : isSpeaking || isIntro
+                  ? 'rgba(99,102,241,0.2)'
+                  : 'rgba(34,197,94,0.15)',
+              border: `1px solid ${isComplete ? 'rgba(107,114,128,0.3)' : isSpeaking || isIntro ? 'rgba(99,102,241,0.4)' : 'rgba(34,197,94,0.3)'}`,
+            }}>
+              {(isSpeaking || isIntro) && !isComplete && (
+                <div style={{ display: 'flex', gap: 3, alignItems: 'center' }}>
+                  {[1,2,3,4,5,6,7,8].map(i => (
+                    <div key={i} style={{
+                      width: 3, borderRadius: 3,
+                      background: '#818cf8',
+                      animation: `waveBar ${0.4 + (i % 4) * 0.12}s ease-in-out infinite alternate`,
+                      minHeight: 4,
+                    }} />
+                  ))}
+                </div>
+              )}
+              {!isSpeaking && !isIntro && !isComplete && (
+                <div style={{ display: 'flex', gap: 3, alignItems: 'center' }}>
+                  {[1,2,3].map(i => (
+                    <div key={i} style={{
+                      width: 6, height: 6, borderRadius: '50%', background: '#4ade80',
+                      animation: `dotBounce ${0.5 + i * 0.15}s ease-in-out infinite alternate`,
+                    }} />
+                  ))}
+                </div>
+              )}
+              <span style={{
+                fontSize: 12, fontWeight: 600,
+                color: isComplete ? '#9ca3af' : isSpeaking || isIntro ? '#a5b4fc' : '#86efac',
+              }}>
+                {statusLabel}
+              </span>
+            </div>
+          </div>
+
+          {/* Question card */}
+          {!isIntro && !isComplete && currentQuestion && (
+            <div style={{
+              maxWidth: 680, width: '100%',
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 16, padding: '20px 28px',
+              backdropFilter: 'blur(16px)',
+              marginBottom: 16,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                <span style={{
+                  padding: '3px 10px', borderRadius: 8, fontSize: 11, fontWeight: 700,
+                  background: 'rgba(99,102,241,0.25)', color: '#a5b4fc',
+                }}>
+                  Question {currentQuestionIndex + 1} of {TOTAL_QUESTIONS_PER_SESSION}
+                </span>
+              </div>
+              <p style={{
+                color: 'rgba(255,255,255,0.92)', fontSize: 16, fontWeight: 500,
+                lineHeight: 1.75, margin: 0,
+              }}>
+                {currentQuestion}
+              </p>
+            </div>
+          )}
+
+          {/* Intro loading state */}
+          {isIntro && (
+            <div style={{
+              maxWidth: 480, textAlign: 'center',
+              color: 'rgba(255,255,255,0.5)', fontSize: 14,
+            }}>
+              {aiName} is introducing the interview session...
+            </div>
+          )}
+
+          {/* Completion card */}
+          {isComplete && (
+            <div style={{
+              maxWidth: 520, width: '100%', textAlign: 'center',
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.12)',
+              borderRadius: 20, padding: '32px 28px',
+              backdropFilter: 'blur(16px)',
+            }}>
+              <div style={{ fontSize: 48, marginBottom: 12 }}>🎉</div>
+              <h3 style={{ color: '#fff', fontSize: 20, fontWeight: 700, margin: '0 0 10px' }}>
+                Interview Complete!
+              </h3>
+              <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, margin: '0 0 24px', lineHeight: 1.6 }}>
+                You answered all {TOTAL_QUESTIONS_PER_SESSION} questions in {formatTime(elapsedSeconds)}.<br />
+                Open the <strong style={{ color: '#a5b4fc' }}>Helply AI chatbot</strong> to review ideal answers.
+              </p>
+              <button
+                onClick={stopInterview}
+                style={{
+                  padding: '12px 32px', borderRadius: 12, fontSize: 15, fontWeight: 700,
+                  background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+                  border: 'none', color: '#fff', cursor: 'pointer',
+                  boxShadow: '0 4px 20px rgba(99,102,241,0.4)',
+                }}
+              >
+                Back to Setup
+              </button>
+            </div>
+          )}
+
+          {/* Progress bar */}
+          {!isIntro && !isComplete && (
+            <div style={{ display: 'flex', gap: 6, maxWidth: 680, width: '100%', marginTop: 8 }}>
+              {Array.from({ length: TOTAL_QUESTIONS_PER_SESSION }).map((_, i) => (
+                <div key={i} style={{
+                  flex: 1, height: 3, borderRadius: 3,
+                  background: i <= currentQuestionIndex
+                    ? 'linear-gradient(90deg, #6366f1, #a78bfa)'
+                    : 'rgba(255,255,255,0.1)',
+                  transition: 'background 0.4s',
+                }} />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* ── Bottom controls ── */}
+        {!isComplete && (
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16,
+            padding: '20px 24px 28px',
+            borderTop: '1px solid rgba(255,255,255,0.07)',
+            background: 'rgba(0,0,0,0.3)',
+            backdropFilter: 'blur(12px)',
+            flexShrink: 0,
+          }}>
+            {/* Next Question */}
+            <button
+              onClick={nextQuestion}
+              disabled={isSpeaking || isIntro}
+              style={{
+                padding: '13px 32px', borderRadius: 50, fontSize: 14, fontWeight: 700,
+                background: isSpeaking || isIntro
+                  ? 'rgba(255,255,255,0.08)'
+                  : 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+                border: isSpeaking || isIntro ? '1px solid rgba(255,255,255,0.12)' : 'none',
+                color: isSpeaking || isIntro ? 'rgba(255,255,255,0.35)' : '#fff',
+                cursor: isSpeaking || isIntro ? 'not-allowed' : 'pointer',
+                display: 'flex', alignItems: 'center', gap: 8,
+                boxShadow: isSpeaking || isIntro ? 'none' : '0 4px 20px rgba(99,102,241,0.5)',
+                transition: 'all 0.2s',
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+              {currentQuestionIndex >= TOTAL_QUESTIONS_PER_SESSION - 1
+                ? 'Finish Interview'
+                : isSpeaking || isIntro ? 'Please wait...' : 'Next Question'}
+            </button>
+
+            {/* End meeting */}
+            <button
+              onClick={stopInterview}
+              style={{
+                padding: '13px 24px', borderRadius: 50, fontSize: 14, fontWeight: 700,
+                background: '#dc2626', border: 'none', color: '#fff',
+                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+                boxShadow: '0 4px 16px rgba(220,38,38,0.4)',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#b91c1c'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#dc2626'; }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C9.61 21 3 14.39 3 6a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.24 1.01l-2.21 2.2z"/>
+              </svg>
+              End Meeting
+            </button>
+          </div>
+        )}
+
+        {/* ── Animations ── */}
+        <style>{`
+          @keyframes ring1 {
+            0%   { transform: scale(1);   opacity: 0.8; }
+            100% { transform: scale(1.35); opacity: 0; }
+          }
+          @keyframes ring2 {
+            0%   { transform: scale(1);   opacity: 0.6; }
+            100% { transform: scale(1.2); opacity: 0; }
+          }
+          @keyframes waveBar {
+            from { height: 4px;  }
+            to   { height: 22px; }
+          }
+          @keyframes dotBounce {
+            from { transform: translateY(0);   opacity: 0.5; }
+            to   { transform: translateY(-5px); opacity: 1;   }
+          }
+          @keyframes livePulse {
+            0%, 100% { opacity: 1;   box-shadow: 0 0 8px #22c55e; }
+            50%       { opacity: 0.4; box-shadow: 0 0 2px #22c55e; }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  // ── SETUP SCREEN ─────────────────────────────────────────────────────────────
   return (
     <div style={{ maxWidth: 760, margin: '0 auto' }}>
 
@@ -233,94 +629,69 @@ export default function MockInterviewPage() {
       </div>
 
       {/* ── Step-by-step Instructions ── */}
-      {!isInterviewing && (
-        <div style={{ marginBottom: 28, padding: '24px', borderRadius: 16, background: '#fff', border: '1px solid #e5e7eb' }}>
-          <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 20, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#374151' }}>
-            Before you start — follow these steps
-          </div>
-
-          {[
-            {
-              num: '1',
-              title: 'Open Helply AI App on your computer',
-              desc: 'Launch the Helply AI desktop app you installed. Drag and snap it to the side of this browser window so both are visible at the same time.',
-              tag: 'Setup',
-              tagColor: '#6366f1',
-            },
-            {
-              num: '2',
-              title: 'Select your role below',
-              desc: 'Pick your job role from the chips below, or type a custom role (e.g. Cloud Architect, Scrum Master). This sets the interview questions.',
-              tag: 'On this page',
-              tagColor: '#2563eb',
-            },
-            {
-              num: '3',
-              title: 'Click "Start Interview"',
-              desc: 'A voice will speak your first question aloud. Listen carefully — just like a real interview!',
-              tag: 'On this page',
-              tagColor: '#2563eb',
-            },
-            {
-              num: '4',
-              title: 'Click "Get Answer" in the Helply AI chatbot',
-              desc: 'Switch to the Helply AI app and click "Get Answer". The AI will show you the ideal answer for the question that was just asked.',
-              tag: 'In Helply AI App',
-              tagColor: '#059669',
-            },
-            {
-              num: '5',
-              title: 'Click "Next Question" to continue',
-              desc: 'Come back here and click "Next Question" when ready. The voice will ask the next question and you repeat the process.',
-              tag: 'On this page',
-              tagColor: '#2563eb',
-            },
-          ].map((step, i, arr) => (
-            <div key={i}>
-              {/* Step row */}
-              <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-                {/* Left: number + connector line */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
-                  <div style={{
-                    width: 36, height: 36, borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
-                    color: '#fff', fontSize: 14, fontWeight: 700,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    boxShadow: '0 2px 8px rgba(37,99,235,0.25)',
-                    flexShrink: 0,
-                  }}>{step.num}</div>
-                  {i < arr.length - 1 && (
-                    <div style={{ width: 2, height: 32, background: 'linear-gradient(to bottom, #c7d2fe, #e5e7eb)', margin: '4px 0' }} />
-                  )}
-                </div>
-                {/* Right: content */}
-                <div style={{ paddingBottom: i < arr.length - 1 ? 4 : 0, flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                    <span style={{ fontSize: 15, fontWeight: 700, color: '#111' }}>{step.title}</span>
-                    <span style={{
-                      fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 20,
-                      background: `${step.tagColor}15`, color: step.tagColor,
-                      border: `1px solid ${step.tagColor}30`,
-                      whiteSpace: 'nowrap',
-                    }}>{step.tag}</span>
-                  </div>
-                  <p style={{ fontSize: 13, color: '#6b7280', margin: '0 0 0 26px', lineHeight: 1.6 }}>
-                    {step.desc}
-                  </p>
-                </div>
-              </div>
-              {/* Arrow between steps */}
-              {i < arr.length - 1 && (
-                <div style={{ display: 'flex', justifyContent: 'flex-start', paddingLeft: 17, marginBottom: 4 }}>
-                  <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
-                    <path d="M5 0v10M1 7l4 4 4-4" stroke="#a5b4fc" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-              )}
-            </div>
-          ))}
+      <div style={{ marginBottom: 28, padding: '24px', borderRadius: 16, background: '#fff', border: '1px solid #e5e7eb' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 20, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#374151' }}>
+          Before you start — follow these steps
         </div>
-      )}
+
+        {[
+          {
+            num: '1', title: 'Open Helply AI App on your computer',
+            desc: 'Launch the Helply AI desktop app you installed. Snap it to the side so both are visible.',
+            tag: 'Setup', tagColor: '#6366f1',
+          },
+          {
+            num: '2', title: 'Select your role below',
+            desc: 'Pick your job role from the chips below, or type a custom role.',
+            tag: 'On this page', tagColor: '#2563eb',
+          },
+          {
+            num: '3', title: 'Click "Start Interview"',
+            desc: 'The AI will introduce itself and begin asking questions in a meeting-style screen.',
+            tag: 'On this page', tagColor: '#2563eb',
+          },
+          {
+            num: '4', title: 'Answer each question, then click "Next Question"',
+            desc: 'When you finish your answer click Next Question. Optionally open HelplyAI chatbot for ideal answers.',
+            tag: 'During Interview', tagColor: '#059669',
+          },
+        ].map((step, i, arr) => (
+          <div key={i}>
+            <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
+                  color: '#fff', fontSize: 14, fontWeight: 700,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 2px 8px rgba(37,99,235,0.25)', flexShrink: 0,
+                }}>{step.num}</div>
+                {i < arr.length - 1 && (
+                  <div style={{ width: 2, height: 32, background: 'linear-gradient(to bottom, #c7d2fe, #e5e7eb)', margin: '4px 0' }} />
+                )}
+              </div>
+              <div style={{ paddingBottom: i < arr.length - 1 ? 4 : 0, flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <span style={{ fontSize: 15, fontWeight: 700, color: '#111' }}>{step.title}</span>
+                  <span style={{
+                    fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 20,
+                    background: `${step.tagColor}15`, color: step.tagColor,
+                    border: `1px solid ${step.tagColor}30`, whiteSpace: 'nowrap',
+                  }}>{step.tag}</span>
+                </div>
+                <p style={{ fontSize: 13, color: '#6b7280', margin: '0 0 0 0', lineHeight: 1.6 }}>{step.desc}</p>
+              </div>
+            </div>
+            {i < arr.length - 1 && (
+              <div style={{ display: 'flex', justifyContent: 'flex-start', paddingLeft: 17, marginBottom: 4 }}>
+                <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+                  <path d="M5 0v10M1 7l4 4 4-4" stroke="#a5b4fc" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
 
       {/* ── Daily limit badge ── */}
       <div style={{
@@ -336,232 +707,106 @@ export default function MockInterviewPage() {
       </div>
 
       {/* ── Setup Panel ── */}
-      {!isInterviewing ? (
-        <div style={{ padding: '28px', borderRadius: 16, border: '1px solid #e5e7eb', background: '#fff' }}>
+      <div style={{ padding: '28px', borderRadius: 16, border: '1px solid #e5e7eb', background: '#fff' }}>
 
-          {/* Role chips */}
-          <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 12 }}>
-              Select a role
-            </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {PRESET_ROLES.map(role => {
-                const active = selectedRole === role && !customRole.trim();
-                return (
-                  <button
-                    key={role}
-                    onClick={() => { setSelectedRole(role); setCustomRole(''); }}
-                    style={{
-                      padding: '7px 16px', borderRadius: 20, fontSize: 13, fontWeight: 500,
-                      background: active ? '#2563eb' : '#f3f4f6',
-                      border: active ? '1.5px solid #2563eb' : '1.5px solid transparent',
-                      color: active ? '#fff' : '#374151',
-                      cursor: 'pointer', transition: 'all 0.15s',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {role}
-                  </button>
-                );
-              })}
-            </div>
+        {/* AI preview chip */}
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 20,
+          padding: '8px 16px', borderRadius: 12,
+          background: 'linear-gradient(135deg, rgba(79,70,229,0.08), rgba(124,58,237,0.08))',
+          border: '1px solid rgba(99,102,241,0.2)',
+        }}>
+          <div style={{
+            width: 28, height: 28, borderRadius: '50%',
+            background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#fff', fontSize: 11, fontWeight: 700,
+          }}>
+            {aiName === 'Maya' ? 'M' : 'S'}
           </div>
-
-          {/* Divider */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-            <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
-            <span style={{ fontSize: 12, color: '#9ca3af', fontWeight: 500 }}>or type your role</span>
-            <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
-          </div>
-
-          {/* Free text input */}
-          <input
-            type="text"
-            value={customRole}
-            onChange={e => { setCustomRole(e.target.value); if (e.target.value) setSelectedRole(''); }}
-            placeholder="e.g. Frontend Engineer, Scrum Master, Cloud Architect..."
-            style={{
-              width: '100%', padding: '12px 16px', borderRadius: 10, fontSize: 14,
-              border: customRole ? '1.5px solid #2563eb' : '1.5px solid #e5e7eb',
-              outline: 'none', color: '#111', background: '#fafafa',
-              boxSizing: 'border-box', transition: 'border 0.15s',
-            }}
-            onFocus={e => { e.currentTarget.style.borderColor = '#2563eb'; e.currentTarget.style.background = '#fff'; }}
-            onBlur={e => { if (!customRole) e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.background = '#fafafa'; }}
-          />
-
-          {/* Selected role preview */}
-          {activeRole && (
-            <div style={{ marginTop: 12, fontSize: 13, color: '#6b7280' }}>
-              Interviewing as: <strong style={{ color: '#2563eb' }}>{activeRole}</strong>
-            </div>
-          )}
-
-          {/* Start button */}
-          <button
-            onClick={startInterview}
-            disabled={!activeRole || remainingToday <= 0}
-            style={{
-              width: '100%', marginTop: 24, padding: '15px 0', borderRadius: 12,
-              background: activeRole && remainingToday > 0 ? 'linear-gradient(135deg, #2563eb, #7c3aed)' : '#e5e7eb',
-              border: 'none', color: '#fff', fontSize: 16, fontWeight: 700,
-              cursor: activeRole && remainingToday > 0 ? 'pointer' : 'not-allowed',
-              letterSpacing: '-0.01em', transition: 'opacity 0.2s',
-            }}
-            onMouseEnter={e => { if (activeRole && remainingToday > 0) e.currentTarget.style.opacity = '0.9'; }}
-            onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
-          >
-            {remainingToday <= 0 ? 'Daily Limit Reached' : 'Start Interview'}
-          </button>
+          <span style={{ fontSize: 13, color: '#4f46e5', fontWeight: 600 }}>
+            Your interviewer: <strong>{aiName}</strong> (AI Voice)
+          </span>
         </div>
-      ) : (
-        /* ── Active Interview Panel ── */
-        <div style={{ padding: '28px 32px', borderRadius: 16, border: '1px solid #e5e7eb', background: '#fff' }}>
 
-          {/* Top row: progress text + role badge */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <span style={{ fontSize: 13, color: '#6b7280', fontWeight: 500 }}>
-              {isComplete ? 'Interview Complete' : `Question ${currentQuestionIndex + 1} of ${TOTAL_QUESTIONS_PER_SESSION}`}
-            </span>
-            <span style={{
-              fontSize: 12, fontWeight: 600, padding: '4px 12px', borderRadius: 20,
-              background: 'rgba(37,99,235,0.08)', color: '#2563eb', border: '1px solid rgba(37,99,235,0.2)',
-            }}>
-              {activeRole}
-            </span>
-          </div>
-
-          {/* Progress dots */}
-          <div style={{ display: 'flex', gap: 6, marginBottom: 28 }}>
-            {Array.from({ length: TOTAL_QUESTIONS_PER_SESSION }).map((_, i) => (
-              <div key={i} style={{
-                flex: 1, height: 5, borderRadius: 3,
-                background: i <= currentQuestionIndex ? 'linear-gradient(90deg, #2563eb, #7c3aed)' : '#e5e7eb',
-                transition: 'background 0.3s ease',
-              }} />
-            ))}
-          </div>
-
-          {/* ── Speaking / Waiting animation ── */}
-          {!isComplete && (
-            <div style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center',
-              padding: '32px 24px', marginBottom: 24, borderRadius: 14,
-              background: isSpeaking ? 'rgba(37,99,235,0.04)' : '#f9fafb',
-              border: `1px solid ${isSpeaking ? 'rgba(37,99,235,0.15)' : '#e5e7eb'}`,
-              transition: 'all 0.3s',
-            }}>
-              {/* Animated waveform */}
-              <div style={{ display: 'flex', gap: 5, alignItems: 'center', marginBottom: 16, height: 40 }}>
-                {[1, 2, 3, 4, 5, 6, 7].map(i => (
-                  <div key={i} style={{
-                    width: 4, borderRadius: 4,
-                    background: isSpeaking ? '#2563eb' : '#d1d5db',
-                    height: isSpeaking ? undefined : '8px',
-                    animation: isSpeaking ? `wave ${0.5 + (i % 3) * 0.15}s ease-in-out infinite alternate` : 'none',
-                    minHeight: 8,
-                  }} />
-                ))}
-              </div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: isSpeaking ? '#2563eb' : '#9ca3af', marginBottom: 14, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                {isSpeaking ? 'Interviewer is speaking...' : 'Waiting for your answer'}
-              </div>
-              {/* Question text */}
-              <div style={{ fontSize: 16, color: '#111', fontWeight: 500, lineHeight: 1.7, textAlign: 'center', maxWidth: 560 }}>
-                {currentQuestion}
-              </div>
-            </div>
-          )}
-
-          {/* Tip when waiting */}
-          {waitingForNext && !isSpeaking && !isComplete && (
-            <div style={{
-              padding: '11px 16px', borderRadius: 10, marginBottom: 20,
-              background: '#fffbeb', border: '1px solid #fde68a',
-              fontSize: 13, color: '#92400e',
-            }}>
-              Open <strong>Helply AI chatbot</strong> and click <strong>"Get Answer"</strong> to see the ideal answer, then come back and click Next.
-            </div>
-          )}
-
-          {/* Completion card */}
-          {isComplete && (
-            <div style={{
-              padding: '32px', borderRadius: 14, marginBottom: 24,
-              background: 'linear-gradient(135deg, rgba(37,99,235,0.05), rgba(124,58,237,0.05))',
-              border: '1px solid rgba(37,99,235,0.15)', textAlign: 'center',
-            }}>
-              <h3 style={{ fontSize: 18, fontWeight: 700, color: '#111', margin: '0 0 8px' }}>Interview Complete</h3>
-              <p style={{ fontSize: 14, color: '#6b7280', margin: 0, lineHeight: 1.6 }}>
-                Great job! You answered all {TOTAL_QUESTIONS_PER_SESSION} questions.<br/>
-                Check the Helply AI chatbot for all your AI-generated answers.
-              </p>
-            </div>
-          )}
-
-          {/* Action buttons */}
-          <div style={{ display: 'flex', gap: 12 }}>
-            {!isComplete ? (
-              <button
-                onClick={nextQuestion}
-                disabled={isSpeaking}
-                style={{
-                  flex: 1, padding: '14px 0', borderRadius: 12, fontSize: 15, fontWeight: 700,
-                  background: isSpeaking ? '#e5e7eb' : 'linear-gradient(135deg, #2563eb, #7c3aed)',
-                  border: 'none', color: isSpeaking ? '#9ca3af' : '#fff',
-                  cursor: isSpeaking ? 'not-allowed' : 'pointer', transition: 'all 0.2s',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                }}
-              >
-                {isSpeaking ? (
-                  <span style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                    {[1,2,3].map(i => <span key={i} style={{ display: 'inline-block', width: 5, height: 5, borderRadius: '50%', background: '#9ca3af', animation: `dot ${0.6 + i*0.2}s ease-in-out infinite alternate` }} />)}
-                    Speaking...
-                  </span>
-                ) : (
-                  <>
-                    {currentQuestionIndex < TOTAL_QUESTIONS_PER_SESSION - 1 ? 'Next Question →' : 'Finish Interview'}
-                  </>
-                )}
-              </button>
-            ) : (
-              <button
-                onClick={stopInterview}
-                style={{
-                  flex: 1, padding: '14px 0', borderRadius: 12, fontSize: 15, fontWeight: 700,
-                  background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
-                  border: 'none', color: '#fff', cursor: 'pointer',
-                }}
-              >
-                Start New Interview
-              </button>
-            )}
-            {!isComplete && (
-              <button
-                onClick={stopInterview}
-                style={{
-                  padding: '14px 20px', borderRadius: 12, fontSize: 14, fontWeight: 600,
-                  background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626',
-                  cursor: 'pointer', transition: 'all 0.2s',
-                }}
-              >
-                End
-              </button>
-            )}
+        {/* Role chips */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 12 }}>Select a role</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {PRESET_ROLES.map(role => {
+              const active = selectedRole === role && !customRole.trim();
+              return (
+                <button key={role} onClick={() => { setSelectedRole(role); setCustomRole(''); }}
+                  style={{
+                    padding: '7px 16px', borderRadius: 20, fontSize: 13, fontWeight: 500,
+                    background: active ? '#2563eb' : '#f3f4f6',
+                    border: active ? '1.5px solid #2563eb' : '1.5px solid transparent',
+                    color: active ? '#fff' : '#374151',
+                    cursor: 'pointer', transition: 'all 0.15s', whiteSpace: 'nowrap',
+                  }}
+                >{role}</button>
+              );
+            })}
           </div>
         </div>
-      )}
 
-      {/* CSS animations */}
+        {/* Divider */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+          <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
+          <span style={{ fontSize: 12, color: '#9ca3af', fontWeight: 500 }}>or type your role</span>
+          <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
+        </div>
+
+        <input
+          type="text" value={customRole}
+          onChange={e => { setCustomRole(e.target.value); if (e.target.value) setSelectedRole(''); }}
+          placeholder="e.g. Frontend Engineer, Scrum Master, Cloud Architect..."
+          style={{
+            width: '100%', padding: '12px 16px', borderRadius: 10, fontSize: 14,
+            border: customRole ? '1.5px solid #2563eb' : '1.5px solid #e5e7eb',
+            outline: 'none', color: '#111', background: '#fafafa',
+            boxSizing: 'border-box', transition: 'border 0.15s',
+          }}
+          onFocus={e => { e.currentTarget.style.borderColor = '#2563eb'; e.currentTarget.style.background = '#fff'; }}
+          onBlur={e => { if (!customRole) e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.background = '#fafafa'; }}
+        />
+
+        {activeRole && (
+          <div style={{ marginTop: 12, fontSize: 13, color: '#6b7280' }}>
+            Interviewing as: <strong style={{ color: '#2563eb' }}>{activeRole}</strong>
+          </div>
+        )}
+
+        <button
+          onClick={startInterview}
+          disabled={!activeRole || remainingToday <= 0}
+          style={{
+            width: '100%', marginTop: 24, padding: '15px 0', borderRadius: 12,
+            background: activeRole && remainingToday > 0 ? 'linear-gradient(135deg, #2563eb, #7c3aed)' : '#e5e7eb',
+            border: 'none', color: activeRole && remainingToday > 0 ? '#fff' : '#9ca3af',
+            fontSize: 16, fontWeight: 700,
+            cursor: activeRole && remainingToday > 0 ? 'pointer' : 'not-allowed',
+            letterSpacing: '-0.01em', transition: 'opacity 0.2s',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+          }}
+          onMouseEnter={e => { if (activeRole && remainingToday > 0) e.currentTarget.style.opacity = '0.9'; }}
+          onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
+        >
+          {remainingToday <= 0 ? 'Daily Limit Reached' : (
+            <>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <circle cx="12" cy="12" r="10"/>
+                <polygon points="10 8 16 12 10 16 10 8"/>
+              </svg>
+              Start Interview with {aiName}
+            </>
+          )}
+        </button>
+      </div>
+
       <style>{`
-        @keyframes wave {
-          from { height: 6px; }
-          to { height: 32px; }
-        }
-        @keyframes dot {
-          from { transform: translateY(0); opacity: 0.4; }
-          to { transform: translateY(-4px); opacity: 1; }
-        }
+        @keyframes wave { from { height: 6px; } to { height: 32px; } }
+        @keyframes dot  { from { transform: translateY(0); opacity: 0.4; } to { transform: translateY(-4px); opacity: 1; } }
       `}</style>
     </div>
   );
