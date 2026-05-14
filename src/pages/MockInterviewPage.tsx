@@ -3,41 +3,49 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 const MAX_DAILY_QUESTIONS = 5;
 const TOTAL_QUESTIONS_PER_SESSION = 5;
 
-// ── Voice helpers ──────────────────────────────────────────────────────────────
-function pickVoice(): { utterance: SpeechSynthesisUtterance | null; name: 'Maya' | 'Smith' } {
-  if (!window.speechSynthesis) return { utterance: null, name: 'Maya' };
-  const voices = window.speechSynthesis.getVoices();
+// ── Voice helpers — always Maya (female) ────────────────────────────────────
+// Priority-ordered female voice name fragments across macOS, Windows, Chrome, Firefox
+const FEMALE_VOICE_FRAGMENTS = [
+  'Samantha', 'Karen', 'Victoria', 'Moira', 'Tessa', 'Fiona', 'Veena',
+  'Google US English', // Chrome macOS — typically female by default
+  'Microsoft Zira', 'Microsoft Eva', 'Microsoft Jenny', 'Microsoft Aria',
+  'Jenny', 'Aria', 'Sonia', 'Susan', 'Linda', 'Emma', 'Amy', 'Joanna',
+  'en-US-Jenny', 'en-US-Aria', 'en-GB-Sonia', 'en-AU-Natasha',
+  'female', 'Female',
+];
 
-  // Female preferences → Maya
-  const femaleNames = ['Samantha', 'Karen', 'Victoria', 'Moira', 'Tessa', 'Fiona',
-    'Google US English Female', 'Microsoft Zira', 'Microsoft Eva', 'en-US-JennyNeural'];
-  const female = voices.find(v => femaleNames.some(n => v.name.includes(n)));
-  if (female) return { utterance: null, name: 'Maya' };
+// Voices to explicitly exclude (known male)
+const MALE_VOICE_FRAGMENTS = [
+  'Daniel', 'Alex', 'Fred', 'Tom', 'Gordon', 'Lee', 'Reed', 'Ralph',
+  'Google UK English Male', 'Microsoft David', 'Microsoft Mark', 'Microsoft Guy',
+  'Guy', 'David', 'Mark', 'Ryan', 'en-US-Guy', 'male', 'Male',
+];
 
-  // Male preferences → Smith
-  const maleNames = ['Daniel', 'Alex', 'Fred', 'Tom', 'Google UK English Male',
-    'Microsoft David', 'Microsoft Mark', 'en-US-GuyNeural'];
-  const male = voices.find(v => maleNames.some(n => v.name.includes(n)));
-  if (male) return { utterance: null, name: 'Smith' };
-
-  // Fallback — pick by lang, default Maya
-  const enVoice = voices.find(v => v.lang.startsWith('en'));
-  return { utterance: null, name: enVoice ? 'Maya' : 'Maya' };
-}
-
-function getVoice(): SpeechSynthesisVoice | null {
+function getFemaleVoice(): SpeechSynthesisVoice | null {
   if (!window.speechSynthesis) return null;
   const voices = window.speechSynthesis.getVoices();
-  const femaleNames = ['Samantha', 'Karen', 'Victoria', 'Moira', 'Tessa', 'Fiona',
-    'Google US English Female', 'Microsoft Zira', 'Microsoft Eva'];
-  const maleNames = ['Daniel', 'Alex', 'Fred', 'Tom', 'Google UK English Male',
-    'Microsoft David', 'Microsoft Mark'];
-  return (
-    voices.find(v => femaleNames.some(n => v.name.includes(n))) ||
-    voices.find(v => maleNames.some(n => v.name.includes(n))) ||
-    voices.find(v => v.lang.startsWith('en')) ||
-    null
+  if (!voices.length) return null;
+
+  // 1. Explicit female match
+  const explicit = voices.find(v =>
+    FEMALE_VOICE_FRAGMENTS.some(f => v.name.includes(f))
   );
+  if (explicit) return explicit;
+
+  // 2. Any en-US voice that isn't explicitly male
+  const enUS = voices.find(v =>
+    v.lang === 'en-US' && !MALE_VOICE_FRAGMENTS.some(f => v.name.includes(f))
+  );
+  if (enUS) return enUS;
+
+  // 3. Any English voice that isn't explicitly male
+  const enAny = voices.find(v =>
+    v.lang.startsWith('en') && !MALE_VOICE_FRAGMENTS.some(f => v.name.includes(f))
+  );
+  if (enAny) return enAny;
+
+  // 4. Absolute fallback — first available voice
+  return voices[0] || null;
 }
 
 const PRESET_ROLES = [
@@ -173,7 +181,7 @@ export default function MockInterviewPage() {
   const [waitingForNext, setWaitingForNext] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [questionsUsedToday, setQuestionsUsedToday] = useState(0);
-  const [aiName, setAiName] = useState<'Maya' | 'Smith'>('Maya');
+  const aiName = 'Maya'; // Always Maya — female voice
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const synthRef = useRef<SpeechSynthesisUtterance | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -181,12 +189,10 @@ export default function MockInterviewPage() {
   const activeRole = customRole.trim() || selectedRole;
   const remainingToday = MAX_DAILY_QUESTIONS - questionsUsedToday;
 
-  // Load voices and determine name
+  // Pre-load voices on mount so they are ready when interview starts
   useEffect(() => {
-    const resolve = () => setAiName(pickVoice().name);
-    if (window.speechSynthesis) {
-      if (window.speechSynthesis.getVoices().length > 0) resolve();
-      else window.speechSynthesis.onvoiceschanged = resolve;
+    if (window.speechSynthesis && window.speechSynthesis.getVoices().length === 0) {
+      window.speechSynthesis.onvoiceschanged = () => {};
     }
   }, []);
 
@@ -232,9 +238,9 @@ export default function MockInterviewPage() {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.rate = 0.9;
-      utterance.pitch = 1.05;
+      utterance.pitch = 1.2;  // Higher pitch reinforces female sound on any fallback voice
       utterance.volume = 1.0;
-      const voice = getVoice();
+      const voice = getFemaleVoice();
       if (voice) utterance.voice = voice;
       utterance.onstart = () => setIsSpeaking(true);
       utterance.onend = () => { setIsSpeaking(false); resolve(); };
@@ -255,12 +261,10 @@ export default function MockInterviewPage() {
     setCurrentQuestionIndex(-1);
     setCurrentQuestion('');
 
-    // Introduction
-    const name = pickVoice().name;
-    setAiName(name);
-    await speakText(`Hi! I'm ${name}, your AI interviewer from Helply AI.`);
+    // Introduction — Maya always
+    await speakText(`Hi! I'm Maya, your AI interviewer from Helply AI.`);
     await speakText(`Today, I'll be taking your mock interview for the ${activeRole} role.`);
-    await speakText(`We'll go through ${TOTAL_QUESTIONS_PER_SESSION} questions. Take your time to answer each one fully. When you're done with your answer, click "Next Question" and I'll move on.`);
+    await speakText(`We'll go through ${TOTAL_QUESTIONS_PER_SESSION} questions. Take your time to answer each one fully. When you're done with your answer, click Next Question and I'll move on.`);
     await speakText(`Alright, let's get started!`);
 
     setIsIntro(false);
