@@ -287,7 +287,10 @@ export default function MockInterviewPage() {
       window.speechSynthesis.onvoiceschanged = () => {};
     }
     // Check if ElevenLabs is available
-    isElevenLabsAvailable().then(setElevenLabsReady);
+    isElevenLabsAvailable().then((available) => {
+      console.log('[ElevenLabs] Available:', available);
+      setElevenLabsReady(available);
+    });
   }, []);
 
   useEffect(() => {
@@ -336,7 +339,7 @@ export default function MockInterviewPage() {
       try {
         console.log('[ElevenLabs] Generating speech for:', text.substring(0, 50) + '...');
         await speakWithElevenLabs(text, {
-          voiceId: ELEVENLABS_VOICES.ADAM, // Use Adam voice (reliable on free tier)
+          voiceId: ELEVENLABS_VOICES.SMITH, // Use custom Smith voice from Voice Library
           onStart: () => {
             console.log('[ElevenLabs] Playing audio...');
             setIsSpeaking(true);
@@ -825,11 +828,13 @@ export default function MockInterviewPage() {
         {!isComplete && (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14,
-            padding: '18px 32px 28px',
-            borderTop: '1px solid rgba(255,255,255,0.06)',
-            background: 'rgba(0,0,0,0.45)',
-            backdropFilter: 'blur(20px)',
+            padding: '18px 32px 32px',
+            borderTop: '1px solid rgba(255,255,255,0.08)',
+            background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 100%)',
+            backdropFilter: 'blur(24px)',
             flexShrink: 0,
+            position: 'relative',
+            zIndex: 50,
           }}>
             {/* Hint text */}
             <span style={{
@@ -880,34 +885,27 @@ export default function MockInterviewPage() {
               )}
             </button>
 
-            {/* End meeting */}
+            {/* End Interview - Fixed click handler */}
             <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
+              onClick={() => {
+                console.log('[MockInterview] End Interview clicked');
                 stopInterview();
               }}
-              type="button"
+              disabled={false}
               style={{
-                padding: '14px 28px', borderRadius: 14, fontSize: 14, fontWeight: 700,
-                background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
-                border: '1px solid rgba(239,68,68,0.5)',
+                padding: '14px 28px', borderRadius: 12, fontSize: 14, fontWeight: 700,
+                background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%)',
+                border: '2px solid rgba(239,68,68,0.6)',
                 color: '#fff',
-                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-                boxShadow: '0 6px 24px rgba(220,38,38,0.4)',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-              }}
-              onMouseEnter={e => { 
-                e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'; 
-                e.currentTarget.style.boxShadow = '0 10px 32px rgba(220,38,38,0.5)';
-              }}
-              onMouseLeave={e => { 
-                e.currentTarget.style.transform = 'translateY(0) scale(1)'; 
-                e.currentTarget.style.boxShadow = '0 6px 24px rgba(220,38,38,0.4)';
+                cursor: 'pointer', 
+                display: 'flex', alignItems: 'center', gap: 8,
+                boxShadow: '0 8px 28px rgba(220,38,38,0.5), inset 0 1px 0 rgba(255,255,255,0.2)',
+                transition: 'all 0.2s ease',
+                pointerEvents: 'auto',
               }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C9.61 21 3 14.39 3 6a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.24 1.01l-2.21 2.2z"/>
+                <path d="M3 5h18M9 3v2.5a2.5 2.5 0 005 0V3M12 12v9"/>
               </svg>
               End Interview
             </button>
