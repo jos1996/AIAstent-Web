@@ -3,12 +3,11 @@
 
 const API_ENDPOINT = '/api/elevenlabs-tts';
 
-// Voice IDs from ElevenLabs
+// Voice IDs from ElevenLabs - verified working voices
 export const ELEVENLABS_VOICES = {
-  JOSH: 'TxGEqnHWrfWFTfGW9XjX',      // Professional male (default for Smith)
-  ADAM: 'pNInz6obpgDQGcFmaJgB',      // Confident male
+  ADAM: 'pNInz6obpgDQGcFmaJgB',      // Professional male (default for Smith) - Free tier
+  JOSH: 'TxGEqnHWrfWFTfGW9XjX',      // Alternative male
   ANTONI: 'ErXwobaYiN019PkySvjV',    // Young male
-  RYAN: 'XrJ9xZz2KjQmVJz6QkQG',      // Calm male (if available)
 } as const;
 
 export type VoiceId = typeof ELEVENLABS_VOICES[keyof typeof ELEVENLABS_VOICES];

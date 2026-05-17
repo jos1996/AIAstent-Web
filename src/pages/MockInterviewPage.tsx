@@ -334,14 +334,22 @@ export default function MockInterviewPage() {
     // Try ElevenLabs first if available
     if (elevenLabsReady) {
       try {
+        console.log('[ElevenLabs] Generating speech for:', text.substring(0, 50) + '...');
         await speakWithElevenLabs(text, {
-          voiceId: ELEVENLABS_VOICES.JOSH,
-          onStart: () => setIsSpeaking(true),
-          onEnd: () => setIsSpeaking(false),
+          voiceId: ELEVENLABS_VOICES.ADAM, // Use Adam voice (reliable on free tier)
+          onStart: () => {
+            console.log('[ElevenLabs] Playing audio...');
+            setIsSpeaking(true);
+          },
+          onEnd: () => {
+            console.log('[ElevenLabs] Audio finished');
+            setIsSpeaking(false);
+          },
         });
         return;
       } catch (err) {
-        console.warn('ElevenLabs failed, falling back to browser TTS:', err);
+        console.error('[ElevenLabs] Failed:', err);
+        console.warn('Falling back to browser TTS');
       }
     }
 
@@ -563,33 +571,52 @@ export default function MockInterviewPage() {
               }} />
             </>)}
 
-            {/* Avatar circle */}
+            {/* Avatar circle with Helply AI icon */}
             <div style={{
-              width: 140, height: 140, borderRadius: '50%',
+              width: 150, height: 150, borderRadius: '50%',
               background: isSpeaking || isIntro
-                ? 'linear-gradient(135deg, #6366f1, #8b5cf6)'
+                ? 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #6366f1 100%)'
                 : !isComplete
-                  ? 'linear-gradient(135deg, #065f46, #047857)' // green tint when listening
+                  ? 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)' // emerald when listening
                   : 'linear-gradient(135deg, #374151, #4b5563)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              border: `3px solid ${
+              border: `4px solid ${
                 isSpeaking || isIntro
                   ? 'rgba(167,139,250,0.9)'
                   : !isComplete
-                    ? 'rgba(52,211,153,0.5)'
+                    ? 'rgba(52,211,153,0.6)'
                     : 'rgba(107,114,128,0.3)'
               }`,
               boxShadow: isSpeaking || isIntro
-                ? '0 0 50px rgba(99,102,241,0.7), 0 0 100px rgba(99,102,241,0.25)'
+                ? '0 0 60px rgba(99,102,241,0.8), 0 0 120px rgba(99,102,241,0.4), inset 0 0 30px rgba(255,255,255,0.1)'
                 : !isComplete
-                  ? '0 0 40px rgba(52,211,153,0.35), 0 0 80px rgba(52,211,153,0.12)'
-                  : '0 4px 24px rgba(0,0,0,0.3)',
-              transition: 'all 0.5s ease',
+                  ? '0 0 50px rgba(52,211,153,0.5), 0 0 100px rgba(52,211,153,0.2), inset 0 0 30px rgba(255,255,255,0.1)'
+                  : '0 8px 32px rgba(0,0,0,0.4)',
+              transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
               position: 'relative', zIndex: 1, flexShrink: 0,
+              overflow: 'hidden',
             }}>
-              <span style={{ fontSize: 52, fontWeight: 700, color: '#fff', letterSpacing: '-2px' }}>
-                S
-              </span>
+              {/* Inner glow effect */}
+              <div style={{
+                position: 'absolute', inset: 0,
+                background: isSpeaking || isIntro
+                  ? 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.25) 0%, transparent 50%)'
+                  : 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15) 0%, transparent 50%)',
+                pointerEvents: 'none',
+              }} />
+              {/* Helply AI Icon */}
+              <img 
+                src="/favicon.png" 
+                alt="Helply AI"
+                style={{
+                  width: 80,
+                  height: 80,
+                  objectFit: 'contain',
+                  filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
+                  position: 'relative',
+                  zIndex: 2,
+                }}
+              />
             </div>
           </div>
 
@@ -661,31 +688,52 @@ export default function MockInterviewPage() {
           {/* Question card */}
           {!isIntro && !isComplete && currentQuestion && (
             <div style={{
-              maxWidth: 700, width: '100%',
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.09)',
-              borderRadius: 20, padding: '24px 32px',
-              backdropFilter: 'blur(20px)',
-              marginBottom: 20,
-              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+              maxWidth: 720, width: '100%',
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)',
+              border: isSpeaking 
+                ? '1px solid rgba(99,102,241,0.4)' 
+                : '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 24, 
+              padding: '28px 36px',
+              backdropFilter: 'blur(24px)',
+              marginBottom: 24,
+              boxShadow: isSpeaking
+                ? '0 12px 48px rgba(0,0,0,0.4), 0 0 40px rgba(99,102,241,0.15), inset 0 1px 0 rgba(255,255,255,0.1)'
+                : '0 12px 48px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)',
+              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
                 <span style={{
-                  padding: '4px 12px', borderRadius: 8, fontSize: 11, fontWeight: 700,
-                  background: 'rgba(99,102,241,0.18)', color: '#a5b4fc',
-                  border: '1px solid rgba(99,102,241,0.22)',
+                  padding: '6px 14px', borderRadius: 10, fontSize: 11, fontWeight: 800,
+                  background: isSpeaking 
+                    ? 'linear-gradient(135deg, rgba(99,102,241,0.3) 0%, rgba(79,70,229,0.2) 100%)' 
+                    : 'rgba(255,255,255,0.08)', 
+                  color: isSpeaking ? '#c4b5fd' : 'rgba(255,255,255,0.6)',
+                  border: isSpeaking ? '1px solid rgba(99,102,241,0.4)' : '1px solid rgba(255,255,255,0.15)',
+                  textTransform: 'uppercase' as const,
+                  letterSpacing: '0.5px',
                 }}>
                   Interview Question
                 </span>
                 {isSpeaking && (
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontStyle: 'italic' }}>
-                    Smith is speaking...
+                  <span style={{ 
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    fontSize: 12, color: '#c4b5fd', fontWeight: 500,
+                  }}>
+                    <span style={{
+                      width: 6, height: 6, borderRadius: '50%',
+                      background: '#6366f1',
+                      boxShadow: '0 0 8px #6366f1',
+                      animation: 'livePulse 1.5s ease-in-out infinite',
+                    }} />
+                    Smith is speaking
                   </span>
                 )}
               </div>
               <p style={{
-                color: 'rgba(255,255,255,0.9)', fontSize: 17, fontWeight: 500,
-                lineHeight: 1.8, margin: 0, letterSpacing: '0.01em',
+                color: '#ffffff', fontSize: 18, fontWeight: 500,
+                lineHeight: 1.85, margin: 0, letterSpacing: '0.01em',
+                textShadow: '0 2px 4px rgba(0,0,0,0.2)',
               }}>
                 {currentQuestion}
               </p>
@@ -695,14 +743,25 @@ export default function MockInterviewPage() {
           {/* Intro loading state */}
           {isIntro && (
             <div style={{
-              maxWidth: 480, textAlign: 'center', padding: '20px 24px',
-              background: 'rgba(255,255,255,0.03)', borderRadius: 16,
-              border: '1px solid rgba(255,255,255,0.07)',
+              maxWidth: 520, textAlign: 'center', padding: '28px 32px',
+              background: 'linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(79,70,229,0.05) 100%)', 
+              borderRadius: 20,
+              border: '1px solid rgba(99,102,241,0.2)',
+              backdropFilter: 'blur(20px)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)',
             }}>
-              <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14, margin: '0 0 8px', fontStyle: 'italic' }}>
-                Maya is introducing the session...
-              </p>
-              <p style={{ color: 'rgba(255,255,255,0.25)', fontSize: 12, margin: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 12 }}>
+                <div style={{
+                  width: 8, height: 8, borderRadius: '50%', 
+                  background: '#6366f1',
+                  boxShadow: '0 0 10px #6366f1',
+                  animation: 'livePulse 1.5s ease-in-out infinite',
+                }} />
+                <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 15, margin: 0, fontWeight: 500 }}>
+                  Smith is introducing the session...
+                </p>
+              </div>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, margin: 0, lineHeight: 1.6 }}>
                 Listen carefully — your first question will follow shortly.
               </p>
             </div>
@@ -711,27 +770,47 @@ export default function MockInterviewPage() {
           {/* Completion card */}
           {isComplete && (
             <div style={{
-              maxWidth: 520, width: '100%', textAlign: 'center',
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: 20, padding: '32px 28px',
-              backdropFilter: 'blur(16px)',
+              maxWidth: 560, width: '100%', textAlign: 'center',
+              background: 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(79,70,229,0.08) 100%)',
+              border: '1px solid rgba(99,102,241,0.3)',
+              borderRadius: 24, padding: '36px 32px',
+              backdropFilter: 'blur(24px)',
+              boxShadow: '0 16px 56px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)',
             }}>
-              <div style={{ fontSize: 48, marginBottom: 12 }}>🎉</div>
-              <h3 style={{ color: '#fff', fontSize: 20, fontWeight: 700, margin: '0 0 10px' }}>
+              <div style={{ 
+                width: 64, height: 64, borderRadius: '50%',
+                background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                margin: '0 auto 20px',
+                boxShadow: '0 8px 24px rgba(99,102,241,0.4)',
+              }}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+              <h3 style={{ color: '#fff', fontSize: 24, fontWeight: 800, margin: '0 0 12px', letterSpacing: '-0.5px' }}>
                 Interview Complete!
               </h3>
-              <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, margin: '0 0 24px', lineHeight: 1.6 }}>
-                You answered all {TOTAL_QUESTIONS_PER_SESSION} questions in {formatTime(elapsedSeconds)}.<br />
-                Open the <strong style={{ color: '#a5b4fc' }}>Helply AI chatbot</strong> to review ideal answers.
+              <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 15, margin: '0 0 28px', lineHeight: 1.7 }}>
+                Great job! You've answered all the questions.<br />
+                Open the <strong style={{ color: '#c4b5fd' }}>Helply AI chatbot</strong> to review ideal answers.
               </p>
               <button
                 onClick={stopInterview}
                 style={{
-                  padding: '12px 32px', borderRadius: 12, fontSize: 15, fontWeight: 700,
+                  padding: '14px 36px', borderRadius: 14, fontSize: 15, fontWeight: 700,
                   background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
                   border: 'none', color: '#fff', cursor: 'pointer',
-                  boxShadow: '0 4px 20px rgba(99,102,241,0.4)',
+                  boxShadow: '0 6px 24px rgba(99,102,241,0.5)',
+                  transition: 'all 0.25s ease',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 10px 32px rgba(99,102,241,0.6)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 6px 24px rgba(99,102,241,0.5)';
                 }}
               >
                 Back to Setup
@@ -755,10 +834,11 @@ export default function MockInterviewPage() {
             {/* Hint text */}
             <span style={{
               position: 'absolute',
-              fontSize: 11, color: 'rgba(255,255,255,0.2)', fontStyle: 'italic',
+              fontSize: 11, color: 'rgba(255,255,255,0.25)', fontStyle: 'italic',
               bottom: 8, left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap',
+              letterSpacing: '0.3px',
             }}>
-              {isSpeaking || isIntro ? 'Maya is speaking — please wait' : 'Click "Next Question" when done answering'}
+              {isSpeaking || isIntro ? 'Smith is speaking — please wait' : 'Click "Next Question" when you finish answering'}
             </span>
 
             {/* Next Question */}
@@ -802,23 +882,34 @@ export default function MockInterviewPage() {
 
             {/* End meeting */}
             <button
-              onClick={stopInterview}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                stopInterview();
+              }}
+              type="button"
               style={{
-                padding: '14px 28px', borderRadius: 50, fontSize: 14, fontWeight: 700,
-                background: 'rgba(220,38,38,0.85)',
-                border: '1px solid rgba(239,68,68,0.4)',
+                padding: '14px 28px', borderRadius: 14, fontSize: 14, fontWeight: 700,
+                background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
+                border: '1px solid rgba(239,68,68,0.5)',
                 color: '#fff',
                 cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-                boxShadow: '0 4px 20px rgba(220,38,38,0.35)',
-                transition: 'all 0.25s',
+                boxShadow: '0 6px 24px rgba(220,38,38,0.4)',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#dc2626'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(220,38,38,0.85)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+              onMouseEnter={e => { 
+                e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'; 
+                e.currentTarget.style.boxShadow = '0 10px 32px rgba(220,38,38,0.5)';
+              }}
+              onMouseLeave={e => { 
+                e.currentTarget.style.transform = 'translateY(0) scale(1)'; 
+                e.currentTarget.style.boxShadow = '0 6px 24px rgba(220,38,38,0.4)';
+              }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C9.61 21 3 14.39 3 6a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.24 1.01l-2.21 2.2z"/>
               </svg>
-              End Meeting
+              End Interview
             </button>
           </div>
         )}

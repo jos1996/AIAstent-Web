@@ -6,9 +6,9 @@ const ELEVENLABS_API_KEY =
   process.env.VITE_ELEVENLABS_API_KEY ||
   '';
 
-// Default voice ID for Smith (Josh - Professional, authoritative male voice)
-// Other options: 'pNInz6obpgDQGcFmaJgB' (Adam), 'TxGEqnHWrfWFTfGW9XjX' (Josh)
-const DEFAULT_VOICE_ID = 'TxGEqnHWrfWFTfGW9XjX'; // Josh - Professional male voice
+// Default voice ID for Smith (Adam - clear, professional male voice)
+// Free tier voices that work reliably: 'pNInz6obpgDQGcFmaJgB' (Adam)
+const DEFAULT_VOICE_ID = 'pNInz6obpgDQGcFmaJgB'; // Adam - Professional male voice
 
 // Model ID for multilingual v2 (high quality, supports English excellently)
 const MODEL_ID = 'eleven_multilingual_v2';
