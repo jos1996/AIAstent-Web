@@ -4,11 +4,10 @@
 const API_ENDPOINT = '/api/elevenlabs-tts';
 
 // Voice IDs from ElevenLabs
-// User's custom voice for Smith: wXvR48IpOq9HACltTmt7
-// Link: https://elevenlabs.io/app/voice-library?voiceId=Z7RrOqZFTyLpIlzCgfsp
+// ADAM is the default - reliable on free tier
 export const ELEVENLABS_VOICES = {
-  SMITH: 'wXvR48IpOq9HACltTmt7',    // Custom voice for Smith (from Voice Library)
-  ADAM: 'pNInz6obpgDQGcFmaJgB',      // Fallback: Professional male
+  ADAM: 'pNInz6obpgDQGcFmaJgB',      // Default: Professional male (free tier)
+  SMITH: 'wXvR48IpOq9HACltTmt7',     // Custom voice (if accessible)
   JOSH: 'TxGEqnHWrfWFTfGW9XjX',      // Alternative male
 } as const;
 
@@ -33,7 +32,8 @@ export async function generateSpeech(
   text: string,
   options: TTSOptions = {}
 ): Promise<string> {
-  const voiceId = options.voiceId || ELEVENLABS_VOICES.SMITH;
+  // Default to ADAM voice (reliable on free tier)
+  const voiceId = options.voiceId || ELEVENLABS_VOICES.ADAM;
   
   console.log('[generateSpeech] Using voice:', voiceId);
   

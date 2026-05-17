@@ -7,10 +7,8 @@ const ELEVENLABS_API_KEY =
   process.env.VITE_ELEVENLABS_API_KEY ||
   'sk_f48ffca4342f3e2c82ee1f7dceda5d781a68b970cc7fa85a';
 
-// Default voice ID for Smith (custom voice from ElevenLabs Voice Library)
-// Voice link: https://elevenlabs.io/app/voice-library?voiceId=Z7RrOqZFTyLpIlzCgfsp
-// Voice ID: wXvR48IpOq9HACltTmt7
-const DEFAULT_VOICE_ID = 'wXvR48IpOq9HACltTmt7';
+// Default voice ID - using ADAM (reliable free tier voice)
+const DEFAULT_VOICE_ID = 'pNInz6obpgDQGcFmaJgB'; // Adam - reliable on free tier
 
 // Model ID for multilingual v2 (high quality, supports English excellently)
 const MODEL_ID = 'eleven_multilingual_v2';

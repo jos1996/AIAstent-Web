@@ -338,15 +338,15 @@ export default function MockInterviewPage() {
     if (elevenLabsReady) {
       // Try custom SMITH voice first
       try {
-        console.log('[ElevenLabs] Trying SMITH voice for:', text.substring(0, 50) + '...');
+        console.log('[ElevenLabs] Trying ADAM voice for:', text.substring(0, 50) + '...');
         await speakWithElevenLabs(text, {
-          voiceId: ELEVENLABS_VOICES.SMITH,
+          voiceId: ELEVENLABS_VOICES.ADAM,
           onStart: () => {
-            console.log('[ElevenLabs SMITH] Playing audio...');
+            console.log('[ElevenLabs ADAM] Playing audio...');
             setIsSpeaking(true);
           },
           onEnd: () => {
-            console.log('[ElevenLabs SMITH] Audio finished');
+            console.log('[ElevenLabs ADAM] Audio finished');
             setIsSpeaking(false);
           },
         });
