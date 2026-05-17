@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { speakWithElevenLabs, ELEVENLABS_VOICES, isElevenLabsAvailable } from '../lib/elevenLabsTTS';
 
 const MAX_DAILY_QUESTIONS = 15;
 const TOTAL_QUESTIONS_PER_SESSION = 12; // ask up to 12, drawn from shuffled bank
 
-// ── Voice helpers — Smith (male, clear) ─────────────────────────────────────
-// Priority-ordered male voice name fragments across macOS, Windows, Chrome, Firefox
+// ── Voice helpers — Browser TTS fallback ───────────────────────────────────
+// Used when ElevenLabs is unavailable
 const MALE_VOICE_FRAGMENTS = [
   'Daniel',            // macOS — clear British male
   'Google UK English Male',
@@ -20,7 +21,6 @@ const MALE_VOICE_FRAGMENTS = [
   'en-GB-RyanNeural',
 ];
 
-// Voices to exclude (known female)
 const FEMALE_VOICE_FRAGMENTS = [
   'Samantha', 'Karen', 'Victoria', 'Moira', 'Tessa', 'Fiona', 'Veena',
   'Google US English', 'Microsoft Zira', 'Microsoft Eva', 'Microsoft Jenny',
@@ -33,25 +33,21 @@ function getMaleVoice(): SpeechSynthesisVoice | null {
   const voices = window.speechSynthesis.getVoices();
   if (!voices.length) return null;
 
-  // 1. Explicit male name match
   const explicit = voices.find(v =>
     MALE_VOICE_FRAGMENTS.some(f => v.name.includes(f))
   );
   if (explicit) return explicit;
 
-  // 2. Any en-GB voice (often male on macOS/Windows)
   const enGB = voices.find(v =>
     v.lang === 'en-GB' && !FEMALE_VOICE_FRAGMENTS.some(f => v.name.includes(f))
   );
   if (enGB) return enGB;
 
-  // 3. Any English voice not in known-female list
   const enAny = voices.find(v =>
     v.lang.startsWith('en') && !FEMALE_VOICE_FRAGMENTS.some(f => v.name.includes(f))
   );
   if (enAny) return enAny;
 
-  // 4. First available voice
   return voices[0] || null;
 }
 
@@ -277,17 +273,21 @@ export default function MockInterviewPage() {
   const [questionsUsedToday, setQuestionsUsedToday] = useState(0);
   const aiName = 'Smith'; // Always Smith — male voice
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [elevenLabsReady, setElevenLabsReady] = useState<boolean | null>(null);
   const synthRef = useRef<SpeechSynthesisUtterance | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const activeRole = customRole.trim() || selectedRole;
   const remainingToday = MAX_DAILY_QUESTIONS - questionsUsedToday;
 
-  // Pre-load voices on mount so they are ready when interview starts
+  // Pre-load voices and check ElevenLabs availability on mount
   useEffect(() => {
     if (window.speechSynthesis && window.speechSynthesis.getVoices().length === 0) {
       window.speechSynthesis.onvoiceschanged = () => {};
     }
+    // Check if ElevenLabs is available
+    isElevenLabsAvailable().then(setElevenLabsReady);
   }, []);
 
   useEffect(() => {
@@ -329,14 +329,28 @@ export default function MockInterviewPage() {
   // Small helper: pause for ms milliseconds
   const pause = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
 
-  const speakText = useCallback((text: string): Promise<void> => {
+  // Primary: ElevenLabs AI voice, Fallback: Browser TTS
+  const speakText = useCallback(async (text: string): Promise<void> => {
+    // Try ElevenLabs first if available
+    if (elevenLabsReady) {
+      try {
+        await speakWithElevenLabs(text, {
+          voiceId: ELEVENLABS_VOICES.JOSH,
+          onStart: () => setIsSpeaking(true),
+          onEnd: () => setIsSpeaking(false),
+        });
+        return;
+      } catch (err) {
+        console.warn('ElevenLabs failed, falling back to browser TTS:', err);
+      }
+    }
+
+    // Fallback to browser speech synthesis
     return new Promise((resolve) => {
       if (!window.speechSynthesis) { resolve(); return; }
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      // Clear, measured male voice — 0.82 is natural without being slow
       utterance.rate = 0.82;
-      // Slightly lowered pitch for a confident, clear male tone
       utterance.pitch = 0.95;
       utterance.volume = 1.0;
       const voice = getMaleVoice();
@@ -347,7 +361,7 @@ export default function MockInterviewPage() {
       synthRef.current = utterance;
       window.speechSynthesis.speak(utterance);
     });
-  }, []);
+  }, [elevenLabsReady]);
 
   // Speak with a natural pause between sentences
   const speakWithPause = useCallback(async (text: string, afterMs = 600) => {
@@ -414,6 +428,11 @@ export default function MockInterviewPage() {
 
   const stopInterview = () => {
     window.speechSynthesis.cancel();
+    // Stop any playing ElevenLabs audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
     setIsInterviewing(false);
     setIsSpeaking(false);
     setIsIntro(false);
@@ -577,7 +596,20 @@ export default function MockInterviewPage() {
           {/* AI Name + status */}
           <div style={{ textAlign: 'center', marginBottom: 24 }}>
             <div style={{ color: '#fff', fontSize: 24, fontWeight: 700, marginBottom: 8, letterSpacing: '-0.5px' }}>Smith</div>
-            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginBottom: 12, fontWeight: 500 }}>AI Interviewer · Helply AI</div>
+            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginBottom: 12, fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+              AI Interviewer · Helply AI
+              {elevenLabsReady && (
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 3,
+                  padding: '2px 8px', borderRadius: 10, fontSize: 10, fontWeight: 700,
+                  background: 'rgba(99,102,241,0.25)', color: '#a5b4fc',
+                  border: '1px solid rgba(99,102,241,0.35)',
+                }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
+                  AI Voice
+                </span>
+              )}
+            </div>
             {/* Status pill */}
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -944,8 +976,21 @@ export default function MockInterviewPage() {
           }}>
             {aiName === 'Maya' ? 'M' : 'S'}
           </div>
-          <span style={{ fontSize: 13, color: '#4f46e5', fontWeight: 600 }}>
-            Your interviewer: <strong>{aiName}</strong> (AI Voice)
+          <span style={{ fontSize: 13, color: '#4f46e5', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}>
+            Your interviewer: <strong>{aiName}</strong>
+            {elevenLabsReady ? (
+              <span style={{
+                padding: '2px 8px', borderRadius: 10, fontSize: 10, fontWeight: 700,
+                background: 'rgba(99,102,241,0.12)', color: '#4f46e5',
+                border: '1px solid rgba(99,102,241,0.2)',
+              }}>ElevenLabs AI</span>
+            ) : (
+              <span style={{
+                padding: '2px 8px', borderRadius: 10, fontSize: 10, fontWeight: 700,
+                background: '#f3f4f6', color: '#6b7280',
+                border: '1px solid #e5e7eb',
+              }}>Browser Voice</span>
+            )}
           </span>
         </div>
 
