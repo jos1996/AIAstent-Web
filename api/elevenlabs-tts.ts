@@ -1,10 +1,11 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 // ElevenLabs API Key - stored securely on server side
+// Using the provided API key: sk_f48ffca4342f3e2c82ee1f7dceda5d781a68b970cc7fa85a
 const ELEVENLABS_API_KEY =
   process.env.ELEVENLABS_API_KEY ||
   process.env.VITE_ELEVENLABS_API_KEY ||
-  '';
+  'sk_f48ffca4342f3e2c82ee1f7dceda5d781a68b970cc7fa85a';
 
 // Default voice ID for Smith (custom voice from ElevenLabs Voice Library)
 // Voice link: https://elevenlabs.io/app/voice-library?voiceId=Z7RrOqZFTyLpIlzCgfsp
@@ -36,8 +37,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (!ELEVENLABS_API_KEY) {
+      console.error('[ElevenLabs] API key not configured');
       return res.status(500).json({ error: 'ElevenLabs API key not configured' });
     }
+    
+    console.log('[ElevenLabs] Using voice ID:', voiceId);
+    console.log('[ElevenLabs] Text length:', text.length);
 
     // Call ElevenLabs API
     const response = await fetch(
@@ -64,10 +69,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('ElevenLabs API error:', response.status, errorText);
-      return res.status(response.status).json({ 
+      console.error('[ElevenLabs] API error:', response.status, errorText);
+      // Return more detailed error for debugging
+      return res.status(200).json({ 
         error: 'ElevenLabs API error', 
-        details: errorText 
+        status: response.status,
+        details: errorText,
+        voiceId: voiceId
       });
     }
 

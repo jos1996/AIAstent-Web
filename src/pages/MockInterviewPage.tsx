@@ -332,26 +332,47 @@ export default function MockInterviewPage() {
   // Small helper: pause for ms milliseconds
   const pause = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
 
-  // Primary: ElevenLabs AI voice, Fallback: Browser TTS
+  // Primary: ElevenLabs AI voice (with fallback chain), Fallback: Browser TTS
   const speakText = useCallback(async (text: string): Promise<void> => {
     // Try ElevenLabs first if available
     if (elevenLabsReady) {
+      // Try custom SMITH voice first
       try {
-        console.log('[ElevenLabs] Generating speech for:', text.substring(0, 50) + '...');
+        console.log('[ElevenLabs] Trying SMITH voice for:', text.substring(0, 50) + '...');
         await speakWithElevenLabs(text, {
-          voiceId: ELEVENLABS_VOICES.SMITH, // Use custom Smith voice from Voice Library
+          voiceId: ELEVENLABS_VOICES.SMITH,
           onStart: () => {
-            console.log('[ElevenLabs] Playing audio...');
+            console.log('[ElevenLabs SMITH] Playing audio...');
             setIsSpeaking(true);
           },
           onEnd: () => {
-            console.log('[ElevenLabs] Audio finished');
+            console.log('[ElevenLabs SMITH] Audio finished');
             setIsSpeaking(false);
           },
         });
         return;
       } catch (err) {
-        console.error('[ElevenLabs] Failed:', err);
+        console.error('[ElevenLabs SMITH] Failed:', err);
+        console.warn('[ElevenLabs] Falling back to ADAM voice...');
+      }
+      
+      // Fallback to ADAM voice (reliable on free tier)
+      try {
+        console.log('[ElevenLabs] Trying ADAM voice for:', text.substring(0, 50) + '...');
+        await speakWithElevenLabs(text, {
+          voiceId: ELEVENLABS_VOICES.ADAM,
+          onStart: () => {
+            console.log('[ElevenLabs ADAM] Playing audio...');
+            setIsSpeaking(true);
+          },
+          onEnd: () => {
+            console.log('[ElevenLabs ADAM] Audio finished');
+            setIsSpeaking(false);
+          },
+        });
+        return;
+      } catch (err) {
+        console.error('[ElevenLabs ADAM] Failed:', err);
         console.warn('Falling back to browser TTS');
       }
     }
@@ -438,11 +459,18 @@ export default function MockInterviewPage() {
   };
 
   const stopInterview = () => {
+    console.log('[MockInterview] stopInterview called - resetting all states');
     window.speechSynthesis.cancel();
     // Stop any playing ElevenLabs audio
     if (audioRef.current) {
       audioRef.current.pause();
+      audioRef.current.currentTime = 0;
       audioRef.current = null;
+    }
+    // Clear timer
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
     }
     setIsInterviewing(false);
     setIsSpeaking(false);
@@ -452,6 +480,8 @@ export default function MockInterviewPage() {
     setCurrentQuestionIndex(-1);
     setIsComplete(false);
     setQuestions([]);
+    setElapsedSeconds(0);
+    console.log('[MockInterview] Interview stopped, returning to setup');
   };
 
   // ── ACTIVE INTERVIEW — Full-screen dark meeting room ────────────────────────
@@ -887,11 +917,11 @@ export default function MockInterviewPage() {
 
             {/* End Interview - Fixed click handler */}
             <button
-              onClick={() => {
-                console.log('[MockInterview] End Interview clicked');
+              onClick={(e) => {
+                e.stopPropagation();
+                console.log('[MockInterview] End Interview clicked - calling stopInterview');
                 stopInterview();
               }}
-              disabled={false}
               style={{
                 padding: '14px 28px', borderRadius: 12, fontSize: 14, fontWeight: 700,
                 background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%)',
@@ -902,12 +932,14 @@ export default function MockInterviewPage() {
                 boxShadow: '0 8px 28px rgba(220,38,38,0.5), inset 0 1px 0 rgba(255,255,255,0.2)',
                 transition: 'all 0.2s ease',
                 pointerEvents: 'auto',
+                position: 'relative',
+                zIndex: 100,
               }}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ flexShrink: 0 }}>
                 <path d="M3 5h18M9 3v2.5a2.5 2.5 0 005 0V3M12 12v9"/>
               </svg>
-              End Interview
+              <span style={{ whiteSpace: 'nowrap' }}>End Interview</span>
             </button>
           </div>
         )}

@@ -33,6 +33,10 @@ export async function generateSpeech(
   text: string,
   options: TTSOptions = {}
 ): Promise<string> {
+  const voiceId = options.voiceId || ELEVENLABS_VOICES.SMITH;
+  
+  console.log('[generateSpeech] Using voice:', voiceId);
+  
   const response = await fetch(API_ENDPOINT, {
     method: 'POST',
     headers: {
@@ -40,17 +44,27 @@ export async function generateSpeech(
     },
     body: JSON.stringify({
       text: text,
-      voiceId: options.voiceId || ELEVENLABS_VOICES.JOSH,
+      voiceId: voiceId,
       modelId: options.modelId || 'eleven_multilingual_v2',
     }),
   });
 
+  const data = await response.json().catch(() => ({ error: 'Failed to parse response' }));
+  
+  // Check for error in response (even if HTTP status is 200)
+  if (data.error) {
+    console.error('[generateSpeech] API returned error:', data);
+    throw new Error(data.error + (data.details ? `: ${data.details}` : ''));
+  }
+  
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-    throw new Error(error.error || `HTTP ${response.status}`);
+    throw new Error(data.error || `HTTP ${response.status}`);
   }
 
-  const data: TTSResponse = await response.json();
+  if (!data.audio) {
+    throw new Error('No audio data in response');
+  }
+
   return data.audio;
 }
 
