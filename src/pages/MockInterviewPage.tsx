@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { speakWithElevenLabs, ELEVENLABS_VOICES, isElevenLabsAvailable } from '../lib/elevenLabsTTS';
+import { speakWithElevenLabs, ELEVENLABS_VOICES, isElevenLabsAvailable, stopCurrentAudio } from '../lib/elevenLabsTTS';
 
 const MAX_DAILY_QUESTIONS = 15;
 const TOTAL_QUESTIONS_PER_SESSION = 12; // ask up to 12, drawn from shuffled bank
@@ -332,49 +332,23 @@ export default function MockInterviewPage() {
   // Small helper: pause for ms milliseconds
   const pause = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
 
-  // Primary: ElevenLabs AI voice (with fallback chain), Fallback: Browser TTS
+  // Primary: ElevenLabs AI voice (direct API call), Fallback: Browser TTS
   const speakText = useCallback(async (text: string): Promise<void> => {
-    // Try ElevenLabs first if available
+    // Try ElevenLabs first
     if (elevenLabsReady) {
-      // Try custom SMITH voice first
       try {
-        console.log('[ElevenLabs] Trying ADAM voice for:', text.substring(0, 50) + '...');
+        console.log('[speakText] Using ElevenLabs SMITH voice');
         await speakWithElevenLabs(text, {
-          voiceId: ELEVENLABS_VOICES.ADAM,
-          onStart: () => {
-            console.log('[ElevenLabs ADAM] Playing audio...');
-            setIsSpeaking(true);
-          },
-          onEnd: () => {
-            console.log('[ElevenLabs ADAM] Audio finished');
-            setIsSpeaking(false);
-          },
+          voiceId: ELEVENLABS_VOICES.SMITH,
+          onStart: () => setIsSpeaking(true),
+          onEnd: () => setIsSpeaking(false),
         });
         return;
       } catch (err) {
-        console.error('[ElevenLabs SMITH] Failed:', err);
-        console.warn('[ElevenLabs] Falling back to ADAM voice...');
+        console.error('[speakText] ElevenLabs failed, falling back to browser TTS:', err);
       }
-      
-      // Fallback to ADAM voice (reliable on free tier)
-      try {
-        console.log('[ElevenLabs] Trying ADAM voice for:', text.substring(0, 50) + '...');
-        await speakWithElevenLabs(text, {
-          voiceId: ELEVENLABS_VOICES.ADAM,
-          onStart: () => {
-            console.log('[ElevenLabs ADAM] Playing audio...');
-            setIsSpeaking(true);
-          },
-          onEnd: () => {
-            console.log('[ElevenLabs ADAM] Audio finished');
-            setIsSpeaking(false);
-          },
-        });
-        return;
-      } catch (err) {
-        console.error('[ElevenLabs ADAM] Failed:', err);
-        console.warn('Falling back to browser TTS');
-      }
+    } else {
+      console.log('[speakText] ElevenLabs not available, using browser TTS');
     }
 
     // Fallback to browser speech synthesis
@@ -459,9 +433,12 @@ export default function MockInterviewPage() {
   };
 
   const stopInterview = () => {
-    console.log('[MockInterview] stopInterview called - resetting all states');
+    console.log('[stopInterview] Stopping interview...');
+    // Stop browser TTS
     window.speechSynthesis.cancel();
-    // Stop any playing ElevenLabs audio
+    // Stop ElevenLabs audio
+    stopCurrentAudio();
+    // Stop any playing audio ref
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
@@ -472,6 +449,7 @@ export default function MockInterviewPage() {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
+    // Reset all state
     setIsInterviewing(false);
     setIsSpeaking(false);
     setIsIntro(false);
@@ -481,7 +459,7 @@ export default function MockInterviewPage() {
     setIsComplete(false);
     setQuestions([]);
     setElapsedSeconds(0);
-    console.log('[MockInterview] Interview stopped, returning to setup');
+    console.log('[stopInterview] Done — back to setup');
   };
 
   // ── ACTIVE INTERVIEW — Full-screen dark meeting room ────────────────────────

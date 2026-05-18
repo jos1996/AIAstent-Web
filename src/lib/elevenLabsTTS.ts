@@ -1,111 +1,87 @@
 // ElevenLabs Text-to-Speech Service
-// Generates realistic AI speech for the mock interview
+// Calls ElevenLabs API directly from the browser (no serverless proxy)
 
-const API_ENDPOINT = '/api/elevenlabs-tts';
+// API key from environment
+const API_KEY = import.meta.env.VITE_ELEVENLABS_API_KEY || 'sk_f48ffca4342f3e2c82ee1f7dceda5d781a68b970cc7fa85a';
 
 // Voice IDs from ElevenLabs
-// ADAM is the default - reliable on free tier
+// User's selected voice from Voice Library
 export const ELEVENLABS_VOICES = {
-  ADAM: 'pNInz6obpgDQGcFmaJgB',      // Default: Professional male (free tier)
-  SMITH: 'wXvR48IpOq9HACltTmt7',     // Custom voice (if accessible)
+  SMITH: '7rQX8r6PVq3gfJ8rZzyE',     // User's voice from Voice Library
+  ADAM: 'pNInz6obpgDQGcFmaJgB',      // Fallback: Professional male (free tier)
   JOSH: 'TxGEqnHWrfWFTfGW9XjX',      // Alternative male
 } as const;
 
 export type VoiceId = typeof ELEVENLABS_VOICES[keyof typeof ELEVENLABS_VOICES];
-
-interface TTSResponse {
-  audio: string;
-  format: string;
-  voiceId: string;
-}
 
 interface TTSOptions {
   voiceId?: VoiceId;
   modelId?: string;
 }
 
+// Global audio ref so we can stop playback from outside
+let currentAudio: HTMLAudioElement | null = null;
+
+export function stopCurrentAudio() {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    currentAudio = null;
+  }
+}
+
 /**
- * Generate speech from text using ElevenLabs API
- * Returns a base64-encoded MP3 that can be played directly
+ * Generate speech by calling ElevenLabs API directly from browser.
+ * Returns a Blob URL that can be played with HTML5 Audio.
  */
-export async function generateSpeech(
+async function generateSpeechBlob(
   text: string,
-  options: TTSOptions = {}
+  voiceId: string,
+  modelId: string
 ): Promise<string> {
-  // Default to ADAM voice (reliable on free tier)
-  const voiceId = options.voiceId || ELEVENLABS_VOICES.ADAM;
-  
-  console.log('[generateSpeech] Using voice:', voiceId);
-  
-  const response = await fetch(API_ENDPOINT, {
+  const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
+
+  console.log('[ElevenLabs] POST', url);
+  console.log('[ElevenLabs] Voice:', voiceId, '| Text:', text.substring(0, 80));
+
+  const res = await fetch(url, {
     method: 'POST',
     headers: {
+      'Accept': 'audio/mpeg',
       'Content-Type': 'application/json',
+      'xi-api-key': API_KEY,
     },
     body: JSON.stringify({
-      text: text,
-      voiceId: voiceId,
-      modelId: options.modelId || 'eleven_multilingual_v2',
+      text,
+      model_id: modelId,
+      voice_settings: {
+        stability: 0.5,
+        similarity_boost: 0.75,
+        style: 0.0,
+        use_speaker_boost: true,
+      },
     }),
   });
 
-  const data = await response.json().catch(() => ({ error: 'Failed to parse response' }));
-  
-  // Check for error in response (even if HTTP status is 200)
-  if (data.error) {
-    console.error('[generateSpeech] API returned error:', data);
-    throw new Error(data.error + (data.details ? `: ${data.details}` : ''));
-  }
-  
-  if (!response.ok) {
-    throw new Error(data.error || `HTTP ${response.status}`);
+  if (!res.ok) {
+    const errBody = await res.text().catch(() => 'unknown');
+    console.error('[ElevenLabs] API error', res.status, errBody);
+    throw new Error(`ElevenLabs ${res.status}: ${errBody}`);
   }
 
-  if (!data.audio) {
-    throw new Error('No audio data in response');
+  const blob = await res.blob();
+  console.log('[ElevenLabs] Got audio blob, size:', blob.size);
+  
+  if (blob.size < 100) {
+    throw new Error('Audio blob too small — likely empty');
   }
 
-  return data.audio;
+  return URL.createObjectURL(blob);
 }
 
 /**
- * Play base64 audio using HTML5 Audio
- * Returns a promise that resolves when playback ends
- */
-export function playBase64Audio(
-  base64Audio: string,
-  onStart?: () => void,
-  onEnd?: () => void
-): HTMLAudioElement {
-  const audioSrc = `data:audio/mpeg;base64,${base64Audio}`;
-  const audio = new Audio(audioSrc);
-  
-  audio.addEventListener('play', () => {
-    onStart?.();
-  });
-  
-  audio.addEventListener('ended', () => {
-    onEnd?.();
-  });
-  
-  audio.addEventListener('error', (e) => {
-    console.error('Audio playback error:', e);
-    onEnd?.();
-  });
-  
-  // Preload and play
-  audio.load();
-  audio.play().catch(err => {
-    console.error('Audio play failed:', err);
-    onEnd?.();
-  });
-  
-  return audio;
-}
-
-/**
- * Main function: Generate and play speech in one call
- * Returns a promise that resolves when playback ends
+ * Main function: Generate and play speech in one call.
+ * Calls ElevenLabs directly — no serverless proxy.
  */
 export async function speakWithElevenLabs(
   text: string,
@@ -114,38 +90,57 @@ export async function speakWithElevenLabs(
     onEnd?: () => void;
   } = {}
 ): Promise<void> {
-  const { onStart, onEnd, ...ttsOptions } = options;
-  
-  // Generate audio
-  const base64Audio = await generateSpeech(text, ttsOptions);
-  
-  // Play and wait for completion
-  return new Promise((resolve) => {
-    playBase64Audio(
-      base64Audio,
-      () => {
-        onStart?.();
-      },
-      () => {
-        onEnd?.();
-        resolve();
-      }
-    );
+  const { onStart, onEnd, voiceId, modelId } = options;
+  const voice = voiceId || ELEVENLABS_VOICES.SMITH;
+  const model = modelId || 'eleven_multilingual_v2';
+
+  // Generate audio blob URL
+  const blobUrl = await generateSpeechBlob(text, voice, model);
+
+  // Play it
+  return new Promise<void>((resolve) => {
+    const audio = new Audio(blobUrl);
+    currentAudio = audio;
+
+    audio.onplay = () => {
+      console.log('[ElevenLabs] Audio playing');
+      onStart?.();
+    };
+
+    audio.onended = () => {
+      console.log('[ElevenLabs] Audio ended');
+      URL.revokeObjectURL(blobUrl);
+      currentAudio = null;
+      onEnd?.();
+      resolve();
+    };
+
+    audio.onerror = (e) => {
+      console.error('[ElevenLabs] Audio playback error:', e);
+      URL.revokeObjectURL(blobUrl);
+      currentAudio = null;
+      onEnd?.();
+      resolve();
+    };
+
+    audio.play().catch((err) => {
+      console.error('[ElevenLabs] play() rejected:', err);
+      URL.revokeObjectURL(blobUrl);
+      currentAudio = null;
+      onEnd?.();
+      resolve();
+    });
   });
 }
 
 /**
- * Check if ElevenLabs is available (API key configured)
+ * Check if ElevenLabs is available (just checks API key exists)
  */
 export async function isElevenLabsAvailable(): Promise<boolean> {
-  try {
-    const response = await fetch(API_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: 'test' }),
-    });
-    return response.ok;
-  } catch {
+  if (!API_KEY || API_KEY.length < 10) {
+    console.warn('[ElevenLabs] No API key configured');
     return false;
   }
+  console.log('[ElevenLabs] API key found, length:', API_KEY.length);
+  return true;
 }

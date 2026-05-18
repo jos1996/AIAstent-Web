@@ -7,8 +7,9 @@ const ELEVENLABS_API_KEY =
   process.env.VITE_ELEVENLABS_API_KEY ||
   'sk_f48ffca4342f3e2c82ee1f7dceda5d781a68b970cc7fa85a';
 
-// Default voice ID - using ADAM (reliable free tier voice)
-const DEFAULT_VOICE_ID = 'pNInz6obpgDQGcFmaJgB'; // Adam - reliable on free tier
+// Default voice ID - using user's selected voice from Voice Library
+// Voice: https://elevenlabs.io/app/voice-library?voiceId=7rQX8r6PVq3gfJ8rZzyE
+const DEFAULT_VOICE_ID = '7rQX8r6PVq3gfJ8rZzyE';
 
 // Model ID for multilingual v2 (high quality, supports English excellently)
 const MODEL_ID = 'eleven_multilingual_v2';
