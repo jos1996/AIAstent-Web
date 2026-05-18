@@ -2,7 +2,7 @@
 // Calls ElevenLabs API directly from the browser (no serverless proxy)
 
 // API key from environment
-const API_KEY = import.meta.env.VITE_ELEVENLABS_API_KEY || 'sk_f48ffca4342f3e2c82ee1f7dceda5d781a68b970cc7fa85a';
+const API_KEY = import.meta.env.VITE_ELEVENLABS_API_KEY || 'sk_2cb2e9ce654c87d96b848c79ff3f5b5c2dd6c87d92a21eb5';
 
 // Voice IDs from ElevenLabs
 // User's selected voice from Voice Library
