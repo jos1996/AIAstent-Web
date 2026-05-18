@@ -66,6 +66,12 @@ async function generateSpeechBlob(
   if (!res.ok) {
     const errBody = await res.text().catch(() => 'unknown');
     console.error('[ElevenLabs] API error', res.status, errBody);
+    console.error('[ElevenLabs] Full error details:', {
+      status: res.status,
+      statusText: res.statusText,
+      headers: Object.fromEntries(res.headers.entries()),
+      body: errBody
+    });
     throw new Error(`ElevenLabs ${res.status}: ${errBody}`);
   }
 
@@ -134,7 +140,7 @@ export async function speakWithElevenLabs(
 }
 
 /**
- * Check if ElevenLabs is available (just checks API key exists)
+ * Check if ElevenLabs is available (test API key with real call)
  */
 export async function isElevenLabsAvailable(): Promise<boolean> {
   if (!API_KEY || API_KEY.length < 10) {
@@ -142,5 +148,35 @@ export async function isElevenLabsAvailable(): Promise<boolean> {
     return false;
   }
   console.log('[ElevenLabs] API key found, length:', API_KEY.length);
-  return true;
+  
+  // Test with a minimal TTS call to verify permissions
+  try {
+    const testRes = await fetch(
+      `https://api.elevenlabs.io/v1/text-to-speech/pNInz6obpgDQGcFmaJgB`,
+      {
+        method: 'POST',
+        headers: {
+          'Accept': 'audio/mpeg',
+          'Content-Type': 'application/json',
+          'xi-api-key': API_KEY,
+        },
+        body: JSON.stringify({
+          text: 'test',
+          model_id: 'eleven_multilingual_v2',
+        }),
+      }
+    );
+    
+    if (testRes.ok) {
+      console.log('[ElevenLabs] API key has TTS permission');
+      return true;
+    } else {
+      const errBody = await testRes.text().catch(() => 'unknown');
+      console.error('[ElevenLabs] API key test failed:', testRes.status, errBody);
+      return false;
+    }
+  } catch (err) {
+    console.error('[ElevenLabs] API key test error:', err);
+    return false;
+  }
 }
