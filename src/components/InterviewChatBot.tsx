@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface ChatMsg {
@@ -190,7 +191,7 @@ Respond in 2–4 sentences unless asked for more detail.`,
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal((
     <div style={{
       position: 'fixed',
       right: 20,
@@ -397,5 +398,5 @@ Respond in 2–4 sentences unless asked for more detail.`,
         </button>
       </div>
     </div>
-  );
+  ), document.body);
 }

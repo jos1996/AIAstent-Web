@@ -537,25 +537,17 @@ export default function MockInterviewPage() {
             }}>
               {formatTime(elapsedSeconds)}
             </span>
-            {/* AI Coach toggle button */}
-            <button
-              onClick={() => setChatOpen(v => !v)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 7,
-                padding: '7px 14px', borderRadius: 10, border: 'none', cursor: 'pointer',
-                background: chatOpen
-                  ? 'linear-gradient(135deg, #6366f1, #7c3aed)'
-                  : 'rgba(99,102,241,0.18)',
-                color: chatOpen ? '#fff' : '#a5b4fc',
-                fontSize: 12, fontWeight: 700,
-                border: `1px solid ${chatOpen ? 'transparent' : 'rgba(99,102,241,0.4)'}`,
-                boxShadow: chatOpen ? '0 4px 16px rgba(99,102,241,0.5)' : 'none',
-                transition: 'all 0.2s',
-              }}
-            >
-              <span style={{ fontSize: 15 }}>🤖</span>
-              AI Coach
-            </button>
+            {/* Info hint */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 7,
+              padding: '6px 13px', borderRadius: 10,
+              background: 'rgba(99,102,241,0.1)',
+              border: '1px solid rgba(99,102,241,0.25)',
+              color: 'rgba(165,180,252,0.8)', fontSize: 11, fontWeight: 500,
+            }}>
+              <span style={{ fontSize: 13 }}>💡</span>
+              Drag Helply AI desktop app to this window for real-time answers
+            </div>
           </div>
         </div>
 
@@ -921,26 +913,6 @@ export default function MockInterviewPage() {
                   {currentQuestionIndex >= TOTAL_QUESTIONS_PER_SESSION - 1 ? 'Finish Interview' : 'Next Question'}
                 </>
               )}
-            </button>
-
-            {/* AI Coach button - bottom bar shortcut */}
-            <button
-              onClick={() => setChatOpen(v => !v)}
-              style={{
-                padding: '14px 22px', borderRadius: 50, fontSize: 13, fontWeight: 700,
-                background: chatOpen
-                  ? 'linear-gradient(135deg, #6366f1, #7c3aed)'
-                  : 'rgba(99,102,241,0.15)',
-                border: `1px solid ${chatOpen ? 'transparent' : 'rgba(99,102,241,0.4)'}`,
-                color: chatOpen ? '#fff' : '#a5b4fc',
-                cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: 7,
-                boxShadow: chatOpen ? '0 4px 20px rgba(99,102,241,0.5)' : 'none',
-                transition: 'all 0.2s',
-              }}
-            >
-              <span style={{ fontSize: 16 }}>🤖</span>
-              AI Coach
             </button>
 
             {/* End Interview - Fixed click handler */}
