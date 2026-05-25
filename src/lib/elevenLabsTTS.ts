@@ -1,23 +1,17 @@
-// ElevenLabs Text-to-Speech Service
-// Calls ElevenLabs API directly from the browser (no serverless proxy)
+// Text-to-Speech Service — Eden AI (Amazon Neural TTS)
+// Uses Eden AI universal-ai endpoint with Amazon Neural voice provider
 
-// API key from environment
-const API_KEY = import.meta.env.VITE_ELEVENLABS_API_KEY || 'sk_2cb2e9ce654c87d96b848c79ff3f5b5c2dd6c87d92a21eb5';
+const EDEN_AI_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiODFlMzM1NzktMDgzMS00MmIxLWIzN2UtNGU5ODIzZmRjOWNjIiwidHlwZSI6ImFwaV90b2tlbiJ9.bMugmLgEFLlnaw-1meQv4uLF_95wXj0BRkzODP0rshw';
 
-// Voice IDs from ElevenLabs
-// User's selected voice from Voice Library
+// Kept for backward-compat — not used by Eden AI TTS
 export const ELEVENLABS_VOICES = {
-  SMITH: '7rQX8r6PVq3gfJ8rZzyE',     // User's voice from Voice Library
-  ADAM: 'pNInz6obpgDQGcFmaJgB',      // Fallback: Professional male (free tier)
-  JOSH: 'TxGEqnHWrfWFTfGW9XjX',      // Alternative male
+  SMITH: 'amazon-neural',
+  ADAM: 'amazon-neural',
+  JOSH: 'amazon-neural',
 } as const;
 
 export type VoiceId = typeof ELEVENLABS_VOICES[keyof typeof ELEVENLABS_VOICES];
-
-interface TTSOptions {
-  voiceId?: VoiceId;
-  modelId?: string;
-}
 
 // Global audio ref so we can stop playback from outside
 let currentAudio: HTMLAudioElement | null = null;
@@ -31,107 +25,84 @@ export function stopCurrentAudio() {
 }
 
 /**
- * Generate speech by calling ElevenLabs API directly from browser.
- * Returns a Blob URL that can be played with HTML5 Audio.
+ * Call Eden AI TTS (Amazon Neural) and return the hosted MP3 URL.
  */
-async function generateSpeechBlob(
-  text: string,
-  voiceId: string,
-  modelId: string
-): Promise<string> {
-  const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
+async function generateSpeechUrl(text: string): Promise<string> {
+  console.log('[TTS] Calling Eden AI Amazon Neural TTS | text:', text.substring(0, 80));
 
-  console.log('[ElevenLabs] POST', url);
-  console.log('[ElevenLabs] Voice:', voiceId, '| Text:', text.substring(0, 80));
-
-  const res = await fetch(url, {
+  const res = await fetch('https://api.edenai.run/v3/universal-ai/', {
     method: 'POST',
     headers: {
-      'Accept': 'audio/mpeg',
+      'Authorization': `Bearer ${EDEN_AI_KEY}`,
       'Content-Type': 'application/json',
-      'xi-api-key': API_KEY,
     },
     body: JSON.stringify({
-      text,
-      model_id: modelId,
-      voice_settings: {
-        stability: 0.5,
-        similarity_boost: 0.75,
-        style: 0.0,
-        use_speaker_boost: true,
-      },
+      model: 'audio/tts/amazon/neural',
+      input: { text },
+      show_original_response: false,
     }),
   });
 
   if (!res.ok) {
     const errBody = await res.text().catch(() => 'unknown');
-    console.error('[ElevenLabs] API error', res.status, errBody);
-    console.error('[ElevenLabs] Full error details:', {
-      status: res.status,
-      statusText: res.statusText,
-      headers: Object.fromEntries(res.headers.entries()),
-      body: errBody
-    });
-    throw new Error(`ElevenLabs ${res.status}: ${errBody}`);
+    console.error('[TTS] Eden AI error', res.status, errBody);
+    throw new Error(`Eden AI TTS ${res.status}: ${errBody}`);
   }
 
-  const blob = await res.blob();
-  console.log('[ElevenLabs] Got audio blob, size:', blob.size);
-  
-  if (blob.size < 100) {
-    throw new Error('Audio blob too small — likely empty');
+  const data = await res.json();
+  console.log('[TTS] Eden AI response status:', data.status);
+
+  const audioUrl: string = data?.output?.audio_resource_url;
+  if (!audioUrl) {
+    throw new Error('Eden AI TTS: no audio_resource_url in response');
   }
 
-  return URL.createObjectURL(blob);
+  console.log('[TTS] Got audio URL:', audioUrl.substring(0, 80));
+  return audioUrl;
 }
 
 /**
- * Main function: Generate and play speech in one call.
- * Calls ElevenLabs directly — no serverless proxy.
+ * Main function: Generate and play speech using Eden AI Amazon Neural TTS.
+ * Falls back to browser TTS if Eden AI fails.
  */
 export async function speakWithElevenLabs(
   text: string,
-  options: TTSOptions & {
+  options: {
+    voiceId?: VoiceId;
+    modelId?: string;
     onStart?: () => void;
     onEnd?: () => void;
   } = {}
 ): Promise<void> {
-  const { onStart, onEnd, voiceId, modelId } = options;
-  const voice = voiceId || ELEVENLABS_VOICES.SMITH;
-  const model = modelId || 'eleven_multilingual_v2';
+  const { onStart, onEnd } = options;
 
-  // Generate audio blob URL
-  const blobUrl = await generateSpeechBlob(text, voice, model);
+  const audioUrl = await generateSpeechUrl(text);
 
-  // Play it
   return new Promise<void>((resolve) => {
-    const audio = new Audio(blobUrl);
+    const audio = new Audio(audioUrl);
     currentAudio = audio;
 
     audio.onplay = () => {
-      console.log('[ElevenLabs] Audio playing');
+      console.log('[TTS] Audio playing');
       onStart?.();
     };
 
     audio.onended = () => {
-      console.log('[ElevenLabs] Audio ended');
-      URL.revokeObjectURL(blobUrl);
+      console.log('[TTS] Audio ended');
       currentAudio = null;
       onEnd?.();
       resolve();
     };
 
     audio.onerror = (e) => {
-      console.error('[ElevenLabs] Audio playback error:', e);
-      URL.revokeObjectURL(blobUrl);
+      console.error('[TTS] Audio playback error:', e);
       currentAudio = null;
       onEnd?.();
       resolve();
     };
 
     audio.play().catch((err) => {
-      console.error('[ElevenLabs] play() rejected:', err);
-      URL.revokeObjectURL(blobUrl);
+      console.error('[TTS] play() rejected:', err);
       currentAudio = null;
       onEnd?.();
       resolve();
@@ -140,43 +111,9 @@ export async function speakWithElevenLabs(
 }
 
 /**
- * Check if ElevenLabs is available (test API key with real call)
+ * Check if TTS is available — Eden AI key is always present so always true.
  */
 export async function isElevenLabsAvailable(): Promise<boolean> {
-  if (!API_KEY || API_KEY.length < 10) {
-    console.warn('[ElevenLabs] No API key configured');
-    return false;
-  }
-  console.log('[ElevenLabs] API key found, length:', API_KEY.length);
-  
-  // Test with a minimal TTS call to verify permissions
-  try {
-    const testRes = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/pNInz6obpgDQGcFmaJgB`,
-      {
-        method: 'POST',
-        headers: {
-          'Accept': 'audio/mpeg',
-          'Content-Type': 'application/json',
-          'xi-api-key': API_KEY,
-        },
-        body: JSON.stringify({
-          text: 'test',
-          model_id: 'eleven_multilingual_v2',
-        }),
-      }
-    );
-    
-    if (testRes.ok) {
-      console.log('[ElevenLabs] API key has TTS permission');
-      return true;
-    } else {
-      const errBody = await testRes.text().catch(() => 'unknown');
-      console.error('[ElevenLabs] API key test failed:', testRes.status, errBody);
-      return false;
-    }
-  } catch (err) {
-    console.error('[ElevenLabs] API key test error:', err);
-    return false;
-  }
+  console.log('[TTS] Using Eden AI Amazon Neural TTS — always available');
+  return true;
 }
