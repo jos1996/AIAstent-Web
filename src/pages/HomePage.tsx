@@ -373,59 +373,81 @@ export default function HomePage() {
       {/* Navigation */}
       <nav style={{
         position: 'fixed', top: 36, left: 0, right: 0, zIndex: 100,
-        padding: '0 20px', height: 60,
+        padding: '10px 32px', height: 68,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        background: scrolled ? 'rgba(255,255,255,0.97)' : 'rgba(255,255,255,0.85)',
-        backdropFilter: 'blur(20px)',
-        borderBottom: '1px solid rgba(0,0,0,0.07)',
+        background: scrolled ? 'rgba(255,255,255,0.97)' : 'transparent',
+        backdropFilter: scrolled ? 'blur(20px)' : 'none',
+        borderBottom: scrolled ? '1px solid rgba(0,0,0,0.07)' : 'none',
         transition: 'all 0.3s',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <img src="/favicon.png" alt="Helply AI" style={{ width: 32, height: 32, borderRadius: 8 }} />
-          <span style={{ fontSize: 17, fontWeight: 800, color: '#000', letterSpacing: '-0.02em' }}>Helply AI</span>
+        {/* Logo */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 9, minWidth: 140 }}>
+          <img src="/favicon.png" alt="Helply AI" style={{ width: 30, height: 30, borderRadius: 8 }} />
+          <span style={{ fontSize: 16, fontWeight: 800, color: '#0a0a0a', letterSpacing: '-0.03em' }}>Helply AI</span>
         </div>
 
-        {/* Desktop links */}
-        <div className="home-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-          <a href="/" style={{ color: '#000', fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>Home</a>
-          <a href="#features" style={{ color: '#555', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#000')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#555')}
-          >Features</a>
-          <a href="#pricing" style={{ color: '#555', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#000')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#555')}
-          >Pricing</a>
-          <a href="#how-it-works" style={{ color: '#555', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#000')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#555')}
-          >How It Works</a>
-          <a href="#about" style={{ color: '#555', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#000')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#555')}
-          >About Us</a>
-          <a href="/settings/dashboard" style={{
-            padding: '8px 20px', borderRadius: 100, fontSize: 14, fontWeight: 600,
-            background: '#000', color: '#fff', textDecoration: 'none',
-          }}>{user ? 'Dashboard' : 'Sign In'}</a>
+        {/* ── Center pill nav ── */}
+        <div className="home-nav-links" style={{
+          display: 'flex', alignItems: 'center', gap: 4,
+          background: 'rgba(255,255,255,0.92)',
+          border: '1px solid rgba(0,0,0,0.1)',
+          borderRadius: 100,
+          padding: '5px 6px',
+          boxShadow: '0 2px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.06)',
+          backdropFilter: 'blur(12px)',
+        }}>
+          {[
+            { href: '/', label: 'Home', active: true },
+            { href: '#features', label: 'Features' },
+            { href: '#pricing', label: 'Pricing' },
+            { href: '#how-it-works', label: 'How It Works' },
+            { href: '#about', label: 'About Us' },
+          ].map(({ href, label, active }) => (
+            <a
+              key={href}
+              href={href}
+              style={{
+                padding: '7px 16px', borderRadius: 100,
+                fontSize: 13, fontWeight: active ? 700 : 500,
+                color: active ? '#fff' : '#444',
+                textDecoration: 'none',
+                background: active ? '#0a0a0a' : 'transparent',
+                transition: 'all 0.18s',
+                whiteSpace: 'nowrap' as const,
+              }}
+              onMouseEnter={e => { if (!active) { e.currentTarget.style.background = 'rgba(0,0,0,0.06)'; e.currentTarget.style.color = '#000'; }}}
+              onMouseLeave={e => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#444'; }}}
+            >
+              {label}
+            </a>
+          ))}
         </div>
 
-        {/* Mobile: Dashboard button + hamburger */}
-        <div className="home-nav-mobile" style={{ display: 'none', alignItems: 'center', gap: 8 }}>
+        {/* Right: Dashboard button */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 140, justifyContent: 'flex-end' }}>
           <a href="/settings/dashboard" style={{
-            padding: '7px 16px', borderRadius: 100, fontSize: 13, fontWeight: 700,
-            background: '#000', color: '#fff', textDecoration: 'none',
-          }}>{user ? 'Dashboard' : 'Sign In'}</a>
+            padding: '9px 22px', borderRadius: 100, fontSize: 13, fontWeight: 700,
+            background: '#0a0a0a', color: '#fff', textDecoration: 'none',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+            transition: 'all 0.2s',
+          }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#333'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.3)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#0a0a0a'; e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)'; }}
+          >
+            {user ? 'Dashboard' : 'Sign In'} →
+          </a>
+
+          {/* Mobile hamburger */}
           <button
-            className="home-hamburger"
+            className="home-hamburger home-nav-mobile"
             onClick={() => {
               const menu = document.getElementById('home-mobile-menu');
               if (menu) menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
             }}
             style={{
-              width: 38, height: 38, borderRadius: 8, background: '#f3f4f6',
-              border: '1px solid #e5e7eb', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#374151',
+              display: 'none', width: 38, height: 38, borderRadius: 10,
+              background: '#f3f4f6', border: '1px solid #e5e7eb',
+              cursor: 'pointer', alignItems: 'center', justifyContent: 'center', color: '#374151',
             }}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
