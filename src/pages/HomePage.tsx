@@ -33,7 +33,7 @@ function VideoDemo() {
   };
 
   return (
-    <div style={{ marginTop: 60, width: '100%', maxWidth: 1000, margin: '60px auto 0' }}>
+    <div style={{ width: '100%' }}>
       <div
         style={{
           borderRadius: 20, overflow: 'hidden',
@@ -346,9 +346,33 @@ export default function HomePage() {
 
       <div style={{ position: 'relative', zIndex: 1 }}>
 
+      {/* ── Promo Banner ── */}
+      <div style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 101,
+        background: 'linear-gradient(90deg, #000 0%, #1a1a2e 50%, #000 100%)',
+        color: '#fff', textAlign: 'center',
+        padding: '9px 16px', fontSize: 13, fontWeight: 600,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+        letterSpacing: '0.01em',
+      }}>
+        <span style={{ fontSize: 15 }}>🎉</span>
+        <span>Limited time offer — Get full access at just</span>
+        <span style={{
+          background: 'linear-gradient(135deg, #f59e0b, #f97316)',
+          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          fontWeight: 900, fontSize: 15,
+        }}>₹399</span>
+        <span>only!</span>
+        <a href="#pricing" style={{
+          background: 'linear-gradient(135deg, #f59e0b, #f97316)',
+          color: '#000', padding: '3px 12px', borderRadius: 20,
+          fontSize: 11, fontWeight: 800, textDecoration: 'none', marginLeft: 4,
+        }}>Grab Now →</a>
+      </div>
+
       {/* Navigation */}
       <nav style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+        position: 'fixed', top: 36, left: 0, right: 0, zIndex: 100,
         padding: '0 20px', height: 60,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         background: scrolled ? 'rgba(255,255,255,0.97)' : 'rgba(255,255,255,0.85)',
@@ -413,7 +437,7 @@ export default function HomePage() {
 
       {/* Mobile menu dropdown */}
       <div id="home-mobile-menu" style={{
-        display: 'none', position: 'fixed', top: 60, left: 0, right: 0, zIndex: 99,
+        display: 'none', position: 'fixed', top: 96, left: 0, right: 0, zIndex: 99,
         background: 'rgba(255,255,255,0.98)', backdropFilter: 'blur(20px)',
         borderBottom: '1px solid rgba(0,0,0,0.08)',
         flexDirection: 'column', padding: '12px 20px 20px', gap: 4,
@@ -429,170 +453,134 @@ export default function HomePage() {
         ))}
       </div>
 
-      {/* Hero Section */}
+      {/* ── Hero Section — Split Layout ── */}
       <section style={{
-        textAlign: 'center', padding: '80px 24px 60px',
-        background: 'linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(240,240,240,0.8) 100%)',
-        position: 'relative',
-        overflow: 'hidden',
+        padding: '100px 0 80px',
+        background: 'linear-gradient(160deg, #f8faff 0%, #ffffff 50%, #f0f4ff 100%)',
+        position: 'relative', overflow: 'hidden', marginTop: 36,
       }}>
-        {/* Animated Grid Background */}
+        {/* Subtle dot grid */}
         <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundImage: `
-            linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px)
-          `,
-          backgroundSize: '50px 50px',
-          animation: 'gridMove 20s linear infinite',
-          opacity: 0.4,
-          zIndex: 0,
+          position: 'absolute', inset: 0, zIndex: 0,
+          backgroundImage: 'radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px)',
+          backgroundSize: '28px 28px', opacity: 0.5, pointerEvents: 'none',
         }} />
-        {/* Animated Dots */}
+
         <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundImage: 'radial-gradient(circle, rgba(0,0,0,0.08) 1px, transparent 1px)',
-          backgroundSize: '30px 30px',
-          animation: 'dotFloat 15s ease-in-out infinite',
-          opacity: 0.3,
-          zIndex: 0,
-        }} />
-        {/* Content wrapper with higher z-index */}
-        <div style={{ position: 'relative', zIndex: 1 }}>
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 20px',
-          background: 'rgba(0,0,0,0.04)', borderRadius: 24, border: '1px solid rgba(0,0,0,0.08)',
-          fontSize: 12, fontWeight: 600, color: '#000', marginBottom: 24,
-          margin: '0 auto 24px',
+          position: 'relative', zIndex: 1,
+          maxWidth: 1180, margin: '0 auto', padding: '0 32px',
+          display: 'flex', alignItems: 'center', gap: 60,
+          flexWrap: 'wrap',
         }}>
-          <Icon name="Sparkles" size={14} />
-          ✨ PRACTICE & IMPROVE YOUR INTERVIEW SKILLS
-        </div>
 
-        <h1 style={{
-          fontSize: 'clamp(22px, 3.75vw, 40px)', fontWeight: 900,
-          lineHeight: 1.1, letterSpacing: '-1px', maxWidth: 900,
-          marginBottom: 16,
-          color: '#000',
-          textAlign: 'center',
-          margin: '0 auto 16px',
-        }}>
-          Your Real-Time <span style={{
-            background: 'linear-gradient(135deg, #000 0%, #000 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}>Interview</span> Assistant
-        </h1>
+          {/* ── LEFT: Content ── */}
+          <div style={{ flex: '1 1 420px', minWidth: 300 }}>
 
-        <p style={{
-          fontSize: 'clamp(15px, 2vw, 18px)', color: '#1a1a1a',
-          maxWidth: 720, lineHeight: 1.6, marginBottom: 20, fontWeight: 600,
-          textAlign: 'center',
-          margin: '0 auto 20px',
-        }}>
-          <strong>Crack your first job</strong> with AI-powered interview practice at an <strong>affordable price</strong>
-        </p>
-
-        <p style={{
-          fontSize: 'clamp(13px, 1.6vw, 15px)', color: '#666',
-          maxWidth: 680, lineHeight: 1.7, marginBottom: 32, fontWeight: 400,
-          textAlign: 'center',
-          margin: '0 auto 32px',
-        }}>
-          Master <strong>interview skills</strong>, build <strong>confidence</strong>, and land your <strong>dream job</strong> with real-time AI feedback. Perfect for <strong>freshers</strong> and <strong>job seekers</strong> preparing for technical and HR interviews.
-        </p>
-
-        {/* Download Buttons */}
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 20 }}>
-          <button onClick={() => handleDownloadClick('ios')} style={{
-            padding: '14px 32px', borderRadius: 12, fontSize: 15, fontWeight: 600,
-            background: '#000', color: '#fff', display: 'flex', alignItems: 'center', gap: 12,
-            border: 'none', cursor: 'pointer',
-            transition: 'all 0.3s', boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.3)'; e.currentTarget.style.background = '#1a1a1a' }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.2)'; e.currentTarget.style.background = '#000' }}
-          >
-            <svg width="20" height="20" viewBox="0 0 814 1000" fill="currentColor">
-              <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76.5 0-103.7 40.8-165.9 40.8s-105.6-57-155.5-127C46.7 790.7 0 663 0 541.8c0-194.4 126.4-297.5 250.8-297.5 66.1 0 121.2 43.4 162.7 43.4 39.5 0 101.1-46 176.3-46 28.5 0 130.9 2.6 198.3 99.2zm-234-181.5c31.1-36.9 53.1-88.1 53.1-139.3 0-7.1-.6-14.3-1.9-20.1-50.6 1.9-110.8 33.7-147.1 75.8-28.5 32.4-55.1 83.6-55.1 135.5 0 7.8 1.3 15.6 1.9 18.1 3.2.6 8.4 1.3 13.6 1.3 45.4 0 102.5-30.4 135.5-71.3z"/>
-            </svg>
-            <span>Download for Mac</span>
-          </button>
-          <button onClick={() => handleDownloadClick('windows')} style={{
-            padding: '14px 32px', borderRadius: 12, fontSize: 15, fontWeight: 600,
-            background: '#000', color: '#fff', display: 'flex', alignItems: 'center', gap: 12,
-            border: 'none', cursor: 'pointer',
-            transition: 'all 0.3s', boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.3)'; e.currentTarget.style.background = '#1a1a1a' }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.2)'; e.currentTarget.style.background = '#000' }}
-          >
-            <svg width="20" height="20" viewBox="0 0 88 88" fill="currentColor">
-              <path d="M0 12.402l35.687-4.8602.0156 34.423-35.67.20313zm35.67 33.529.0277 34.453-35.67-4.9041-.002-29.78zm4.3261-39.025l47.318-6.906v41.527l-47.318.37565zm47.329 39.349-.0111 41.34-47.318-6.6784-.0663-34.739z"/>
-            </svg>
-            <span>Download for Windows</span>
-          </button>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 12, flexWrap: 'wrap', justifyContent: 'center', fontSize: 13, color: '#666' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Icon name="Check" size={14} /> One-time payment
-          </div>
-          <div style={{ width: 1, height: 10, background: '#ddd' }} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Icon name="Check" size={14} /> Or subscription/lifetime
-          </div>
-        </div>
-
-        <div style={{ marginTop: 32, display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap', justifyContent: 'center', padding: '20px 32px', background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(10px)', borderRadius: 16, border: '1px solid rgba(0,0,0,0.08)', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ display: 'flex', marginLeft: -8 }}>
-              {[
-                'https://randomuser.me/api/portraits/men/32.jpg',
-                'https://randomuser.me/api/portraits/women/44.jpg',
-                'https://randomuser.me/api/portraits/men/67.jpg',
-                'https://randomuser.me/api/portraits/women/21.jpg',
-                'https://randomuser.me/api/portraits/men/85.jpg',
-              ].map((img, i) => (
-                <img key={i} src={img} alt="User" style={{
-                  width: 40, height: 40, borderRadius: '50%',
-                  border: '3px solid #fff',
-                  marginLeft: -12,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                  objectFit: 'cover',
-                }} />
-              ))}
+            {/* Badge */}
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 7,
+              padding: '6px 14px', borderRadius: 20,
+              background: 'rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.1)',
+              fontSize: 11, fontWeight: 700, color: '#333', marginBottom: 20,
+              letterSpacing: '0.06em', textTransform: 'uppercase' as const,
+            }}>
+              <span>🤖</span> AI POWERED INTERVIEW ASSISTANT
             </div>
-            <div style={{ fontSize: 15, fontWeight: 600, color: '#000', marginLeft: 8 }}>
-              <span style={{ fontWeight: 800, fontSize: 16 }}>100K+</span> users worldwide
+
+            {/* Headline */}
+            <h1 style={{
+              fontSize: 'clamp(28px, 4vw, 52px)', fontWeight: 900,
+              lineHeight: 1.08, letterSpacing: '-1.5px',
+              color: '#0a0a0a', margin: '0 0 20px',
+            }}>
+              Your Real-Time{' '}
+              <span style={{
+                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+              }}>AI</span>{' '}Interview Assistant
+            </h1>
+
+            {/* Subheadline */}
+            <p style={{ fontSize: 17, color: '#444', lineHeight: 1.65, margin: '0 0 12px', fontWeight: 500 }}>
+              Automatically get an answer to every interview question with AI. Real-time and private.
+            </p>
+            <p style={{ fontSize: 14, color: '#666', lineHeight: 1.7, margin: '0 0 32px' }}>
+              Master <strong>interview skills</strong>, build <strong>confidence</strong>, and land your <strong>dream job</strong>. Perfect for freshers and experienced professionals.
+            </p>
+
+            {/* CTA Buttons */}
+            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 20 }}>
+              <button onClick={() => handleDownloadClick('ios')} style={{
+                padding: '14px 28px', borderRadius: 12, fontSize: 15, fontWeight: 700,
+                background: '#0a0a0a', color: '#fff', border: 'none', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 10,
+                boxShadow: '0 4px 20px rgba(0,0,0,0.25)', transition: 'all 0.25s',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(0,0,0,0.35)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.25)'; }}
+              >
+                <svg width="18" height="18" viewBox="0 0 814 1000" fill="currentColor"><path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76.5 0-103.7 40.8-165.9 40.8s-105.6-57-155.5-127C46.7 790.7 0 663 0 541.8c0-194.4 126.4-297.5 250.8-297.5 66.1 0 121.2 43.4 162.7 43.4 39.5 0 101.1-46 176.3-46 28.5 0 130.9 2.6 198.3 99.2zm-234-181.5c31.1-36.9 53.1-88.1 53.1-139.3 0-7.1-.6-14.3-1.9-20.1-50.6 1.9-110.8 33.7-147.1 75.8-28.5 32.4-55.1 83.6-55.1 135.5 0 7.8 1.3 15.6 1.9 18.1 3.2.6 8.4 1.3 13.6 1.3 45.4 0 102.5-30.4 135.5-71.3z"/></svg>
+                Download for Mac
+              </button>
+              <button onClick={() => handleDownloadClick('windows')} style={{
+                padding: '14px 28px', borderRadius: 12, fontSize: 15, fontWeight: 700,
+                background: '#0a0a0a', color: '#fff', border: 'none', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 10,
+                boxShadow: '0 4px 20px rgba(0,0,0,0.25)', transition: 'all 0.25s',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(0,0,0,0.35)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.25)'; }}
+              >
+                <svg width="18" height="18" viewBox="0 0 88 88" fill="currentColor"><path d="M0 12.402l35.687-4.8602.0156 34.423-35.67.20313zm35.67 33.529.0277 34.453-35.67-4.9041-.002-29.78zm4.3261-39.025l47.318-6.906v41.527l-47.318.37565zm47.329 39.349-.0111 41.34-47.318-6.6784-.0663-34.739z"/></svg>
+                Download for Windows
+              </button>
+            </div>
+
+            {/* Payment note */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13, color: '#666', marginBottom: 32 }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                <Icon name="Check" size={13} /> One-time payment
+              </span>
+              <span style={{ color: '#ccc' }}>|</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                <Icon name="Check" size={13} /> Or subscription/lifetime
+              </span>
+            </div>
+
+            {/* Social proof */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex' }}>
+                {[
+                  'https://randomuser.me/api/portraits/men/32.jpg',
+                  'https://randomuser.me/api/portraits/women/44.jpg',
+                  'https://randomuser.me/api/portraits/men/67.jpg',
+                  'https://randomuser.me/api/portraits/women/21.jpg',
+                ].map((img, i) => (
+                  <img key={i} src={img} alt="User" style={{
+                    width: 34, height: 34, borderRadius: '50%',
+                    border: '2px solid #fff', marginLeft: i === 0 ? 0 : -10,
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.15)', objectFit: 'cover',
+                  }} />
+                ))}
+              </div>
+              <div style={{ fontSize: 13, color: '#555', fontWeight: 600 }}>
+                Used by <strong style={{ color: '#000' }}>100K+</strong> people
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                {[1,2,3,4,5].map(i => (
+                  <svg key={i} width="14" height="14" viewBox="0 0 24 24" fill="#f59e0b"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                ))}
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#000', marginLeft: 3 }}>4.9</span>
+                <span style={{ fontSize: 12, color: '#888' }}>/5 · 30K+ reviews</span>
+              </div>
             </div>
           </div>
-          <div style={{ width: 1, height: 24, background: 'rgba(0,0,0,0.15)' }} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ display: 'flex', gap: 3 }}>
-              {[1,2,3,4,5].map(i => (
-                <svg key={i} width="18" height="18" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFB800" strokeWidth="1.5">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                </svg>
-              ))}
-            </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-              <span style={{ fontSize: 16, fontWeight: 800, color: '#000' }}>4.9</span>
-              <span style={{ fontSize: 14, color: '#666', fontWeight: 500 }}>from <span style={{ fontWeight: 700, color: '#000' }}>30K+</span> reviews</span>
-            </div>
-          </div>
-        </div>
 
-        {/* Video Demo */}
-        <VideoDemo />
+          {/* ── RIGHT: Video Demo ── */}
+          <div style={{ flex: '1 1 440px', minWidth: 300 }}>
+            <VideoDemo />
+          </div>
+
         </div>
       </section>
 
