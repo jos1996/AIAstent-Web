@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { speakWithElevenLabs, ELEVENLABS_VOICES, isElevenLabsAvailable, stopCurrentAudio } from '../lib/elevenLabsTTS';
+import { InterviewChatBot } from '../components/InterviewChatBot';
 
 const MAX_DAILY_QUESTIONS = 15;
 const TOTAL_QUESTIONS_PER_SESSION = 12; // ask up to 12, drawn from shuffled bank
@@ -274,6 +275,7 @@ export default function MockInterviewPage() {
   const aiName = 'Smith'; // Always Smith — male voice
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [elevenLabsReady, setElevenLabsReady] = useState<boolean | null>(null);
+  const [chatOpen, setChatOpen] = useState(false);
   const synthRef = useRef<SpeechSynthesisUtterance | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -475,17 +477,26 @@ export default function MockInterviewPage() {
     return (
       <div className="mock-meeting-room" style={{
         position: 'fixed', inset: 0, zIndex: 200,
-        background: 'linear-gradient(180deg, #0c0c14 0%, #0f1729 55%, #0c0c14 100%)',
+        background: 'linear-gradient(135deg, #0a0a14 0%, #0d1120 50%, #0a0a14 100%)',
         display: 'flex', flexDirection: 'column',
         fontFamily: '-apple-system, system-ui, sans-serif',
       }}>
+
+        {/* ── Chatbot (floating, fixed) ── */}
+        <InterviewChatBot
+          isOpen={chatOpen}
+          onClose={() => setChatOpen(false)}
+          currentQuestion={currentQuestion}
+          role={activeRole}
+        />
+
         {/* ── Top bar ── */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '12px 28px',
-          background: 'rgba(0,0,0,0.4)',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
-          backdropFilter: 'blur(20px)',
+          padding: '10px 24px',
+          background: 'rgba(0,0,0,0.5)',
+          borderBottom: '1px solid rgba(255,255,255,0.07)',
+          backdropFilter: 'blur(24px)',
           flexShrink: 0,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -514,18 +525,37 @@ export default function MockInterviewPage() {
               border: '1px solid rgba(99,102,241,0.3)',
             }}>{activeRole}</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {!isComplete && (
-              <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontWeight: 500 }}>
-                {currentQuestionIndex >= 0 ? `Question ${currentQuestionIndex + 1} of ${TOTAL_QUESTIONS_PER_SESSION}` : 'Introduction'}
+              <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12, fontWeight: 500 }}>
+                {currentQuestionIndex >= 0 ? `Q${currentQuestionIndex + 1}/${TOTAL_QUESTIONS_PER_SESSION}` : 'Intro'}
               </span>
             )}
             <span style={{
-              color: 'rgba(255,255,255,0.6)', fontSize: 14, fontFamily: 'monospace', fontWeight: 600,
-              background: 'rgba(255,255,255,0.06)', padding: '3px 10px', borderRadius: 8,
+              color: 'rgba(255,255,255,0.6)', fontSize: 13, fontFamily: 'monospace', fontWeight: 600,
+              background: 'rgba(255,255,255,0.07)', padding: '4px 10px', borderRadius: 8,
             }}>
               {formatTime(elapsedSeconds)}
             </span>
+            {/* AI Coach toggle button */}
+            <button
+              onClick={() => setChatOpen(v => !v)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 7,
+                padding: '7px 14px', borderRadius: 10, border: 'none', cursor: 'pointer',
+                background: chatOpen
+                  ? 'linear-gradient(135deg, #6366f1, #7c3aed)'
+                  : 'rgba(99,102,241,0.18)',
+                color: chatOpen ? '#fff' : '#a5b4fc',
+                fontSize: 12, fontWeight: 700,
+                border: `1px solid ${chatOpen ? 'transparent' : 'rgba(99,102,241,0.4)'}`,
+                boxShadow: chatOpen ? '0 4px 16px rgba(99,102,241,0.5)' : 'none',
+                transition: 'all 0.2s',
+              }}
+            >
+              <span style={{ fontSize: 15 }}>🤖</span>
+              AI Coach
+            </button>
           </div>
         </div>
 
@@ -891,6 +921,26 @@ export default function MockInterviewPage() {
                   {currentQuestionIndex >= TOTAL_QUESTIONS_PER_SESSION - 1 ? 'Finish Interview' : 'Next Question'}
                 </>
               )}
+            </button>
+
+            {/* AI Coach button - bottom bar shortcut */}
+            <button
+              onClick={() => setChatOpen(v => !v)}
+              style={{
+                padding: '14px 22px', borderRadius: 50, fontSize: 13, fontWeight: 700,
+                background: chatOpen
+                  ? 'linear-gradient(135deg, #6366f1, #7c3aed)'
+                  : 'rgba(99,102,241,0.15)',
+                border: `1px solid ${chatOpen ? 'transparent' : 'rgba(99,102,241,0.4)'}`,
+                color: chatOpen ? '#fff' : '#a5b4fc',
+                cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 7,
+                boxShadow: chatOpen ? '0 4px 20px rgba(99,102,241,0.5)' : 'none',
+                transition: 'all 0.2s',
+              }}
+            >
+              <span style={{ fontSize: 16 }}>🤖</span>
+              AI Coach
             </button>
 
             {/* End Interview - Fixed click handler */}
