@@ -537,17 +537,6 @@ export default function MockInterviewPage() {
             }}>
               {formatTime(elapsedSeconds)}
             </span>
-            {/* Info hint */}
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 7,
-              padding: '6px 13px', borderRadius: 10,
-              background: 'rgba(99,102,241,0.1)',
-              border: '1px solid rgba(99,102,241,0.25)',
-              color: 'rgba(165,180,252,0.8)', fontSize: 11, fontWeight: 500,
-            }}>
-              <span style={{ fontSize: 13 }}>💡</span>
-              Drag Helply AI desktop app to this window for real-time answers
-            </div>
           </div>
         </div>
 
@@ -555,9 +544,26 @@ export default function MockInterviewPage() {
         <div style={{
           flex: 1, display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center',
-          padding: '32px 32px 0',
+          padding: '24px 32px 0',
           overflow: 'hidden', gap: 0,
         }}>
+
+          {/* ── Hint banner above avatar ── */}
+          <div style={{
+            marginBottom: 28, textAlign: 'center',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+            padding: '10px 24px', borderRadius: 14,
+            background: 'rgba(99,102,241,0.1)',
+            border: '1px solid rgba(99,102,241,0.22)',
+            backdropFilter: 'blur(10px)',
+          }}>
+            <span style={{ fontSize: 18 }}>💡</span>
+            <span style={{
+              color: '#c4b5fd', fontSize: 15, fontWeight: 700, letterSpacing: '0.01em',
+            }}>
+              Open the Helply AI desktop app and position it next to this window to get real time answers
+            </span>
+          </div>
 
           {/* AI Avatar with pulse rings */}
           <div style={{ position: 'relative', marginBottom: 24, flexShrink: 0 }}>
