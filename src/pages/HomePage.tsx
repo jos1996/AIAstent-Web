@@ -274,6 +274,278 @@ function VideoShowcase() {
   );
 }
 
+const ALL_FEATURES_BY_PLAN: Record<string, string[]> = {
+  free: [
+    '15 minutes free usage',
+    'Full AI chat assistant',
+    'Interview mode (live questions)',
+    'No credit card needed',
+    'Basic screen analysis',
+  ],
+  hour1: [
+    '1 hour of usage',
+    'Unlimited AI responses',
+    'Screen analysis',
+    'AI Interview Chatbot',
+    'Universal Job Search',
+    'ATS Resume Check',
+    'Resume Maker',
+    'Mock Interview practice',
+    'All features included',
+  ],
+  hour3: [
+    '3 hours of usage',
+    'Unlimited AI responses',
+    'Screen analysis',
+    'AI Interview Chatbot',
+    'Universal Job Search',
+    'ATS Resume Check',
+    'Resume Maker',
+    'Mock Interview practice',
+    'Save 50% vs single hour',
+    'All features included',
+    'Priority response speed',
+  ],
+  hour10: [
+    '10 hours of usage',
+    'Unlimited AI responses',
+    'Screen analysis',
+    'AI Interview Chatbot',
+    'Universal Job Search',
+    'ATS Resume Check',
+    'Resume Maker',
+    'Mock Interview practice',
+    'Save 50%+ vs single hour',
+    'All features included',
+    'Priority support',
+    'Priority response speed',
+    'Best value pack',
+  ],
+};
+
+function PricingSection({ regionalPricing }: { regionalPricing: RegionalPricing }) {
+  const [popupPlan, setPopupPlan] = useState<string | null>(null);
+
+  const plans = [
+    {
+      key: 'free',
+      label: 'FREE TRIAL',
+      price: 'Free',
+      sub: '15 min',
+      features: ['15 min free', 'Full AI chat', 'Interview mode', 'No card needed'],
+      featureTags: ['AI Interview Chatbot', 'Mock Interview'],
+      cta: 'Start Free',
+      href: '/settings/dashboard',
+      highlight: false,
+      badge: '',
+    },
+    {
+      key: 'hour1',
+      label: '1 HOUR',
+      price: regionalPricing.credit_1hr.label,
+      sub: '/ hour',
+      features: ['1 hr usage', 'Unlimited AI', 'Screen analysis', 'All features'],
+      featureTags: ['AI Interview Chatbot', 'Universal Job Search', 'ATS Check', 'Resume Maker', 'Mock Interview'],
+      cta: 'Buy',
+      href: '/settings/billing',
+      highlight: false,
+      badge: regionalPricing.credit_1hr.badge,
+    },
+    {
+      key: 'hour3',
+      label: '3 HOURS',
+      price: regionalPricing.credit_3hr.label,
+      sub: '/ 3 hrs',
+      features: ['3 hrs usage', 'Unlimited AI', regionalPricing.credit_3hr.savingsNote || 'Save 50%', 'All features'],
+      featureTags: ['AI Interview Chatbot', 'Universal Job Search', 'ATS Check', 'Resume Maker', 'Mock Interview'],
+      cta: 'Buy',
+      href: '/settings/billing',
+      highlight: true,
+      badge: regionalPricing.credit_3hr.badge || 'BEST VALUE',
+    },
+    {
+      key: 'hour10',
+      label: '10 HOURS',
+      price: regionalPricing.credit_10hr.label,
+      sub: '/ 10 hrs',
+      features: ['10 hrs usage', 'Unlimited AI', regionalPricing.credit_10hr.savingsNote || 'Save 50%', 'Priority support'],
+      featureTags: ['AI Interview Chatbot', 'Universal Job Search', 'ATS Check', 'Resume Maker', 'Mock Interview'],
+      cta: 'Buy',
+      href: '/settings/billing',
+      highlight: false,
+      badge: regionalPricing.credit_10hr.badge,
+    },
+  ];
+
+  const popupData = popupPlan ? plans.find(p => p.key === popupPlan) : null;
+
+  return (
+    <section id="pricing" style={{ padding: '72px 24px', background: 'linear-gradient(180deg, #000 0%, #111 100%)', position: 'relative' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 44 }}>
+          <h2 style={{ fontSize: 'clamp(24px, 3.5vw, 38px)', fontWeight: 900, letterSpacing: '-1px', color: '#fff', marginBottom: 10 }}>
+            Simple, Transparent Pricing
+          </h2>
+          <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 15, margin: 0 }}>
+            Pay only for what you use — no subscriptions, no hidden fees.
+          </p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 18, marginBottom: 24 }}>
+          {plans.map((plan) => (
+            <div key={plan.key} style={{
+              background: plan.highlight ? '#fff' : 'rgba(255,255,255,0.06)',
+              borderRadius: 18,
+              padding: '28px 22px 22px',
+              border: plan.highlight ? '2px solid #fff' : '1px solid rgba(255,255,255,0.1)',
+              position: 'relative',
+              display: 'flex', flexDirection: 'column',
+            }}>
+              {plan.badge && (
+                <div style={{
+                  position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)',
+                  background: plan.highlight ? '#6366f1' : '#333', color: '#fff', fontSize: 10, fontWeight: 800,
+                  padding: '4px 14px', borderRadius: 20, letterSpacing: 1, whiteSpace: 'nowrap' as const,
+                  border: '1px solid rgba(255,255,255,0.2)',
+                }}>{plan.badge}</div>
+              )}
+
+              {/* Label */}
+              <div style={{ fontSize: 11, fontWeight: 800, color: plan.highlight ? '#6366f1' : 'rgba(255,255,255,0.5)', textTransform: 'uppercase' as const, letterSpacing: 1.5, marginBottom: 10 }}>{plan.label}</div>
+
+              {/* Price */}
+              <div style={{ marginBottom: 6 }}>
+                <span style={{ fontSize: 36, fontWeight: 900, color: plan.highlight ? '#000' : '#fff', letterSpacing: '-1px' }}>{plan.price}</span>
+                <span style={{ fontSize: 13, color: plan.highlight ? '#777' : 'rgba(255,255,255,0.45)', marginLeft: 5 }}>{plan.sub}</span>
+              </div>
+
+              {/* Feature list */}
+              <ul style={{ listStyle: 'none', padding: 0, margin: '14px 0 12px 0', flex: 1 }}>
+                {plan.features.map((f, fi) => (
+                  <li key={fi} style={{ fontSize: 13, color: plan.highlight ? '#333' : 'rgba(255,255,255,0.75)', marginBottom: 8, display: 'flex', alignItems: 'flex-start', gap: 7 }}>
+                    <span style={{ color: plan.highlight ? '#6366f1' : '#4ade80', fontSize: 15, lineHeight: 1.2, flexShrink: 0 }}>✓</span> {f}
+                  </li>
+                ))}
+              </ul>
+
+              {/* Feature tags */}
+              <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 5, marginBottom: 16 }}>
+                {plan.featureTags.map(tag => (
+                  <span key={tag} style={{
+                    fontSize: 10, fontWeight: 600, padding: '3px 9px', borderRadius: 20,
+                    background: plan.highlight ? 'rgba(99,102,241,0.1)' : 'rgba(255,255,255,0.08)',
+                    color: plan.highlight ? '#6366f1' : 'rgba(255,255,255,0.6)',
+                    border: plan.highlight ? '1px solid rgba(99,102,241,0.25)' : '1px solid rgba(255,255,255,0.12)',
+                  }}>{tag}</span>
+                ))}
+              </div>
+
+              {/* Buttons row */}
+              <div style={{ display: 'flex', gap: 8 }}>
+                <a href={plan.href} style={{
+                  flex: 1, display: 'block', textAlign: 'center', padding: '11px 0',
+                  borderRadius: 10, fontSize: 14, fontWeight: 700,
+                  background: plan.highlight ? '#6366f1' : 'rgba(255,255,255,0.1)',
+                  color: '#fff', textDecoration: 'none', transition: 'all 0.2s',
+                  border: plan.highlight ? 'none' : '1px solid rgba(255,255,255,0.2)',
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; }}
+                  onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
+                >{plan.cta}</a>
+                <button onClick={() => setPopupPlan(plan.key)} style={{
+                  padding: '11px 14px', borderRadius: 10, fontSize: 13, fontWeight: 600,
+                  background: 'transparent',
+                  color: plan.highlight ? '#6366f1' : 'rgba(255,255,255,0.55)',
+                  border: plan.highlight ? '1px solid rgba(99,102,241,0.4)' : '1px solid rgba(255,255,255,0.15)',
+                  cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap' as const,
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = plan.highlight ? '#6366f1' : 'rgba(255,255,255,0.4)'; e.currentTarget.style.color = plan.highlight ? '#6366f1' : '#fff'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = plan.highlight ? 'rgba(99,102,241,0.4)' : 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = plan.highlight ? '#6366f1' : 'rgba(255,255,255,0.55)'; }}
+                >View More</button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <p style={{ textAlign: 'center', fontSize: 13, color: 'rgba(255,255,255,0.4)', margin: 0 }}>
+          Hours never expire · 1 hour = 60 min of AI usage · <a href="/settings/billing" style={{ color: 'rgba(255,255,255,0.65)', fontWeight: 600 }}>Full billing details →</a>
+        </p>
+      </div>
+
+      {/* View More Popup */}
+      {popupPlan && popupData && (
+        <div
+          onClick={() => setPopupPlan(null)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 999,
+            background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: 24,
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: '#fff', borderRadius: 24, padding: '40px 36px',
+              maxWidth: 520, width: '100%', position: 'relative',
+              boxShadow: '0 32px 80px rgba(0,0,0,0.4)',
+            }}
+          >
+            {/* Close */}
+            <button onClick={() => setPopupPlan(null)} style={{
+              position: 'absolute', top: 16, right: 16,
+              width: 34, height: 34, borderRadius: '50%',
+              background: '#f3f4f6', border: 'none', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 18, color: '#555', fontWeight: 700,
+            }}>×</button>
+
+            {/* Plan label */}
+            <div style={{ fontSize: 11, fontWeight: 800, color: '#6366f1', textTransform: 'uppercase' as const, letterSpacing: 1.5, marginBottom: 8 }}>{popupData.label}</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 6 }}>
+              <span style={{ fontSize: 40, fontWeight: 900, color: '#0a0a0a', letterSpacing: '-1.5px' }}>{popupData.price}</span>
+              <span style={{ fontSize: 15, color: '#888' }}>{popupData.sub}</span>
+            </div>
+            <p style={{ fontSize: 13, color: '#888', margin: '0 0 24px' }}>Everything included in this plan:</p>
+
+            {/* All features */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 16px', marginBottom: 28 }}>
+              {ALL_FEATURES_BY_PLAN[popupData.key]?.map((f, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 14, color: '#222' }}>
+                  <span style={{ color: '#6366f1', fontWeight: 800, fontSize: 16, lineHeight: 1.2, flexShrink: 0 }}>✓</span>
+                  {f}
+                </div>
+              ))}
+            </div>
+
+            {/* Feature tags */}
+            <div style={{ marginBottom: 28 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#aaa', textTransform: 'uppercase' as const, letterSpacing: 1, marginBottom: 10 }}>Tools Included</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 8 }}>
+                {['AI Interview Chatbot', 'Universal Job Search', 'ATS Check', 'Resume Maker', 'Mock Interview'].map(tag => (
+                  <span key={tag} style={{
+                    fontSize: 12, fontWeight: 600, padding: '5px 14px', borderRadius: 20,
+                    background: 'rgba(99,102,241,0.08)', color: '#6366f1',
+                    border: '1px solid rgba(99,102,241,0.2)',
+                  }}>{tag}</span>
+                ))}
+              </div>
+            </div>
+
+            <a href={popupData.href} style={{
+              display: 'block', textAlign: 'center', padding: '14px 0',
+              borderRadius: 12, fontSize: 15, fontWeight: 700,
+              background: 'linear-gradient(135deg, #6366f1, #7c3aed)',
+              color: '#fff', textDecoration: 'none',
+              boxShadow: '0 4px 18px rgba(99,102,241,0.4)',
+            }}>{popupData.cta === 'Start Free' ? 'Get Started Free' : `Buy — ${popupData.price}`}</a>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
 export default function HomePage() {
   const { user } = useAuth()
   const [scrolled, setScrolled] = useState(false)
@@ -386,15 +658,15 @@ export default function HomePage() {
           <span style={{ fontSize: 16, fontWeight: 800, color: '#0a0a0a', letterSpacing: '-0.03em' }}>Helply AI</span>
         </div>
 
-        {/* ── Center pill nav ── */}
+        {/* ── Center pill nav (with Dashboard inside) ── */}
         <div className="home-nav-links" style={{
-          display: 'flex', alignItems: 'center', gap: 4,
-          background: 'rgba(255,255,255,0.92)',
-          border: '1px solid rgba(0,0,0,0.1)',
+          display: 'flex', alignItems: 'center', gap: 3,
+          background: 'rgba(255,255,255,0.95)',
+          border: '1px solid rgba(0,0,0,0.11)',
           borderRadius: 100,
-          padding: '5px 6px',
-          boxShadow: '0 2px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.06)',
-          backdropFilter: 'blur(12px)',
+          padding: '6px 7px',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.1), 0 1px 6px rgba(0,0,0,0.06)',
+          backdropFilter: 'blur(16px)',
         }}>
           {[
             { href: '/', label: 'Home', active: true },
@@ -407,8 +679,8 @@ export default function HomePage() {
               key={href}
               href={href}
               style={{
-                padding: '7px 16px', borderRadius: 100,
-                fontSize: 13, fontWeight: active ? 700 : 500,
+                padding: '9px 20px', borderRadius: 100,
+                fontSize: 15, fontWeight: active ? 700 : 500,
                 color: active ? '#fff' : '#444',
                 textDecoration: 'none',
                 background: active ? '#0a0a0a' : 'transparent',
@@ -421,21 +693,26 @@ export default function HomePage() {
               {label}
             </a>
           ))}
-        </div>
-
-        {/* Right: Dashboard button */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 140, justifyContent: 'flex-end' }}>
+          {/* Dashboard inside the pill */}
           <a href="/settings/dashboard" style={{
-            padding: '9px 22px', borderRadius: 100, fontSize: 13, fontWeight: 700,
-            background: '#0a0a0a', color: '#fff', textDecoration: 'none',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
-            transition: 'all 0.2s',
+            padding: '9px 22px', borderRadius: 100,
+            fontSize: 15, fontWeight: 700,
+            color: '#fff', textDecoration: 'none',
+            background: 'linear-gradient(135deg, #6366f1, #7c3aed)',
+            marginLeft: 4,
+            whiteSpace: 'nowrap' as const,
+            boxShadow: '0 2px 10px rgba(99,102,241,0.4)',
+            transition: 'all 0.18s',
           }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#333'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.3)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#0a0a0a'; e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)'; }}
+            onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 4px 18px rgba(99,102,241,0.6)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+            onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 2px 10px rgba(99,102,241,0.4)'; e.currentTarget.style.transform = 'translateY(0)'; }}
           >
             {user ? 'Dashboard' : 'Sign In'} →
           </a>
+        </div>
+
+        {/* Right: empty spacer to balance logo */}
+        <div style={{ minWidth: 140 }}>
 
           {/* Mobile hamburger */}
           <button
@@ -1645,68 +1922,7 @@ export default function HomePage() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" style={{ padding: '60px 24px', background: 'linear-gradient(180deg, #000 0%, #111 100%)' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 36 }}>
-            <h2 style={{ fontSize: 'clamp(22px, 3.5vw, 36px)', fontWeight: 900, letterSpacing: '-1px', color: '#fff', marginBottom: 8 }}>
-              Simple, Transparent Pricing
-            </h2>
-            <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 15, margin: 0 }}>
-              Pay only for what you use — no subscriptions, no hidden fees.
-            </p>
-          </div>
-
-          {/* Compact 4-column grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 20 }}>
-            {[
-              { label: 'Free Trial', price: 'Free', sub: '15 min', features: ['15 min free', 'Full AI chat', 'Interview mode', 'No card needed'], cta: 'Start Free', href: '/settings/dashboard', highlight: false, badge: '' },
-              { label: '1 Credit', price: regionalPricing.credit_1hr.label, sub: regionalPricing.credit_1hr.sub, features: ['1 hr usage', 'Unlimited AI', 'Screen analysis', 'All features'], cta: 'Buy', href: '/settings/billing', highlight: false, badge: regionalPricing.credit_1hr.badge },
-              { label: '3 Credits', price: regionalPricing.credit_3hr.label, sub: regionalPricing.credit_3hr.sub, features: ['3 hrs usage', 'Unlimited AI', regionalPricing.credit_3hr.savingsNote || 'Best for prep', 'All features'], cta: 'Buy', href: '/settings/billing', highlight: true, badge: regionalPricing.credit_3hr.badge || 'BEST VALUE' },
-              { label: '10 Credits', price: regionalPricing.credit_10hr.label, sub: regionalPricing.credit_10hr.sub, features: ['10 hrs usage', 'Unlimited AI', regionalPricing.credit_10hr.savingsNote || 'Max value', 'Priority support'], cta: 'Buy', href: '/settings/billing', highlight: false, badge: regionalPricing.credit_10hr.badge },
-            ].map((plan, i) => (
-              <div key={i} style={{
-                background: plan.highlight ? '#fff' : 'rgba(255,255,255,0.06)',
-                borderRadius: 16,
-                padding: '24px 20px',
-                border: plan.highlight ? 'none' : '1px solid rgba(255,255,255,0.1)',
-                position: 'relative',
-              }}>
-                {plan.badge && (
-                  <div style={{
-                    position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)',
-                    background: '#000', color: '#fff', fontSize: 10, fontWeight: 800,
-                    padding: '3px 12px', borderRadius: 20, letterSpacing: 1, whiteSpace: 'nowrap' as const,
-                    border: '1px solid rgba(255,255,255,0.2)',
-                  }}>{plan.badge}</div>
-                )}
-                <div style={{ fontSize: 11, fontWeight: 700, color: plan.highlight ? '#666' : 'rgba(255,255,255,0.5)', textTransform: 'uppercase' as const, letterSpacing: 1, marginBottom: 8 }}>{plan.label}</div>
-                <div style={{ marginBottom: 4 }}>
-                  <span style={{ fontSize: 32, fontWeight: 900, color: plan.highlight ? '#000' : '#fff' }}>{plan.price}</span>
-                  <span style={{ fontSize: 12, color: plan.highlight ? '#666' : 'rgba(255,255,255,0.5)', marginLeft: 4 }}>{plan.sub}</span>
-                </div>
-                <ul style={{ listStyle: 'none', padding: 0, margin: '12px 0 16px 0' }}>
-                  {plan.features.map((f, fi) => (
-                    <li key={fi} style={{ fontSize: 12, color: plan.highlight ? '#333' : 'rgba(255,255,255,0.7)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ color: plan.highlight ? '#000' : '#4ade80', fontSize: 14, lineHeight: 1 }}>✓</span> {f}
-                    </li>
-                  ))}
-                </ul>
-                <a href={plan.href} style={{
-                  display: 'block', textAlign: 'center', padding: '10px 0',
-                  borderRadius: 10, fontSize: 13, fontWeight: 700,
-                  background: plan.highlight ? '#000' : 'rgba(255,255,255,0.1)',
-                  color: plan.highlight ? '#fff' : '#fff',
-                  textDecoration: 'none', transition: 'all 0.2s',
-                  border: plan.highlight ? 'none' : '1px solid rgba(255,255,255,0.2)',
-                }}>{plan.cta}</a>
-              </div>
-            ))}
-          </div>
-          <p style={{ textAlign: 'center', fontSize: 13, color: 'rgba(255,255,255,0.4)', margin: 0 }}>
-            Credits never expire · 1 credit = 1 hour · <a href="/settings/billing" style={{ color: 'rgba(255,255,255,0.65)', fontWeight: 600 }}>Full billing details →</a>
-          </p>
-        </div>
-      </section>
+      <PricingSection regionalPricing={regionalPricing} />
 
       {/* Features Section */}
       <section id="features" style={{ padding: '80px 24px', background: '#fff', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
