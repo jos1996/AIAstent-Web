@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: 'grid', path: '/settings/dashboard' },
+  { id: 'job-profile', label: 'Job Profile', icon: 'file', path: '/settings/job-profile' },
   { id: 'billing', label: 'Billing', icon: 'card', path: '/settings/billing' },
   { id: 'job-search', label: 'Job Search', icon: 'briefcase', path: '/settings/job-search' },
   { id: 'mock-interview', label: 'Mock Interview', icon: 'mic', path: '/settings/mock-interview' },
@@ -37,6 +38,7 @@ function SidebarIcon({ type }: { type: string }) {
     case 'play': return <svg {...s}><polygon points="5 3 19 12 5 21 5 3"/></svg>;
     case 'briefcase': return <svg {...s}><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>;
     case 'mic': return <svg {...s}><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>;
+    case 'file': return <svg {...s}><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>;
     default: return null;
   }
 }

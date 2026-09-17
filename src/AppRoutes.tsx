@@ -6,6 +6,7 @@ import RefundPolicyPage from './pages/RefundPolicyPage';
 import SettingsLayout from './pages/SettingsLayout';
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
+import JobProfilePage from './pages/JobProfilePage';
 import HistoryPage from './pages/HistoryPage';
 import RemindersPage from './pages/RemindersPage';
 import LanguagePage from './pages/LanguagePage';
@@ -83,6 +84,7 @@ export default function AppRoutes() {
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<DashboardPage />} />
         <Route path="profile" element={<ProfilePage />} />
+        <Route path="job-profile" element={<JobProfilePage />} />
         <Route path="updates" element={<LatestUpdatesPage />} />
         <Route path="tutorials" element={<TutorialsPage />} />
         <Route path="history" element={<HistoryPage />} />
