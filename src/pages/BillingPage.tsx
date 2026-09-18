@@ -93,6 +93,25 @@ export default function BillingPage() {
     });
   };
 
+  // Create a Razorpay order server-side (edge function holds the API secret).
+  // Payments without an order_id stay in "authorized" state and are never
+  // captured — the order carries payment.capture: "automatic" settings.
+  const createRazorpayOrder = async (planId: string, amount: number, notes: Record<string, any>): Promise<string | null> => {
+    try {
+      const { data, error } = await supabase.functions.invoke('razorpay-create-order', {
+        body: { plan_id: planId, amount, currency: 'INR', notes },
+      });
+      if (error || !data?.order_id) {
+        console.error('Razorpay order creation failed:', error || data);
+        return null;
+      }
+      return data.order_id as string;
+    } catch (err) {
+      console.error('Razorpay order creation error:', err);
+      return null;
+    }
+  };
+
   const handlePurchaseCredits = async (planId: PlanId) => {
     if (planId === 'free') return;
     setUpgradeLoading(planId);
@@ -115,6 +134,21 @@ export default function BillingPage() {
       return;
     }
 
+    const notes = {
+      user_id: user!.id,
+      plan: planId,
+      credits_minutes: plan.limits.totalMinutes,
+      region: regionalPricing.region,
+      display_price: displayPrice,
+    };
+
+    const orderId = await createRazorpayOrder(planId, amount, notes);
+    if (!orderId) {
+      alert('Could not initialize payment. Please try again in a moment.');
+      setUpgradeLoading(null);
+      return;
+    }
+
     const options = {
       key: RAZORPAY_KEY,
       amount: amount,
@@ -122,13 +156,8 @@ export default function BillingPage() {
       name: 'HelplyAI',
       description: `${plan.name} — ${plan.priceSuffix}`,
       image: 'https://helplyai.co/logo.png',
-      notes: {
-        user_id: user!.id,
-        plan: planId,
-        credits_minutes: plan.limits.totalMinutes,
-        region: regionalPricing.region,
-        display_price: displayPrice,
-      },
+      order_id: orderId,
+      notes: notes,
       handler: async function (response: any) {
         trackPaymentCompleted(planId, amount / 100, 'INR');
         const razorpayPaymentId = response.razorpay_payment_id || null;
@@ -277,6 +306,20 @@ export default function BillingPage() {
       return;
     }
 
+    const notes = {
+      user_id: user!.id,
+      plan: 'general_30min',
+      type: 'general_credits',
+      credits_minutes: 30,
+    };
+
+    const orderId = await createRazorpayOrder('general_30min', plan.priceInPaise, notes);
+    if (!orderId) {
+      alert('Could not initialize payment. Please try again in a moment.');
+      setGeneralUpgradeLoading(false);
+      return;
+    }
+
     const options = {
       key: RAZORPAY_KEY,
       amount: plan.priceInPaise,
@@ -284,12 +327,8 @@ export default function BillingPage() {
       name: 'HelplyAI',
       description: `${plan.name} — 30 Minutes Access`,
       image: 'https://helplyai.co/logo.png',
-      notes: {
-        user_id: user!.id,
-        plan: 'general_30min',
-        type: 'general_credits',
-        credits_minutes: 30,
-      },
+      order_id: orderId,
+      notes: notes,
       handler: async function (response: any) {
         const razorpayPaymentId = response.razorpay_payment_id || null;
         const now = new Date();
@@ -417,6 +456,19 @@ export default function BillingPage() {
       return;
     }
 
+    const notes = {
+      user_id: user!.id,
+      plan: 'general_monthly',
+      type: 'subscription',
+    };
+
+    const orderId = await createRazorpayOrder('general_monthly', plan.priceInPaise, notes);
+    if (!orderId) {
+      alert('Could not initialize payment. Please try again in a moment.');
+      setGeneralUpgradeLoading(false);
+      return;
+    }
+
     const options = {
       key: RAZORPAY_KEY,
       amount: plan.priceInPaise,
@@ -424,11 +476,8 @@ export default function BillingPage() {
       name: 'HelplyAI',
       description: `${plan.name} — Monthly Subscription`,
       image: 'https://helplyai.co/logo.png',
-      notes: {
-        user_id: user!.id,
-        plan: 'general_monthly',
-        type: 'subscription',
-      },
+      order_id: orderId,
+      notes: notes,
       handler: async function (response: any) {
         const razorpayPaymentId = response.razorpay_payment_id || null;
         const now = new Date();
