@@ -83,6 +83,50 @@ function VideoDemo() {
   );
 }
 
+const HERO_FEATURE_IMAGES = [
+  { src: 'https://beeptalk.s3.eu-north-1.amazonaws.com/ChatGPT+Image+Sep+21%2C+2026%2C+12_05_34+AM.png', label: 'Online Interviews' },
+  { src: 'https://beeptalk.s3.eu-north-1.amazonaws.com/ChatGPT+Image+Sep+21%2C+2026%2C+12_07_06+AM.png', label: 'Auto Apply' },
+  { src: 'https://beeptalk.s3.eu-north-1.amazonaws.com/ChatGPT+Image+Sep+21%2C+2026%2C+12_08_12+AM.png', label: 'Universal Job Search' },
+  { src: 'https://beeptalk.s3.eu-north-1.amazonaws.com/ChatGPT+Image+Sep+21%2C+2026%2C+12_12_50+AM.png', label: 'Mock Interviews' },
+];
+
+function HeroFeatureImages() {
+  return (
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(2, 1fr)',
+      gap: 12,
+      marginTop: 16,
+    }}>
+      {HERO_FEATURE_IMAGES.map((item) => (
+        <div
+          key={item.label}
+          style={{
+            borderRadius: 14,
+            overflow: 'hidden',
+            border: '1px solid rgba(0,0,0,0.1)',
+            background: '#fff',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+            transition: 'all 0.3s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,0,0,0.14)'; }}
+          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)'; }}
+        >
+          <img
+            src={item.src}
+            alt={item.label}
+            style={{ width: '100%', aspectRatio: '4/3', objectFit: 'cover', display: 'block' }}
+            loading="lazy"
+          />
+          <div style={{ padding: '8px 10px', fontSize: 12, fontWeight: 700, color: '#111', textAlign: 'center' }}>
+            {item.label}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 const Icon = ({ name, size = 24 }: { name: string; size?: number }) => {
   const icons: Record<string, React.ReactElement> = {
     MessageSquare: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
@@ -875,9 +919,10 @@ export default function HomePage({ embedded = false }: { embedded?: boolean }) {
             </div>
           </div>
 
-          {/* ── RIGHT: Video Demo ── */}
+          {/* ── RIGHT: Video Demo + feature image grid ── */}
           <div style={{ flex: '1 1 440px', minWidth: 300 }}>
             <VideoDemo />
+            <HeroFeatureImages />
           </div>
 
         </div>
