@@ -930,11 +930,9 @@ export default function HomePage({ embedded = false }: { embedded?: boolean }) {
       {/* Video Showcase — all 5 videos side by side, directly under hero */}
       <VideoShowcase />
 
-      {/* Feature image grid — full-width, directly under the video, above the stats banner */}
-      <section style={{ padding: '0 24px 40px', background: '#fff' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <HeroFeatureImages />
-        </div>
+      {/* Feature image grid — edge-to-edge, directly under the video, above the stats banner */}
+      <section style={{ padding: '0 0 40px', background: '#fff' }}>
+        <HeroFeatureImages />
       </section>
 
       {/* CSS Animations */}
