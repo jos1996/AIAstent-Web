@@ -95,8 +95,8 @@ function HeroFeatureImages() {
     <div style={{
       display: 'grid',
       gridTemplateColumns: 'repeat(2, 1fr)',
-      gap: 12,
-      marginTop: 16,
+      gap: 16,
+      width: '100%',
     }}>
       {HERO_FEATURE_IMAGES.map((item) => (
         <div
@@ -115,7 +115,7 @@ function HeroFeatureImages() {
           <img
             src={item.src}
             alt={item.label}
-            style={{ width: '100%', aspectRatio: '4/3', objectFit: 'cover', display: 'block' }}
+            style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block' }}
             loading="lazy"
           />
           <div style={{ padding: '8px 10px', fontSize: 12, fontWeight: 700, color: '#111', textAlign: 'center' }}>
@@ -919,10 +919,9 @@ export default function HomePage({ embedded = false }: { embedded?: boolean }) {
             </div>
           </div>
 
-          {/* ── RIGHT: Video Demo + feature image grid ── */}
+          {/* ── RIGHT: Video Demo ── */}
           <div style={{ flex: '1 1 440px', minWidth: 300 }}>
             <VideoDemo />
-            <HeroFeatureImages />
           </div>
 
         </div>
@@ -930,6 +929,13 @@ export default function HomePage({ embedded = false }: { embedded?: boolean }) {
 
       {/* Video Showcase — all 5 videos side by side, directly under hero */}
       <VideoShowcase />
+
+      {/* Feature image grid — full-width, directly under the video, above the stats banner */}
+      <section style={{ padding: '0 24px 40px', background: '#fff' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <HeroFeatureImages />
+        </div>
+      </section>
 
       {/* CSS Animations */}
       <style>{`
