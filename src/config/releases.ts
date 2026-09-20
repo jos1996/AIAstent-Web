@@ -12,13 +12,13 @@ export const RELEASE_VERSION = 'v0.1.0';
 const S3_BASE = 'https://beeptalk.s3.eu-north-1.amazonaws.com';
 
 export const DOWNLOAD_LINKS = {
-  // macOS Downloads — AWS S3 public bucket
-  macAppleSilicon: `${S3_BASE}/HelplyAI_0.1.0_Apple_Silicon.dmg`,
-  macIntel: `${S3_BASE}/HelplyAI_0.1.0_Intel.dmg`,
+  // macOS Downloads — AWS S3 public bucket (prodv5 build)
+  macAppleSilicon: `${S3_BASE}/Helply-AI-0.1.0-prodv5-arm64.dmg`,
+  macIntel: `${S3_BASE}/Helply-AI-0.1.0-prodv5-intel.dmg`,
 
-  // Windows Downloads — AWS S3 public bucket
+  // Windows Downloads — AWS S3 public bucket (prodv5 build)
   windowsNSIS: `${S3_BASE}/HelplyAI-Windows-NSIS-exe.zip`,
-  windowsMSI: `${S3_BASE}/HelplyAI-Windows-MSI+(1).zip`,
+  windowsMSI: `${S3_BASE}/HelplyAI-Windows-MSI.zip`,
 };
 
 /**
