@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 
 const menuItems = [
+  { id: 'home', label: 'Home', icon: 'home', path: '/' },
   { id: 'dashboard', label: 'Dashboard', icon: 'grid', path: '/settings/dashboard' },
   { id: 'job-profile', label: 'Job Profile', icon: 'file', path: '/settings/job-profile' },
   { id: 'billing', label: 'Billing', icon: 'card', path: '/settings/billing' },
@@ -39,6 +40,7 @@ function SidebarIcon({ type }: { type: string }) {
     case 'briefcase': return <svg {...s}><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>;
     case 'mic': return <svg {...s}><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>;
     case 'file': return <svg {...s}><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>;
+    case 'home': return <svg {...s}><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
     default: return null;
   }
 }
@@ -76,8 +78,9 @@ export default function SettingsLayout() {
         navigate('/settings/dashboard', { replace: true });
         return;
       }
-      // If at /settings root (not a sub-page), redirect to dashboard
-      if (currentPath === '/settings' || currentPath === '/settings/') {
+      // If at /settings root (not a sub-page) or the marketing home page,
+      // redirect to dashboard — logged-in users go straight to the app
+      if (currentPath === '/settings' || currentPath === '/settings/' || currentPath === '/') {
         navigate('/settings/dashboard', { replace: true });
       }
     }
@@ -150,6 +153,10 @@ export default function SettingsLayout() {
   };
 
   const isAuthenticated = !!user;
+  // Gated routes: everything under /settings requires login — show the auth
+  // form inside the shell while keeping the sidebar visible. '/' stays open.
+  const showAuthGate = !isAuthenticated && currentPath.startsWith('/settings');
+  const attemptedLabel = [...menuItems, ...supportItems].find(i => i.path === currentPath)?.label;
 
   // Show loading spinner while session is being resolved or after successful login
   // This prevents the login form from flashing between sign-in and dashboard
@@ -212,8 +219,7 @@ export default function SettingsLayout() {
         }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
           {/* Hamburger — only on mobile */}
-          {isAuthenticated && (
-            <button
+          <button
               className="mobile-menu-btn"
               onClick={() => setMobileSidebarOpen(v => !v)}
               style={{
@@ -228,7 +234,6 @@ export default function SettingsLayout() {
                 <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
               </svg>
             </button>
-          )}
           <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', flexShrink: 0 }}>
             <img src="/favicon.png" alt="Helply AI" style={{ width: 30, height: 30, borderRadius: 8 }} />
             <span style={{ color: '#000000', fontSize: 15, fontWeight: 700, letterSpacing: '-0.02em' }}>Helply AI</span>
@@ -282,12 +287,23 @@ export default function SettingsLayout() {
                 {showPrefs && <PreferencesPanel onClose={() => setShowPrefs(false)} />}
               </div>
             </>
-          ) : null}
+          ) : (
+            <button
+              onClick={() => navigate('/settings/dashboard')}
+              style={{
+                padding: '8px 18px', borderRadius: 10, border: 'none',
+                background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
+                color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                boxShadow: '0 2px 10px rgba(99,102,241,0.35)',
+              }}
+            >
+              Sign In
+            </button>
+          )}
         </div>
       </div>
 
-      {isAuthenticated ? (
-        <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
+      <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
           {/* Sidebar — desktop always visible, mobile = slide-out drawer */}
           <div style={{
             width: 220, flexShrink: 0,
@@ -352,8 +368,9 @@ export default function SettingsLayout() {
               flexShrink: 0, padding: '12px 16px 20px',
               borderTop: '1px solid #e5e7eb',
             }}>
+              {isAuthenticated ? (
               <button
-                onClick={async () => { await signOut(); navigate('/settings'); }}
+                onClick={async () => { await signOut(); navigate('/'); }}
                 style={{
                   width: '100%', padding: '11px 16px', borderRadius: 10,
                   background: '#ffffff', border: '1px solid #e5e7eb',
@@ -371,24 +388,35 @@ export default function SettingsLayout() {
                 </svg>
                 Sign Out
               </button>
+              ) : (
+              <button
+                onClick={() => navigate('/settings/dashboard')}
+                style={{
+                  width: '100%', padding: '11px 16px', borderRadius: 10,
+                  background: 'linear-gradient(135deg, #2563eb, #7c3aed)', border: 'none',
+                  color: '#ffffff', fontSize: 14, fontWeight: 600,
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                  transition: 'all 0.2s',
+                }}
+              >
+                Sign In
+              </button>
+              )}
             </div>
           </div>
 
           {/* Main Content - Only this scrolls */}
-          <div style={{ 
-            flex: 1, 
-            overflowY: 'auto', 
+          <div className="settings-main-content" style={{
+            flex: 1,
+            overflowY: 'auto',
             overflowX: 'hidden',
-            padding: '24px 20px 40px',
+            padding: currentPath === '/' ? 0 : '24px 20px 40px',
             background: '#ffffff',
             height: '100%',
           }}>
-            <Outlet />
-          </div>
-        </div>
-      ) : (
+            {showAuthGate ? (
         /* ── Embedded Auth Form (when not logged in) ── */
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100%' }}>
           <div style={{
             width: '100%', maxWidth: 400, padding: '32px 24px', borderRadius: 20, margin: '0 16px',
             background: '#ffffff',
@@ -404,6 +432,15 @@ export default function SettingsLayout() {
               <p style={{ color: '#666', fontSize: 14, marginTop: 8 }}>
                 {authMode === 'login' ? 'Sign in to unlock all features' : authMode === 'signup' ? 'Get started with HelplyAI' : 'Enter your email to reset'}
               </p>
+              {attemptedLabel && authMode === 'login' && (
+                <div style={{
+                  marginTop: 14, padding: '8px 14px', borderRadius: 10,
+                  background: 'rgba(37,99,235,0.07)', border: '1px solid rgba(37,99,235,0.25)',
+                  color: '#2563eb', fontSize: 13, fontWeight: 600,
+                }}>
+                  Sign in to access {attemptedLabel}
+                </div>
+              )}
             </div>
 
             {authError && (
@@ -535,7 +572,11 @@ export default function SettingsLayout() {
             </div>
           </div>
         </div>
-      )}
+            ) : (
+              <Outlet />
+            )}
+          </div>
+        </div>
 
       {/* Mobile responsive styles */}
       <style>{`
@@ -654,7 +695,7 @@ function PreferencesPanel({ onClose }: { onClose: () => void }) {
               onClick={async () => {
                 await signOut();
                 onClose();
-                navigate('/settings');
+                navigate('/');
               }}
               style={{
                 width: '100%', padding: '10px 0', borderRadius: 10,

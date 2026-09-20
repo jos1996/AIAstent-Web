@@ -76,25 +76,30 @@ import BehavioralInterviewAIPage from './pages/seo/BehavioralInterviewAIPage';
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<HomePage />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/privacy" element={<PrivacyPolicyPage />} />
       <Route path="/refund" element={<RefundPolicyPage />} />
-      <Route path="/settings" element={<SettingsLayout />}>
-        <Route index element={<Navigate to="dashboard" replace />} />
-        <Route path="dashboard" element={<DashboardPage />} />
-        <Route path="profile" element={<ProfilePage />} />
-        <Route path="job-profile" element={<JobProfilePage />} />
-        <Route path="updates" element={<LatestUpdatesPage />} />
-        <Route path="tutorials" element={<TutorialsPage />} />
-        <Route path="history" element={<HistoryPage />} />
-        <Route path="reminders" element={<RemindersPage />} />
-        <Route path="language" element={<LanguagePage />} />
-        <Route path="billing" element={<BillingPage />} />
-        <Route path="help" element={<HelpCenterPage />} />
-        <Route path="job-search" element={<JobSearchPage />} />
-        <Route path="mock-interview" element={<MockInterviewPage />} />
-        <Route path="referral" element={<ReferralPage />} />
+      {/* Dashboard shell wraps the whole site — sidebar (Home default) +
+          sticky layout; '/' shows the home page inside it, /settings/*
+          shows page content or the login gate when signed out */}
+      <Route element={<SettingsLayout />}>
+        <Route path="/" element={<HomePage embedded />} />
+        <Route path="/settings">
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="job-profile" element={<JobProfilePage />} />
+          <Route path="updates" element={<LatestUpdatesPage />} />
+          <Route path="tutorials" element={<TutorialsPage />} />
+          <Route path="history" element={<HistoryPage />} />
+          <Route path="reminders" element={<RemindersPage />} />
+          <Route path="language" element={<LanguagePage />} />
+          <Route path="billing" element={<BillingPage />} />
+          <Route path="help" element={<HelpCenterPage />} />
+          <Route path="job-search" element={<JobSearchPage />} />
+          <Route path="mock-interview" element={<MockInterviewPage />} />
+          <Route path="referral" element={<ReferralPage />} />
+        </Route>
       </Route>
       <Route path="/auth/callback" element={<AuthCallbackPage />} />
       {/* SEO Pages */}

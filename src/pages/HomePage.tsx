@@ -546,7 +546,7 @@ function PricingSection({ regionalPricing }: { regionalPricing: RegionalPricing 
   );
 }
 
-export default function HomePage() {
+export default function HomePage({ embedded = false }: { embedded?: boolean }) {
   const { user } = useAuth()
   const [scrolled, setScrolled] = useState(false)
   const [showDownloadModal, setShowDownloadModal] = useState(false)
@@ -593,9 +593,9 @@ export default function HomePage() {
   return (
     <div style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f8f8f8 25%, #f0f0f0 50%, #e8e8e8 75%, #e0e0e0 100%)', minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
       
-      {/* Animated Background */}
+      {/* Animated Background — absolute when embedded so it stays inside the scrollable content area */}
       <div style={{
-        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0,
+        position: embedded ? 'absolute' : 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0,
         backgroundImage: 'linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px)',
         backgroundSize: '50px 50px',
         animation: 'gridMove 40s linear infinite',
@@ -603,14 +603,14 @@ export default function HomePage() {
       }} />
 
       <div style={{
-        position: 'fixed', top: '-20%', left: '-10%', width: 600, height: 600,
+        position: embedded ? 'absolute' : 'fixed', top: '-20%', left: '-10%', width: 600, height: 600,
         background: 'radial-gradient(circle, rgba(0,0,0,0.03) 0%, transparent 70%)',
         borderRadius: '50%', animation: 'float 25s ease-in-out infinite',
         pointerEvents: 'none', zIndex: 0,
       }} />
 
       <div style={{
-        position: 'fixed', bottom: '-20%', right: '-10%', width: 500, height: 500,
+        position: embedded ? 'absolute' : 'fixed', bottom: '-20%', right: '-10%', width: 500, height: 500,
         background: 'radial-gradient(circle, rgba(0,0,0,0.03) 0%, transparent 70%)',
         borderRadius: '50%', animation: 'floatReverse 30s ease-in-out infinite',
         pointerEvents: 'none', zIndex: 0,
@@ -618,9 +618,9 @@ export default function HomePage() {
 
       <div style={{ position: 'relative', zIndex: 1 }}>
 
-      {/* ── Promo Banner ── */}
+      {/* ── Promo Banner — static at top of scrollable content when embedded ── */}
       <div style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 101,
+        position: embedded ? 'relative' : 'fixed', top: 0, left: 0, right: 0, zIndex: 101,
         background: 'linear-gradient(90deg, #000 0%, #1a1a2e 50%, #000 100%)',
         color: '#fff', textAlign: 'center',
         padding: '9px 16px', fontSize: 13, fontWeight: 600,
@@ -642,8 +642,8 @@ export default function HomePage() {
         }}>Grab Now →</a>
       </div>
 
-      {/* Navigation */}
-      <nav style={{
+      {/* Navigation — hidden when embedded inside the dashboard shell (topbar + sidebar replace it) */}
+      {!embedded && <nav style={{
         position: 'fixed', top: 36, left: 0, right: 0, zIndex: 100,
         padding: '10px 32px', height: 68,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -732,10 +732,10 @@ export default function HomePage() {
             </svg>
           </button>
         </div>
-      </nav>
+      </nav>}
 
       {/* Mobile menu dropdown */}
-      <div id="home-mobile-menu" style={{
+      {!embedded && <div id="home-mobile-menu" style={{
         display: 'none', position: 'fixed', top: 96, left: 0, right: 0, zIndex: 99,
         background: 'rgba(255,255,255,0.98)', backdropFilter: 'blur(20px)',
         borderBottom: '1px solid rgba(0,0,0,0.08)',
@@ -750,13 +750,13 @@ export default function HomePage() {
             }}
           >{label}</a>
         ))}
-      </div>
+      </div>}
 
       {/* ── Hero Section — Split Layout ── */}
       <section style={{
-        padding: '100px 0 80px',
+        padding: embedded ? '56px 0 80px' : '100px 0 80px',
         background: 'linear-gradient(160deg, #f8faff 0%, #ffffff 50%, #f0f4ff 100%)',
-        position: 'relative', overflow: 'hidden', marginTop: 36,
+        position: 'relative', overflow: 'hidden', marginTop: embedded ? 0 : 36,
       }}>
         {/* Subtle dot grid */}
         <div style={{
@@ -1103,44 +1103,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Promotional Images Section */}
-      <section style={{
-        padding: '60px 24px',
-        background: '#fff',
-      }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', 
-            gap: 32,
-          }}>
-            <div style={{
-              borderRadius: 20,
-              overflow: 'hidden',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-              transition: 'all 0.3s',
-              border: '1px solid rgba(0,0,0,0.06)',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.15)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.1)' }}
-            >
-              <img src="/promo-1.png" alt="HelplyAI Interview Assistant" style={{ width: '100%', height: 'auto', display: 'block' }} />
-            </div>
-            <div style={{
-              borderRadius: 20,
-              overflow: 'hidden',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-              transition: 'all 0.3s',
-              border: '1px solid rgba(0,0,0,0.06)',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.15)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.1)' }}
-            >
-              <img src="/promo-2.png" alt="HelplyAI Real-Time Assistance" style={{ width: '100%', height: 'auto', display: 'block' }} />
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* How It Works Section */}
       <section style={{
@@ -1320,281 +1282,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* How Interview Mode Works - Roadmap */}
-      <section style={{
-        padding: '80px 24px',
-        background: 'linear-gradient(180deg, #f8fafc 0%, #fff 100%)',
-      }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 60 }}>
-            <span style={{
-              display: 'inline-block',
-              padding: '8px 16px',
-              background: '#000',
-              color: '#fff',
-              borderRadius: 100,
-              fontSize: 13,
-              fontWeight: 700,
-              marginBottom: 16,
-            }}>
-              🎯 INTERVIEW MODE
-            </span>
-            <h2 style={{
-              fontSize: 'clamp(28px, 4.5vw, 44px)',
-              fontWeight: 900,
-              letterSpacing: '-1px',
-              marginBottom: 16,
-              color: '#000',
-            }}>
-              How It Works
-            </h2>
-            <p style={{ color: '#666', fontSize: 17, maxWidth: 600, margin: '0 auto' }}>
-              Get real-time AI assistance during your interviews in just 4 simple steps
-            </p>
-          </div>
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: 24,
-            position: 'relative',
-          }}>
-            {[
-              {
-                step: '01',
-                icon: '📥',
-                title: 'Download & Install',
-                desc: 'Download HelplyAI for Mac or Windows. Quick 2-minute setup with no complex configuration.',
-                color: '#3b82f6',
-              },
-              {
-                step: '02',
-                icon: '🎙️',
-                title: 'Switch to Interview Mode',
-                desc: 'Open the app and toggle Interview Mode. Grant microphone & screen permissions when prompted.',
-                color: '#8b5cf6',
-              },
-              {
-                step: '03',
-                icon: '📋',
-                title: 'Join Your Interview',
-                desc: 'Start your Zoom, Meet, or Teams call. HelplyAI runs invisibly in the background - undetectable on screen share.',
-                color: '#ec4899',
-              },
-              {
-                step: '04',
-                icon: '✨',
-                title: 'Get Real-Time Answers',
-                desc: 'Click "Analyze Screen" or use voice. AI listens to questions and provides instant, contextual answers.',
-                color: '#10b981',
-              },
-            ].map((item, i) => (
-              <div key={i} style={{
-                background: '#fff',
-                borderRadius: 20,
-                padding: 32,
-                position: 'relative',
-                border: '1px solid #e5e7eb',
-                transition: 'all 0.3s',
-                cursor: 'default',
-              }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.transform = 'translateY(-8px)';
-                  e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,0,0,0.1)';
-                  e.currentTarget.style.borderColor = item.color;
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'none';
-                  e.currentTarget.style.borderColor = '#e5e7eb';
-                }}
-              >
-                <div style={{
-                  position: 'absolute',
-                  top: -12,
-                  left: 24,
-                  background: item.color,
-                  color: '#fff',
-                  padding: '6px 14px',
-                  borderRadius: 100,
-                  fontSize: 13,
-                  fontWeight: 800,
-                }}>
-                  STEP {item.step}
-                </div>
-                <div style={{
-                  fontSize: 48,
-                  marginBottom: 16,
-                  marginTop: 8,
-                }}>
-                  {item.icon}
-                </div>
-                <h3 style={{
-                  fontSize: 20,
-                  fontWeight: 800,
-                  marginBottom: 12,
-                  color: '#000',
-                }}>
-                  {item.title}
-                </h3>
-                <p style={{
-                  fontSize: 14,
-                  color: '#666',
-                  lineHeight: 1.6,
-                  margin: 0,
-                }}>
-                  {item.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <div style={{
-            textAlign: 'center',
-            marginTop: 50,
-            padding: '30px',
-            background: 'linear-gradient(135deg, #000 0%, #1a1a1a 100%)',
-            borderRadius: 16,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 16,
-          }}>
-            <p style={{ color: '#fff', fontSize: 18, fontWeight: 600, margin: 0 }}>
-              💡 Pro Tip: Interview Mode captures both your voice AND the interviewer's audio for perfect context!
-            </p>
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
-              <span style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '8px 18px', borderRadius: 100, fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#2D8CFF"/><path d="M6.5 8.5v7h5v-7h-5zm6 1.5v4l4 2.5v-9l-4 2.5z" fill="#fff"/></svg>
-                Works on Zoom
-              </span>
-              <span style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '8px 18px', borderRadius: 100, fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="4" fill="#00897B"/><path d="M12 6.5c-1.93 0-3.5 1.57-3.5 3.5v4c0 1.93 1.57 3.5 3.5 3.5s3.5-1.57 3.5-3.5v-4c0-1.93-1.57-3.5-3.5-3.5zm5 3.5h1.5v4c0 3.04-2.17 5.57-5 6.33V22h-3v-1.67c-2.83-.76-5-3.29-5-6.33V10H7v4c0 2.76 2.24 5 5 5s5-2.24 5-5v-4z" fill="#fff"/></svg>
-                Google Meet
-              </span>
-              <span style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '8px 18px', borderRadius: 100, fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="4" fill="#5B5FC7"/><path d="M14.5 5h-7A1.5 1.5 0 0 0 6 6.5v7A1.5 1.5 0 0 0 7.5 15h7a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 14.5 5zm3.5 3v6l2 1.5v-9L18 8zM7 17h8a1 1 0 0 1-1 1H7a2 2 0 0 1-2-2V8.5a1 1 0 0 1 1-1v8.5a1 1 0 0 0 1 1z" fill="#fff"/></svg>
-                Microsoft Teams
-              </span>
-              <span style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '8px 18px', borderRadius: 100, fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="4" fill="#1BA94C"/><path d="M6 6h5v5H6V6zm7 0h5v5h-5V6zm-7 7h5v5H6v-5zm7 0h5v5h-5v-5z" fill="#fff" fillOpacity="0.9"/></svg>
-                HackerRank
-              </span>
-              <span style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '8px 18px', borderRadius: 100, fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="4" fill="#FFA116"/><path d="M8 17l4-4 4 4M8 7l4 4 4-4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                LeetCode
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-
-      {/* Custom Resume Builder Section */}
-      <section style={{ padding: '80px 24px', background: '#f9fafb', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#888', letterSpacing: 2, textTransform: 'uppercase' }}>AI Resume Builder</span>
-            <h2 style={{ fontSize: 'clamp(22px, 3vw, 36px)', fontWeight: 900, color: '#000', marginTop: 10, marginBottom: 0 }}>Custom Resume Builder based on Job Description</h2>
-            <p style={{ color: '#000', fontSize: 15, maxWidth: 650, margin: '10px auto 0' }}>Paste any job description — AI tailors your resume with JD keywords, optimises for ATS, and generates print-ready PDFs in seconds</p>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
-            {/* Step 1: Paste JD */}
-            <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(0,0,0,0.1)', boxShadow: '0 16px 48px rgba(0,0,0,0.08)', transition: 'all 0.35s', background: '#fff' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 28px 64px rgba(0,0,0,0.15)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.08)'; }}
-            >
-              <div style={{ padding: '10px 14px', background: '#1a1a1a', display: 'flex', alignItems: 'center', gap: 7 }}>
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#ff5f57' }} />
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#febc2e' }} />
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#28c840' }} />
-                <span style={{ marginLeft: 10, color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 600 }}>Step 1 — Paste Job Description</span>
-              </div>
-              <div style={{ padding: 20, minHeight: 240, display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center', gap: 14 }}>
-                <div style={{ width: 52, height: 52, borderRadius: '50%', border: '2px solid #000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
-                </div>
-                <div style={{ fontSize: 17, fontWeight: 700, color: '#000' }}>Resume Builder</div>
-                <div style={{ fontSize: 12, color: '#000', textAlign: 'center', lineHeight: 1.5, padding: '0 8px' }}>Paste a job description — AI tailors your resume with JD keywords</div>
-                <div style={{ width: '90%', padding: '10px 12px', background: '#fafafa', borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 11, color: '#000' }}>Paste the full job description here...</div>
-                <div style={{ width: '90%', padding: '10px 0', background: '#000', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, textAlign: 'center' }}>Generate Tailored Resume</div>
-              </div>
-            </div>
-
-            {/* Step 2: Choose Template */}
-            <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(0,0,0,0.1)', boxShadow: '0 16px 48px rgba(0,0,0,0.08)', transition: 'all 0.35s', background: '#fff' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 28px 64px rgba(0,0,0,0.15)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.08)'; }}
-            >
-              <div style={{ padding: '10px 14px', background: '#1a1a1a', display: 'flex', alignItems: 'center', gap: 7 }}>
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#ff5f57' }} />
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#febc2e' }} />
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#28c840' }} />
-                <span style={{ marginLeft: 10, color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 600 }}>Step 2 — Choose Template</span>
-              </div>
-              <div style={{ padding: 16, minHeight: 240 }}>
-                <div style={{ fontSize: 15, fontWeight: 700, color: '#000', marginBottom: 4 }}>Your Tailored Resumes</div>
-                <div style={{ fontSize: 11, color: '#000', marginBottom: 14 }}>3 ATS-optimised templates • Tailored for your role</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
-                  {['Executive', 'Modern', 'Clean'].map((t, i) => (
-                    <div key={t} style={{ borderRadius: 8, border: i === 0 ? '2px solid #000' : '1px solid #e5e7eb', padding: 8, textAlign: 'center', background: '#fafafa', cursor: 'default' }}>
-                      <div style={{ height: 64, background: i === 0 ? 'linear-gradient(135deg, #1e3a5f, #2c5a7f)' : i === 1 ? '#2563eb' : '#f3f4f6', borderRadius: 4, marginBottom: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        {i === 0 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>}
-                      </div>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: '#111' }}>{t}</div>
-                      <div style={{ fontSize: 9, color: '#000', marginTop: 2 }}>{i === 0 ? 'gold accents' : i === 1 ? 'sidebar' : 'serif'}</div>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14, padding: '8px 12px', background: '#f9fafb', borderRadius: 8, border: '1px solid #e5e7eb' }}>
-                  <div>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: '#111' }}>Executive selected</div>
-                    <div style={{ fontSize: 9, color: '#000' }}>ATS-optimised • 1 page</div>
-                  </div>
-                  <span style={{ fontSize: 10, padding: '5px 12px', background: '#000', color: '#fff', borderRadius: 6, fontWeight: 600 }}>Download PDF</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Step 3: Final Resume */}
-            <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(0,0,0,0.1)', boxShadow: '0 16px 48px rgba(0,0,0,0.08)', transition: 'all 0.35s', background: '#fff' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 28px 64px rgba(0,0,0,0.15)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.08)'; }}
-            >
-              <div style={{ padding: '10px 14px', background: '#1a1a1a', display: 'flex', alignItems: 'center', gap: 7 }}>
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#ff5f57' }} />
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#febc2e' }} />
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#28c840' }} />
-                <span style={{ marginLeft: 10, color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 600 }}>Step 3 — Your Resume</span>
-              </div>
-              <div style={{ padding: 12, minHeight: 240 }}>
-                <div style={{ background: 'linear-gradient(180deg, #1e3a5f 0%, #2c5a7f 100%)', borderRadius: 6, padding: '14px 16px', color: '#fff', marginBottom: 10 }}>
-                  <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, textTransform: 'uppercase' as const, color: '#c9a96e', marginBottom: 4 }}>AI PRODUCT MANAGER</div>
-                  <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' as const }}>
-                    {['Product Management', 'Healthcare', 'Agile', 'Cross-functional'].map(k => (
-                      <span key={k} style={{ fontSize: 7, padding: '2px 6px', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 3, color: '#fff' }}>{k}</span>
-                    ))}
-                  </div>
-                </div>
-                <div style={{ padding: '0 4px' }}>
-                  <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 1.5, color: '#1e3a5f', marginBottom: 4, textTransform: 'uppercase' as const }}>Professional Summary</div>
-                  <div style={{ fontSize: 8, color: '#444', lineHeight: 1.5, marginBottom: 8 }}>AI Product Manager with 3.7 years of experience in product management, focusing on healthcare and clinical research...</div>
-                  <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 1.5, color: '#1e3a5f', marginBottom: 4, textTransform: 'uppercase' as const }}>Experience</div>
-                  <div style={{ fontSize: 8, fontWeight: 700, color: '#111' }}>Product Manager / Product Owner</div>
-                  <div style={{ fontSize: 7, color: '#000', marginBottom: 4 }}>HUB Group • Sep 2024 – Present</div>
-                  <div style={{ fontSize: 7, color: '#555', lineHeight: 1.4 }}>• Built LTL Logistics platform from 0→1 and delivered MVP in 3 months, generating $1M revenue</div>
-                  <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 1.5, color: '#1e3a5f', marginTop: 8, marginBottom: 4, textTransform: 'uppercase' as const }}>Core Competencies</div>
-                  <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' as const }}>
-                    {['Product Strategy', 'A/B Testing', 'Go-To-Market', 'KPI & Metrics'].map(k => (
-                      <span key={k} style={{ fontSize: 7, padding: '2px 5px', border: '1px solid #d1d5db', borderRadius: 3, color: '#374151' }}>{k}</span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Competitor Comparison Section */}
       <section style={{ padding: '60px 24px', background: '#000' }}>
@@ -1923,452 +1610,6 @@ export default function HomePage() {
 
       {/* Pricing Section */}
       <PricingSection regionalPricing={regionalPricing} />
-
-      {/* Features Section */}
-      <section id="features" style={{ padding: '80px 24px', background: '#fff', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-
-          {/* Header */}
-          <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <span style={{
-              display: 'inline-block', padding: '5px 16px', borderRadius: 100,
-              background: '#000', color: '#fff', fontSize: 11, fontWeight: 800,
-              textTransform: 'uppercase' as const, letterSpacing: 1.5, marginBottom: 16,
-            }}>All Features</span>
-            <h2 style={{ fontSize: 'clamp(26px, 4vw, 42px)', fontWeight: 900, letterSpacing: '-1.5px', color: '#000', margin: '0 0 14px', lineHeight: 1.1 }}>
-              Everything you need to land<br />your next job
-            </h2>
-            <p style={{ color: '#555', fontSize: 16, margin: 0, maxWidth: 560, marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.7 }}>
-              Four powerful tools — AI interview assistance, smart resume building, universal job search, and mock interview practice — all in one platform.
-            </p>
-          </div>
-
-          {/* Main feature cards — 2x2 large grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(480px, 1fr))', gap: 20, marginBottom: 20 }}>
-
-            {/* 1. AI Interview Helper */}
-            <div style={{
-              borderRadius: 20, border: '1px solid rgba(0,0,0,0.09)', overflow: 'hidden',
-              background: '#000', position: 'relative',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 16px 40px rgba(0,0,0,0.2)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.12)'; }}
-            >
-              <div style={{ padding: '32px 32px 0' }}>
-                <div style={{ display: 'inline-block', padding: '4px 12px', borderRadius: 100, background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', fontSize: 10, fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: 1.5, marginBottom: 16 }}>
-                  AI Interview Helper
-                </div>
-                <h3 style={{ fontSize: 22, fontWeight: 800, color: '#fff', margin: '0 0 10px', lineHeight: 1.25 }}>
-                  Real-time AI answers during live interviews
-                </h3>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', margin: '0 0 24px', lineHeight: 1.65 }}>
-                  Helply AI listens to your interview via mic and system audio, transcribes questions in real time, and generates accurate answers using GPT-4.1 or Claude — invisible to the interviewer.
-                </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 8, marginBottom: 28 }}>
-                  {['Real-time transcription', 'GPT-4.1 & Claude', 'Undetectable overlay', 'Coding support', 'Screen analyzer'].map(t => (
-                    <span key={t} style={{ padding: '4px 12px', borderRadius: 20, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.85)', fontSize: 11, fontWeight: 600 }}>{t}</span>
-                  ))}
-                </div>
-              </div>
-              {/* Browser window mockup — AI Interview Helper */}
-              <div style={{ margin: '0 20px 20px', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
-                {/* Title bar */}
-                <div style={{ background: '#1a1a1a', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#ff5f57' }} />
-                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#febc2e' }} />
-                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#28c840' }} />
-                  <span style={{ marginLeft: 8, color: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: 600 }}>Helply AI — Interview Mode</span>
-                </div>
-                {/* App UI */}
-                <div style={{ background: '#111', padding: '14px' }}>
-                  {/* Transcription box */}
-                  <div style={{ background: '#1c1c1c', borderRadius: 8, padding: '10px 12px', marginBottom: 10, border: '1px solid rgba(255,255,255,0.08)' }}>
-                    <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: 1, marginBottom: 6 }}>Interviewer said</div>
-                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>"Walk me through how you would design a scalable REST API from scratch."</div>
-                  </div>
-                  {/* AI Answer streaming */}
-                  <div style={{ background: '#1c1c1c', borderRadius: 8, padding: '10px 12px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                      <div style={{ width: 14, height: 14, borderRadius: '50%', background: 'linear-gradient(135deg,#2563eb,#7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <svg width="8" height="8" viewBox="0 0 24 24" fill="#fff"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                      </div>
-                      <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: 1 }}>AI Answer — GPT-4.1</span>
-                      <span style={{ marginLeft: 'auto', fontSize: 8, padding: '2px 6px', borderRadius: 4, background: 'rgba(34,197,94,0.2)', color: '#4ade80', fontWeight: 700 }}>LIVE</span>
-                    </div>
-                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7 }}>"I'd start by defining the resource model — nouns like /users, /orders. Then enforce versioning via /v1/. For scalability, I'd add rate limiting, use stateless JWT auth, implement pagination on list endpoints, and put an API gateway in front for throttling and caching..."</div>
-                    <div style={{ display: 'flex', gap: 4, marginTop: 10 }}>
-                      {['Copy', 'Regenerate'].map(b => (
-                        <div key={b} style={{ padding: '4px 10px', borderRadius: 6, background: 'rgba(255,255,255,0.08)', fontSize: 9, color: 'rgba(255,255,255,0.6)', fontWeight: 700, cursor: 'default' }}>{b}</div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* 2. AI Resume Builder + ATS */}
-            <div style={{
-              borderRadius: 20, border: '1px solid rgba(0,0,0,0.09)', overflow: 'hidden',
-              background: '#f9fafb', position: 'relative',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 16px 40px rgba(0,0,0,0.12)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.06)'; }}
-            >
-              <div style={{ padding: '32px 32px 0' }}>
-                <div style={{ display: 'inline-block', padding: '4px 12px', borderRadius: 100, background: '#000', color: '#fff', fontSize: 10, fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: 1.5, marginBottom: 16 }}>
-                  Resume Builder + ATS
-                </div>
-                <h3 style={{ fontSize: 22, fontWeight: 800, color: '#000', margin: '0 0 10px', lineHeight: 1.25 }}>
-                  ATS-optimised resumes tailored to every JD
-                </h3>
-                <p style={{ fontSize: 14, color: '#555', margin: '0 0 24px', lineHeight: 1.65 }}>
-                  Paste any job description and AI rewrites your resume with the exact keywords recruiters and ATS systems look for — then generates a print-ready PDF in seconds.
-                </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 8, marginBottom: 28 }}>
-                  {['JD keyword matching', 'ATS optimised', '3 templates', 'PDF export', 'One-click generate'].map(t => (
-                    <span key={t} style={{ padding: '4px 12px', borderRadius: 20, background: '#fff', border: '1px solid #e5e7eb', color: '#374151', fontSize: 11, fontWeight: 600 }}>{t}</span>
-                  ))}
-                </div>
-              </div>
-              {/* Browser window mockup — Resume Builder */}
-              <div style={{ margin: '0 20px 20px', borderRadius: 12, overflow: 'hidden', border: '1px solid #e5e7eb', boxShadow: '0 8px 32px rgba(0,0,0,0.08)' }}>
-                {/* Title bar */}
-                <div style={{ background: '#1a1a1a', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#ff5f57' }} />
-                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#febc2e' }} />
-                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#28c840' }} />
-                  <span style={{ marginLeft: 8, color: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: 600 }}>Helply AI — Resume Builder</span>
-                </div>
-                {/* Two-column layout */}
-                <div style={{ background: '#fff', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
-                  {/* Left: input */}
-                  <div style={{ padding: '12px', borderRight: '1px solid #f3f4f6' }}>
-                    <div style={{ fontSize: 9, color: '#888', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: 1, marginBottom: 8 }}>Job Description</div>
-                    <div style={{ background: '#f9fafb', borderRadius: 6, padding: '8px', fontSize: 10, color: '#374151', lineHeight: 1.6, marginBottom: 8, border: '1px solid #e5e7eb', minHeight: 60 }}>"Senior Product Manager at Google. 5+ years exp. Must have experience with OKRs, roadmapping, agile, and cross-functional leadership..."</div>
-                    <div style={{ background: '#000', borderRadius: 6, padding: '7px 0', textAlign: 'center' as const, fontSize: 10, fontWeight: 800, color: '#fff' }}>Generate Tailored Resume</div>
-                  </div>
-                  {/* Right: output */}
-                  <div style={{ padding: '12px', background: '#fafafa' }}>
-                    <div style={{ fontSize: 9, color: '#888', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: 1, marginBottom: 8 }}>Your Resume — ATS Score</div>
-                    {[['Keyword match', 94, '#22c55e'], ['ATS compatibility', 98, '#2563eb'], ['Readability', 91, '#7c3aed']].map(([label, val, col]) => (
-                      <div key={label as string} style={{ marginBottom: 7 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: '#374151', fontWeight: 700, marginBottom: 2 }}>
-                          <span>{label}</span><span style={{ color: col as string }}>{val}%</span>
-                        </div>
-                        <div style={{ height: 4, background: '#f3f4f6', borderRadius: 2 }}>
-                          <div style={{ height: '100%', background: col as string, borderRadius: 2, width: `${val}%` }} />
-                        </div>
-                      </div>
-                    ))}
-                    <div style={{ marginTop: 8, padding: '6px 8px', background: '#000', borderRadius: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: 9, color: '#fff', fontWeight: 700 }}>Executive Template</span>
-                      <span style={{ fontSize: 8, padding: '2px 6px', background: 'rgba(255,255,255,0.15)', borderRadius: 4, color: '#fff', fontWeight: 700 }}>Download PDF</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Second row */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(480px, 1fr))', gap: 20 }}>
-
-            {/* 3. Universal Job Search */}
-            <div style={{
-              borderRadius: 20, border: '1px solid rgba(0,0,0,0.09)', overflow: 'hidden',
-              background: '#f9fafb',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 16px 40px rgba(0,0,0,0.12)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.06)'; }}
-            >
-              <div style={{ padding: '32px 32px 0' }}>
-                <div style={{ display: 'inline-block', padding: '4px 12px', borderRadius: 100, background: '#000', color: '#fff', fontSize: 10, fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: 1.5, marginBottom: 16 }}>
-                  Universal Job Search
-                </div>
-                <h3 style={{ fontSize: 22, fontWeight: 800, color: '#000', margin: '0 0 10px', lineHeight: 1.25 }}>
-                  Find jobs from every platform in one place
-                </h3>
-                <p style={{ fontSize: 14, color: '#555', margin: '0 0 24px', lineHeight: 1.65 }}>
-                  Search LinkedIn, Indeed, Glassdoor, and more simultaneously. Save listings, track application status, and match your resume to any role — all from one dashboard.
-                </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 8, marginBottom: 28 }}>
-                  {['LinkedIn', 'Indeed', 'Glassdoor', 'Application tracker', 'Resume match score'].map(t => (
-                    <span key={t} style={{ padding: '4px 12px', borderRadius: 20, background: '#fff', border: '1px solid #e5e7eb', color: '#374151', fontSize: 11, fontWeight: 600 }}>{t}</span>
-                  ))}
-                </div>
-              </div>
-              {/* Browser window mockup — Job Search */}
-              <div style={{ margin: '0 20px 20px', borderRadius: 12, overflow: 'hidden', border: '1px solid #e5e7eb', boxShadow: '0 8px 32px rgba(0,0,0,0.08)' }}>
-                {/* Title bar */}
-                <div style={{ background: '#1a1a1a', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#ff5f57' }} />
-                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#febc2e' }} />
-                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#28c840' }} />
-                  <span style={{ marginLeft: 8, color: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: 600 }}>Helply AI — Job Search</span>
-                </div>
-                <div style={{ background: '#fff' }}>
-                  {/* Search bar */}
-                  <div style={{ padding: '10px 12px', borderBottom: '1px solid #f3f4f6', display: 'flex', gap: 6 }}>
-                    <div style={{ flex: 1, background: '#f9fafb', borderRadius: 6, padding: '6px 10px', fontSize: 10, color: '#374151', border: '1px solid #e5e7eb' }}>Product Manager · Remote · Any experience</div>
-                    <div style={{ padding: '6px 12px', background: '#000', borderRadius: 6, fontSize: 10, fontWeight: 700, color: '#fff' }}>Search</div>
-                  </div>
-                  {/* Source logos row */}
-                  <div style={{ padding: '8px 12px', display: 'flex', gap: 8, borderBottom: '1px solid #f3f4f6' }}>
-                    {[['in', '#0077b5'], ['G', '#ea4335'], ['G+', '#1a9b00']].map(([label, col]) => (
-                      <div key={label as string} style={{ padding: '3px 8px', borderRadius: 4, background: col as string, fontSize: 9, fontWeight: 800, color: '#fff' }}>{label}</div>
-                    ))}
-                    <span style={{ fontSize: 9, color: '#9ca3af', alignSelf: 'center' }}>LinkedIn · Indeed · Glassdoor</span>
-                  </div>
-                  {/* Job listings */}
-                  {[
-                    { title: 'Senior Product Manager', co: 'Google', loc: 'Remote', match: '96%', tag: 'New' },
-                    { title: 'Product Manager II', co: 'Stripe', loc: 'San Francisco', match: '91%', tag: '' },
-                    { title: 'Associate PM', co: 'Notion', loc: 'New York', match: '88%', tag: '' },
-                  ].map((job, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 12px', borderBottom: i < 2 ? '1px solid #f9fafb' : 'none' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div style={{ width: 24, height: 24, borderRadius: 6, background: ['#4285f4','#635bff','#000'][i], display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 800, color: '#fff' }}>{job.co[0]}</div>
-                        <div>
-                          <div style={{ fontSize: 11, fontWeight: 700, color: '#111', display: 'flex', alignItems: 'center', gap: 4 }}>
-                            {job.title}
-                            {job.tag && <span style={{ fontSize: 8, padding: '1px 5px', background: '#dcfce7', color: '#16a34a', borderRadius: 3, fontWeight: 800 }}>{job.tag}</span>}
-                          </div>
-                          <div style={{ fontSize: 9, color: '#6b7280' }}>{job.co} · {job.loc}</div>
-                        </div>
-                      </div>
-                      <span style={{ fontSize: 9, fontWeight: 800, padding: '3px 7px', borderRadius: 5, background: '#000', color: '#fff' }}>{job.match}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* 4. Mock Interview */}
-            <div style={{
-              borderRadius: 20, border: '1px solid rgba(0,0,0,0.09)', overflow: 'hidden',
-              background: '#000',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 16px 40px rgba(0,0,0,0.25)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.12)'; }}
-            >
-              <div style={{ padding: '32px 32px 0' }}>
-                <div style={{ display: 'inline-block', padding: '4px 12px', borderRadius: 100, background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', fontSize: 10, fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: 1.5, marginBottom: 16 }}>
-                  Mock Interview
-                </div>
-                <h3 style={{ fontSize: 22, fontWeight: 800, color: '#fff', margin: '0 0 10px', lineHeight: 1.25 }}>
-                  Practice interviews with AI voice questions
-                </h3>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', margin: '0 0 24px', lineHeight: 1.65 }}>
-                  Select your target role and an AI voice asks you 5 real interview questions one by one. Use the Helply AI chatbot to get ideal answers and build your confidence before the real interview.
-                </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 8, marginBottom: 28 }}>
-                  {['12 job roles', 'Voice questions', 'AI answers', '5 daily sessions', 'Custom roles'].map(t => (
-                    <span key={t} style={{ padding: '4px 12px', borderRadius: 20, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.85)', fontSize: 11, fontWeight: 600 }}>{t}</span>
-                  ))}
-                </div>
-              </div>
-              {/* Browser window mockup — Mock Interview */}
-              <div style={{ margin: '0 20px 20px', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
-                {/* Title bar */}
-                <div style={{ background: '#1a1a1a', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#ff5f57' }} />
-                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#febc2e' }} />
-                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#28c840' }} />
-                  <span style={{ marginLeft: 8, color: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: 600 }}>helplyai.co — Mock Interview</span>
-                </div>
-                <div style={{ background: '#111', padding: '14px' }}>
-                  {/* Role badge + progress */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                    <span style={{ fontSize: 9, padding: '3px 8px', borderRadius: 12, background: 'rgba(37,99,235,0.2)', color: '#93c5fd', fontWeight: 700 }}>Product Manager</span>
-                    <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', fontWeight: 600 }}>Question 2 of 5</span>
-                  </div>
-                  {/* Progress segments */}
-                  <div style={{ display: 'flex', gap: 4, marginBottom: 12 }}>
-                    {[1,2,3,4,5].map(i => (
-                      <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: i <= 2 ? 'linear-gradient(90deg,#2563eb,#7c3aed)' : 'rgba(255,255,255,0.12)' }} />
-                    ))}
-                  </div>
-                  {/* Waveform visual */}
-                  <div style={{ display: 'flex', gap: 3, alignItems: 'center', justifyContent: 'center', marginBottom: 10, height: 28 }}>
-                    {[10,18,14,22,16,20,12,24,14,18,10].map((h, i) => (
-                      <div key={i} style={{ width: 3, height: h, borderRadius: 2, background: 'rgba(37,99,235,0.7)' }} />
-                    ))}
-                  </div>
-                  <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', textAlign: 'center' as const, fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: 1, marginBottom: 10 }}>Interviewer is speaking...</div>
-                  {/* Question */}
-                  <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 8, padding: '10px 12px', marginBottom: 10, border: '1px solid rgba(255,255,255,0.08)' }}>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)', lineHeight: 1.65 }}>"How do you measure whether a feature you shipped was actually successful?"</div>
-                  </div>
-                  {/* Tip */}
-                  <div style={{ background: 'rgba(253,224,71,0.08)', borderRadius: 6, padding: '7px 10px', marginBottom: 10, border: '1px solid rgba(253,224,71,0.15)' }}>
-                    <div style={{ fontSize: 9, color: 'rgba(253,224,71,0.8)', lineHeight: 1.5 }}>Open Helply AI chatbot and click <strong>Get Answer</strong> to see the ideal answer</div>
-                  </div>
-                  {/* Buttons */}
-                  <div style={{ display: 'flex', gap: 6 }}>
-                    <div style={{ flex: 1, padding: '7px 0', background: '#fff', borderRadius: 7, textAlign: 'center' as const, fontSize: 10, fontWeight: 800, color: '#000' }}>Next Question</div>
-                    <div style={{ padding: '7px 12px', background: 'rgba(255,255,255,0.08)', borderRadius: 7, fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.12)' }}>End</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom capability pills */}
-          <div style={{ marginTop: 48, textAlign: 'center' }}>
-            <div style={{ fontSize: 12, color: '#888', fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: 1, marginBottom: 16 }}>Also included</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap' as const, justifyContent: 'center', gap: 10 }}>
-              {[
-                'Real-time speech transcription', 'GPT-4.1 + Claude 4.0', 'Coding round support',
-                'Screen content analyzer', 'Smart interview reminders', '100% undetectable overlay',
-                'Zoom, Meet & Teams support', 'Multi-language support', 'Application history tracker',
-              ].map(cap => (
-                <span key={cap} style={{
-                  padding: '7px 16px', borderRadius: 20, fontSize: 12, fontWeight: 600,
-                  background: '#f3f4f6', border: '1px solid #e5e7eb', color: '#374151',
-                }}>{cap}</span>
-              ))}
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* Modern UI Section (Uiverse-inspired) */}
-      <section style={{ padding: '60px 24px', background: 'linear-gradient(165deg, #0b0b0b 0%, #161616 55%, #0f0f0f 100%)' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 30 }}>
-            <span style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              padding: '8px 14px',
-              borderRadius: 999,
-              border: '1px solid rgba(255,255,255,0.22)',
-              background: 'rgba(255,255,255,0.06)',
-              color: 'rgba(255,255,255,0.9)',
-              fontSize: 12,
-              fontWeight: 700,
-              letterSpacing: 0.4,
-            }}>
-              <Icon name="Sparkles" size={14} /> UI UPGRADE
-            </span>
-            <h2 style={{ fontSize: 'clamp(24px, 4vw, 38px)', fontWeight: 900, color: '#fff', margin: '14px 0 10px', letterSpacing: '-0.8px' }}>
-              Faster Decisions, Cleaner Interface
-            </h2>
-            <p style={{ margin: 0, fontSize: 15, color: 'rgba(255,255,255,0.72)' }}>
-              Polished cards, modern buttons, and clean layouts built for interview workflows.
-            </p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1.1fr', gap: 18 }}>
-            <div style={{
-              borderRadius: 20,
-              border: '1px solid rgba(255,255,255,0.12)',
-              background: 'linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03))',
-              padding: 22,
-              boxShadow: '0 22px 50px rgba(0,0,0,0.25)',
-            }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: 12 }}>
-                {[
-                  { title: 'One-click startup', desc: 'Launch interview mode instantly with preloaded context.', icon: 'Rocket' },
-                  { title: 'Live answer stream', desc: 'Readable token-by-token response for natural flow.', icon: 'MessageSquare' },
-                  { title: 'Screen insights', desc: 'Analyze shared screens and coding tasks in real time.', icon: 'Monitor' },
-                  { title: 'Reminder smart actions', desc: 'Capture follow-ups without leaving interview focus.', icon: 'Bell' },
-                ].map((item, idx) => (
-                  <div key={idx} style={{
-                    borderRadius: 14,
-                    border: '1px solid rgba(255,255,255,0.14)',
-                    background: 'rgba(9,9,9,0.5)',
-                    padding: 14,
-                  }}>
-                    <div style={{
-                      width: 34, height: 34, borderRadius: 10,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      background: 'linear-gradient(145deg, #ffffff, #cccccc)',
-                      color: '#000', marginBottom: 10,
-                    }}>
-                      <Icon name={item.icon} size={16} />
-                    </div>
-                    <div style={{ color: '#fff', fontWeight: 700, fontSize: 14, marginBottom: 6 }}>{item.title}</div>
-                    <p style={{ margin: 0, color: 'rgba(255,255,255,0.72)', fontSize: 12.5, lineHeight: 1.6 }}>{item.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div style={{
-                borderRadius: 16,
-                border: '1px solid rgba(255,255,255,0.16)',
-                background: 'rgba(255,255,255,0.06)',
-                padding: 16,
-              }}>
-                <div style={{ color: '#fff', fontSize: 13, fontWeight: 700, marginBottom: 12 }}>Quick Actions</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <button
-                    onClick={() => handleDownloadClick('ios')}
-                    style={{
-                      border: 'none', borderRadius: 12, padding: '12px 14px', cursor: 'pointer',
-                      background: 'linear-gradient(135deg, #ffffff 0%, #d6d6d6 100%)',
-                      color: '#000', fontWeight: 700, fontSize: 13,
-                      boxShadow: '0 8px 18px rgba(255,255,255,0.2)',
-                      transition: 'transform 0.2s',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)' }}
-                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)' }}
-                  >
-                    Download for Mac
-                  </button>
-                  <a
-                    href={user ? '/settings/dashboard' : '/signin'}
-                    onClick={() => trackCTAClick(user ? 'go_dashboard_modern_ui' : 'start_now_modern_ui')}
-                    style={{
-                      borderRadius: 12, padding: '12px 14px',
-                      background: 'rgba(255,255,255,0.02)',
-                      border: '1px solid rgba(255,255,255,0.2)',
-                      color: '#fff', fontWeight: 700, fontSize: 13,
-                      textDecoration: 'none', textAlign: 'center',
-                    }}
-                  >
-                    {user ? 'Go to Dashboard' : 'Start Free'}
-                  </a>
-                </div>
-              </div>
-
-              <div style={{
-                borderRadius: 16,
-                border: '1px solid rgba(255,255,255,0.16)',
-                background: 'linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
-                padding: 16,
-              }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                  {[
-                    { value: '100K+', label: 'Users' },
-                    { value: '4.9/5', label: 'Rating' },
-                    { value: '<2 min', label: 'Setup' },
-                    { value: '24/7', label: 'AI support' },
-                  ].map((stat, idx) => (
-                    <div key={idx} style={{
-                      borderRadius: 10, background: 'rgba(0,0,0,0.35)',
-                      border: '1px solid rgba(255,255,255,0.1)', padding: '10px 8px',
-                      textAlign: 'center',
-                    }}>
-                      <div style={{ color: '#fff', fontWeight: 800, fontSize: 14 }}>{stat.value}</div>
-                      <div style={{ color: 'rgba(255,255,255,0.62)', fontSize: 11 }}>{stat.label}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Testimonials */}
       <section style={{
