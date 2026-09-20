@@ -115,7 +115,7 @@ function HeroFeatureImages() {
           <img
             src={item.src}
             alt={item.label}
-            style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block' }}
+            style={{ width: '100%', height: 'auto', display: 'block' }}
             loading="lazy"
           />
           <div style={{ padding: '8px 10px', fontSize: 12, fontWeight: 700, color: '#111', textAlign: 'center' }}>
